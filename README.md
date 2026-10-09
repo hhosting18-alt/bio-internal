@@ -13,7 +13,7 @@ replacing that file with a `.glb` using the standard Mixamo skeleton (bone names
 The 3D only loads over http(s) (Vercel, GitHub Pages, or `python3 -m http.server` locally).
 Opened straight from disk, the page falls back to the flat 2D figure.
 
-The character waits in the bottom-right corner of the screen, standing calmly. When a place it works
+The character waits in the bottom-right corner of the screen, slowly rotating. When a place it works
 comes into view (the hero or the "how it works" panel) it walks up, sits into that spot and does its
 demo. When you scroll past, it walks back to the corner. It only exercises where it works.
 

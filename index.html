@@ -459,7 +459,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .tech-fig{min-height:420px}
 @media (max-width:800px){.tech-fig{min-height:340px;height:340px}}
 /* agent athlete: walks alongside the visitor between the places it works (hero, engine panel) */
-.bmx-fly{position:fixed;left:0;top:0;z-index:40;pointer-events:none;opacity:0;transition:opacity .3s ease;will-change:transform}
+.bmx-fly{position:fixed;left:0;top:0;z-index:40;pointer-events:none;opacity:0;transition:opacity .3s ease;will-change:transform;transform-origin:0 0}
 .bmx-fly.on{opacity:1}
 .bmx-fly .bmx3d{width:100%;height:100%}
 
@@ -1231,12 +1231,9 @@ window.addEventListener('DOMContentLoaded',function(){
     rw(B[P+'Spine'],Xa,lam*.45*d);rw(B[P+'Spine1'],Xa,lam*.35*d);rw(B[P+'Spine2'],Xa,lam*.2*d);rw(B[P+'Neck'],Xa,-lam*.5*d);
     o.m.updateMatrixWorld(true);B[P+'LeftFoot'].getWorldPosition(a1);
     var h=B[P+'Hips'];h.getWorldPosition(hw);hw.y+=a0.y-a1.y;hw.z+=a0.z-a1.z;h.parent.worldToLocal(hw);h.position.copy(hw);o.m.updateMatrixWorld(true);}
-  /* simple walk cycle used while the character travels with the visitor */
-  function walk(ph){var B=o.B,d=Math.PI/180,s=Math.sin(ph),c=Math.cos(ph);
-    for(var k in o.rest)B[k].quaternion.copy(o.rest[k]);B[P+'Hips'].position.copy(o.hipPos);
-    rw(B[P+'LeftArm'],Za,-72*d);rw(B[P+'RightArm'],Za,72*d);
+  /* walking stride layered on top of the current pose; amp 0..1 so the stride fades out as it arrives */
+  function walkAdd(ph,amp){var B=o.B,d=Math.PI/180*amp,s=Math.sin(ph),c=Math.cos(ph);
     rw(B[P+'LeftArm'],Xa,s*22*d);rw(B[P+'RightArm'],Xa,-s*22*d);
-    rw(B[P+'LeftForeArm'],Xa,-18*d);rw(B[P+'RightForeArm'],Xa,-18*d);
     rw(B[P+'LeftUpLeg'],Xa,-s*26*d);rw(B[P+'RightUpLeg'],Xa,s*26*d);
     rw(B[P+'LeftLeg'],Xa,Math.max(0,c)*38*d);rw(B[P+'RightLeg'],Xa,Math.max(0,-c)*38*d);
     o.m.updateMatrixWorld(true);}
@@ -1259,8 +1256,8 @@ window.addEventListener('DOMContentLoaded',function(){
       var drive=DRIVE.indexOf(e[0])>-1&&DRIVE.indexOf(e[1])>-1;
       tb.t.material.color.setHex(mode==='understand'?(drive?LIME:0x4a4a4a):LIME);});
     /* lighter model inside the engine panel */
-    hemi.intensity=panel?1.7:.85;key.intensity=panel?1.9:1.3;
-    if(o.mats)o.mats.forEach(function(mt){if(mt.emissiveMap)mt.emissiveIntensity=panel?.42:0;});
+    var lk=.08;hemi.intensity+=((panel?1.7:.85)-hemi.intensity)*lk;key.intensity+=((panel?1.9:1.3)-key.intensity)*lk;
+    if(o.mats)o.mats.forEach(function(mt){if(mt.emissiveMap)mt.emissiveIntensity+=((panel?.42:0)-mt.emissiveIntensity)*lk;});
     halos.forEach(function(h,i){h.visible=mode==='understand';h.position.copy(wp[COMP[i]]);h.lookAt(cam.position);});
     var v1=new THREE.Vector3().subVectors(wp.LeftUpLeg,wp.LeftLeg).normalize(),v2=new THREE.Vector3().subVectors(wp.LeftFoot,wp.LeftLeg).normalize();
     return Math.round(Math.acos(Math.max(-1,Math.min(1,v1.dot(v2))))*180/Math.PI);}
@@ -1276,33 +1273,50 @@ window.addEventListener('DOMContentLoaded',function(){
      past, it walks back to the corner and waits. */
   var fly=document.createElement('div');fly.className='bmx-fly';fly.setAttribute('aria-hidden','true');document.body.appendChild(fly);
 
-  var active=null,ag={state:'',host:null,x:0,y:0,w:144,h:200,ph:0,camYaw:.45,cw:0,ch:0};
+  var active=null,ag={state:'',host:null,target:null,cx:0,cy:0,h:200,ox:0,oy:0,oh:0,vx:0,vy:0,vh:0,ph:0,amp:0,dir:1,work:0,settled:false,camYaw:.45,R:4.3,cw:0,ch:0};
   function hostRatio(el){var b=el.getBoundingClientRect(),vh=window.innerHeight;return b.height?Math.max(0,Math.min(vh,b.bottom)-Math.max(0,b.top))/b.height:0;}
   function wantHost(){if(hostRatio(hosts.hero)>=.5)return 'hero';if(hostRatio(hosts.tech)>=.6)return 'tech';return null;}
   function setCanvasSize(w,h){w=Math.max(1,Math.round(w));h=Math.max(1,Math.round(h));if(w===ag.cw&&h===ag.ch)return;ag.cw=w;ag.ch=h;r.setSize(w,h,false);cv.style.width=w+'px';cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix();}
   function steady(){cv.style.animation='none';cv.style.opacity='1';}
-  function placeFly(bob){fly.style.transform='translate3d('+ag.x+'px,'+(ag.y+(bob||0))+'px,0)';fly.style.width=ag.w+'px';fly.style.height=ag.h+'px';setCanvasSize(ag.w,ag.h);}
+  /* while travelling the canvas keeps one resolution and is scaled on the GPU, so nothing is reallocated mid-move */
+  function placeFly(){if(!ag.ch)return;var s=ag.h/ag.ch;fly.style.width=ag.cw+'px';fly.style.height=ag.ch+'px';
+    fly.style.transform='translate3d('+(ag.cx-ag.cw*s/2)+'px,'+(ag.cy-ag.ch*s/2)+'px,0) scale('+s+')';}
   /* where the character waits: bottom-right corner of the screen */
   function corner(){var vw=document.documentElement.clientWidth,vh=window.innerHeight,small=vw<700,h=small?140:200,w=Math.round(h*.72),m=small?10:18;return {x:vw-w-m,y:vh-h-m,w:w,h:h};}
+  function rectOf(k){if(k==='corner')return corner();var b=hosts[k].getBoundingClientRect();return {x:b.left,y:b.top,w:b.width,h:b.height};}
   /* sit down in a place where the character works */
   function dockInto(k,fade){ag.state='docked';ag.host=k;active=k;hosts[k].appendChild(cv);if(fade){cv.style.animation='';cv.style.opacity='';}else steady();fly.classList.remove('on');setCanvasSize(hosts[k].clientWidth,hosts[k].clientHeight||400);}
   /* get up and head back to the corner */
-  function undock(){var b=hosts[ag.host].getBoundingClientRect();ag.x=b.left;ag.y=b.top;ag.w=b.width;ag.h=b.height;ag.state='free';ag.host=null;active='fly';fly.appendChild(cv);steady();fly.classList.add('on');placeFly();}
-  function resize(){if(ag.state==='docked'&&ag.host)setCanvasSize(hosts[ag.host].clientWidth,hosts[ag.host].clientHeight||400);}
+  function undock(){var b=hosts[ag.host].getBoundingClientRect();ag.cx=b.left+b.width/2;ag.cy=b.top+b.height/2;ag.h=b.height;ag.vx=ag.vy=ag.vh=0;ag.target=null;
+    ag.state='free';ag.host=null;active='fly';fly.appendChild(cv);steady();fly.classList.add('on');placeFly();}
+  function resize(){if(ag.state==='docked'&&ag.host)setCanvasSize(hosts[ag.host].clientWidth,hosts[ag.host].clientHeight||400);else ag.settled=false;}
   window.addEventListener('resize',resize);
   (function(){var w0=wantHost();if(w0){dockInto(w0,true);return;}
-    var cn=corner();ag.state='free';active='fly';ag.x=cn.x;ag.y=cn.y;ag.w=cn.w;ag.h=cn.h;fly.appendChild(cv);fly.classList.add('on');placeFly();})();
+    var cn=corner();ag.state='free';active='fly';ag.target='corner';ag.cx=cn.x+cn.w/2;ag.cy=cn.y+cn.h/2;ag.h=cn.h;setCanvasSize(cn.w,cn.h);fly.appendChild(cv);fly.classList.add('on');placeFly();})();
 
+  /* critically damped spring: eases in and out with no overshoot */
+  function damp(x,v,T,dt){var w=2/T,k=w*dt,e=1/(1+k+.48*k*k+.235*k*k*k),tmp=(v+w*x)*dt;return [(x+tmp)*e,(v-w*tmp)*e];}
   function agentTick(dt){
     var want=wantHost();
-    if(ag.state==='docked'){if(want===ag.host||hostRatio(hosts[ag.host])>=.4)return {moving:false};undock();}
-    var tg;if(want){var b=hosts[want].getBoundingClientRect();tg={x:b.left,y:b.top,w:b.width,h:b.height};}else tg=corner();
-    var a=reduce?1:1-Math.exp(-dt*5),ox=ag.x,oy=ag.y;
-    ag.x+=(tg.x-ag.x)*a;ag.y+=(tg.y-ag.y)*a;ag.w+=(tg.w-ag.w)*a;ag.h+=(tg.h-ag.h)*a;
-    if(want&&Math.abs(tg.x-ag.x)<2&&Math.abs(tg.y-ag.y)<2&&Math.abs(tg.w-ag.w)<2&&Math.abs(tg.h-ag.h)<2){dockInto(want);return {moving:false};}
-    var vx=(ag.x-ox)/Math.max(dt,1e-3),vy=(ag.y-oy)/Math.max(dt,1e-3),sp=Math.hypot(vx,vy);
-    placeFly();
-    return {moving:sp>40,dir:Math.abs(vx)>Math.abs(vy)*.5?(vx>0?1:-1):0,speed:sp};}
+    if(ag.state==='docked'){if(want===ag.host||hostRatio(hosts[ag.host])>=.4){ag.work=Math.min(1,ag.work+dt*2.5);ag.amp*=Math.exp(-dt*8);return;}undock();}
+    ag.work=Math.max(0,ag.work-dt*4);
+    /* position is tracked relative to where it is heading, so scrolling carries it along instead of making it chase */
+    var key=want||'corner',tr=rectOf(key),tcx=tr.x+tr.w/2,tcy=tr.y+tr.h/2;
+    if(key!==ag.target){ag.target=key;ag.ox=ag.cx-tcx;ag.oy=ag.cy-tcy;ag.oh=ag.h-tr.h;ag.settled=false;}
+    if(reduce){ag.ox=ag.oy=ag.oh=ag.vx=ag.vy=ag.vh=0;}
+    else{var T=.5,q;q=damp(ag.ox,ag.vx,T,dt);ag.ox=q[0];ag.vx=q[1];q=damp(ag.oy,ag.vy,T,dt);ag.oy=q[0];ag.vy=q[1];q=damp(ag.oh,ag.vh,T,dt);ag.oh=q[0];ag.vh=q[1];}
+    ag.cx=tcx+ag.ox;ag.cy=tcy+ag.oy;ag.h=tr.h+ag.oh;
+    /* stride follows real travel speed and distance, so the legs slow down and stop exactly on arrival */
+    var sp=Math.hypot(ag.vx,ag.vy);
+    ag.amp+=(Math.min(1,sp/220)-ag.amp)*(1-Math.exp(-dt*8));
+    if(Math.abs(ag.vx)>30)ag.dir=ag.vx>0?1:-1;
+    ag.ph+=dt*Math.min(sp*.03,14);
+    if(Math.abs(ag.ox)<.5&&Math.abs(ag.oy)<.5&&Math.abs(ag.oh)<.5&&sp<8){
+      ag.ox=ag.oy=ag.oh=ag.vx=ag.vy=ag.vh=0;ag.cx=tcx;ag.cy=tcy;ag.h=tr.h;
+      if(want){dockInto(want);return;}
+      if(!ag.settled){ag.settled=true;setCanvasSize(tr.w,tr.h);}
+    }
+    placeFly();}
 
   /* drag to rotate (auto-spin keeps going) */
   var uYaw=0,drag=false,px=0,vel=0;
@@ -1316,19 +1330,19 @@ window.addEventListener('DOMContentLoaded',function(){
     if(!active||!o||document.hidden)return;
     if(!reduce){clock+=dt;yaw+=dt*.18;}
     var c=reduce?.25:(clock/3.4)%1;if(c<lcyc)reps++;lcyc=c;var t=.5-.5*Math.cos(c*Math.PI*2);
-    var mv=agentTick(dt),walking=mv.moving&&!reduce;
-    /* walks while travelling, stands calmly in the corner, exercises only where it works */
-    if(walking){ag.ph+=dt*Math.min(13,5+mv.speed*.01);walk(ag.ph);}else pose(active==='fly'?(reduce?0:.02+.02*Math.sin(clock*1.6)):t);
+    agentTick(dt);
+    /* exercises only where it works (fading in and out), with the walking stride layered on while travelling */
+    pose(t*ag.work);if(ag.amp>.01&&!reduce)walkAdd(ag.ph,ag.amp);
     var mode=active==='tech'?(window.BMX_MODE||'see'):'hero';var kd=overlay(mode);
     if(active!=='tech'&&tRead.innerHTML)tRead.innerHTML='';
     if(active==='hero'){if(heroKnee)heroKnee.textContent=kd+'°';}
     else if(active==='tech'){tRead.innerHTML=mode==='measure'?'knee <b>'+kd+'°</b>':(mode==='respond'?'<span class="big">'+String(reps%100).padStart(2,'0')+'</span>rep':'');}
     if(!drag){uYaw+=vel;vel*=.92;}
     var fit=Math.max(1,.62/Math.min(cam.aspect,.9));
-    var R=(active==='tech'?3.75:4.3)*fit,look=.84;
-    /* while walking, turn side-on to face the way it is going; in the corner, face the visitor */
-    var ty=active==='tech'?.9+Math.sin(clock*.3)*.35:(walking&&mv.dir?(mv.dir>0?-1.25:1.25):(active==='fly'?.45:yaw));
-    var dA=Math.atan2(Math.sin(ty-ag.camYaw),Math.cos(ty-ag.camYaw));ag.camYaw+=reduce?dA:dA*(1-Math.exp(-dt*6));
+    var Rt=(active==='tech'?3.75:4.3)*fit,look=.84;ag.R+=(Rt-ag.R)*(reduce?1:1-Math.exp(-dt*4));var R=ag.R;
+    /* travelling: turn side-on to face the way it is going; otherwise keep slowly rotating */
+    var side=ag.dir>0?-1.25:1.25,ty=active==='tech'?.9+Math.sin(clock*.3)*.35:yaw+Math.atan2(Math.sin(side-yaw),Math.cos(side-yaw))*ag.amp;
+    var dA=Math.atan2(Math.sin(ty-ag.camYaw),Math.cos(ty-ag.camYaw));ag.camYaw+=reduce?dA:dA*(1-Math.exp(-dt*4));
     var yy=ag.camYaw+uYaw;
     cam.position.set(Math.sin(yy)*R,1.12,Math.cos(yy)*R);cam.lookAt(0,look,0);
     r.render(scene,cam);}
