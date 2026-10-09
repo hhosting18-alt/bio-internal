@@ -458,10 +458,10 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .bmx3d-read .big{display:block;font-family:var(--font-display);font-size:clamp(56px,7vw,96px);font-weight:500;letter-spacing:-.05em;line-height:.9;color:var(--lime)}
 .tech-fig{min-height:420px}
 @media (max-width:800px){.tech-fig{min-height:340px;height:340px}}
-/* roaming athlete: follows you down the page and only rests in empty space */
-.roam{position:absolute;left:0;top:0;z-index:40;pointer-events:none;transform-origin:0 0;opacity:0;transition:opacity .35s ease;will-change:transform}
-.roam.on{opacity:1}
-.roam .bmx3d{height:100%}
+/* agent athlete: walks alongside the visitor between the places it works (hero, engine panel) */
+.bmx-fly{position:fixed;left:0;top:0;z-index:40;pointer-events:none;opacity:0;transition:opacity .3s ease;will-change:transform}
+.bmx-fly.on{opacity:1}
+.bmx-fly .bmx3d{width:100%;height:100%}
 
 /* ---------- Layout updates ---------- */
 .explain{display:block}
@@ -1231,6 +1231,15 @@ window.addEventListener('DOMContentLoaded',function(){
     rw(B[P+'Spine'],Xa,lam*.45*d);rw(B[P+'Spine1'],Xa,lam*.35*d);rw(B[P+'Spine2'],Xa,lam*.2*d);rw(B[P+'Neck'],Xa,-lam*.5*d);
     o.m.updateMatrixWorld(true);B[P+'LeftFoot'].getWorldPosition(a1);
     var h=B[P+'Hips'];h.getWorldPosition(hw);hw.y+=a0.y-a1.y;hw.z+=a0.z-a1.z;h.parent.worldToLocal(hw);h.position.copy(hw);o.m.updateMatrixWorld(true);}
+  /* simple walk cycle used while the character travels with the visitor */
+  function walk(ph){var B=o.B,d=Math.PI/180,s=Math.sin(ph),c=Math.cos(ph);
+    for(var k in o.rest)B[k].quaternion.copy(o.rest[k]);B[P+'Hips'].position.copy(o.hipPos);
+    rw(B[P+'LeftArm'],Za,-72*d);rw(B[P+'RightArm'],Za,72*d);
+    rw(B[P+'LeftArm'],Xa,s*22*d);rw(B[P+'RightArm'],Xa,-s*22*d);
+    rw(B[P+'LeftForeArm'],Xa,-18*d);rw(B[P+'RightForeArm'],Xa,-18*d);
+    rw(B[P+'LeftUpLeg'],Xa,-s*26*d);rw(B[P+'RightUpLeg'],Xa,s*26*d);
+    rw(B[P+'LeftLeg'],Xa,Math.max(0,c)*38*d);rw(B[P+'RightLeg'],Xa,Math.max(0,-c)*38*d);
+    o.m.updateMatrixWorld(true);}
   var cL=new THREE.Color(LIME),cG=new THREE.Color(0x3a3a3a),cW=new THREE.Color(0xbdbdbd);
   function overlay(mode){
     TRACK.forEach(function(n){var b=o.B[P+n];if(b)b.getWorldPosition(wp[n]);});wp.Head.y+=.08;
@@ -1261,81 +1270,83 @@ window.addEventListener('DOMContentLoaded',function(){
   var tRead=document.createElement('div');tRead.className='bmx3d-read';techHost.appendChild(tRead);
   var heroKnee=document.querySelector('#kneeRead b');
 
-  /* ---------- Roaming athlete ----------
-     Outside the hero and the engine panel, the character travels down the page with you.
-     It scans the layout for empty space (no text, images or cards), rests only there, and
-     leaps with a spin to the next empty spot as you scroll. */
-  var roam=document.createElement('div');roam.className='roam';roam.setAttribute('aria-hidden','true');document.body.appendChild(roam);hosts.roam=roam;
-  var RH,RW,SIZES;
-  function roamDims(){var small=window.innerWidth<700;RH=small?220:300;RW=Math.round(RH*.72);SIZES=small?[220,180]:[300,250,200];roam.style.width=RW+'px';roam.style.height=RH+'px';}
-  roamDims();
+  /* ---------- Agent athlete ----------
+     The character is a companion that travels with the visitor. It docks into the places it is
+     needed (the hero and the engine panel) and does its demo there. In between it walks alongside
+     you on screen, rests only in empty space (no text, images, cards or buttons) and steps out of
+     the way whenever content scrolls under it. */
+  var fly=document.createElement('div');fly.className='bmx-fly';fly.setAttribute('aria-hidden','true');document.body.appendChild(fly);
   var OBS_TEXT='h1,h2,h3,h4,h5,p,li,dt,dd,th,td,a,button,.label,.mono,.tag,.readout,.tname,.ban-t';
   var OBS_BOX='img,figure,.btn,.feat,.stp,.path,.tech,.panel,.note,.extra,.report>div,.values>div,.who>div,.support-box,.acc,.tbl-wrap,.cmp-card,.marquee,.photo-band,.big-line,.checks,.wordbox,.facts,.loop-back,.frame,.hero,.slide-head,.final,svg.plus';
-  var spots=[],obs=[],rg=document.createRange();
-  function fits(x,y,w,h){for(var i=0;i<obs.length;i++){var o=obs[i];if(o[1]>=y+h)break;if(o[3]>y&&o[0]<x+w&&o[2]>x)return false;}return true;}
-  function gapAt(y,w,h,pad,vw){var iv=[];for(var i=0;i<obs.length;i++){var o=obs[i];if(o[1]>=y+h)break;if(o[3]>y)iv.push(o);}
-    iv.sort(function(a,b){return a[0]-b[0];});var gaps=[],x=pad;
-    iv.forEach(function(o){if(o[0]>x)gaps.push([x,o[0]]);x=Math.max(x,o[2]);});if(vw-pad>x)gaps.push([x,vw-pad]);
-    for(var g=gaps.length-1;g>=0;g--)if(gaps[g][1]-gaps[g][0]>=w)return Math.round(gaps[g][1]-w);return null;}
-  function findSpots(){
-    roamDims();
-    var sx=window.scrollX,sy=window.scrollY,M=20,vw=document.documentElement.clientWidth,pad=Math.max(16,Math.min(44,vw*.034)),docH=document.documentElement.scrollHeight;
-    obs=[];
+  var obs=[],rg=document.createRange();
+  /* everything the character must not stand on, in page coordinates */
+  function collectObs(){
+    var sx=window.scrollX,sy=window.scrollY,M=20;obs=[];
     function add(b){if(b.width>2&&b.height>2)obs.push([b.left+sx-M,b.top+sy-M,b.right+sx+M,b.bottom+sy+M]);}
-    document.querySelectorAll(OBS_BOX).forEach(function(el){if(!el.closest('.nav,.mnav,.roam'))add(el.getBoundingClientRect());});
-    document.querySelectorAll(OBS_TEXT).forEach(function(el){if(el.closest('.nav,.mnav,.roam'))return;rg.selectNodeContents(el);add(rg.getBoundingClientRect());});
-    obs.sort(function(a,b){return a[1]-b[1];});
-    spots=[];var y=0,STEP=16;
-    while(y<docH){var f=null;
-      for(var si=0;si<SIZES.length&&!f;si++){var h=SIZES[si],w=Math.round(h*.72),x=gapAt(y,w,h,pad,vw);if(x!==null)f={x:x,w:w,h:h};}
-      if(!f){y+=STEP;continue;}
-      var y1=y;while(y1+STEP+f.h<docH&&fits(f.x,y1+STEP,f.w,f.h))y1+=STEP;
-      spots.push({x:f.x,y:Math.round((y+y1)/2),w:f.w,h:f.h,s:f.h/RH});
-      y=y1+f.h+40;}
-    if(active==='roam'){resize();rs.pendingFrom=rs.cur||rs.leap?{x:rs.x,y:rs.y,s:rs.s}:null;rs.cur=null;rs.leap=null;}
-  }
-  var spotTimer=0;function queueSpots(){clearTimeout(spotTimer);spotTimer=setTimeout(findSpots,300);}
-  window.addEventListener('resize',queueSpots);window.addEventListener('load',queueSpots);
-  if(window.ResizeObserver)new ResizeObserver(queueSpots).observe(document.body);
-  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(queueSpots);
+    document.querySelectorAll(OBS_BOX).forEach(function(el){if(!el.closest('.nav,.mnav,.bmx-fly'))add(el.getBoundingClientRect());});
+    document.querySelectorAll(OBS_TEXT).forEach(function(el){if(el.closest('.nav,.mnav,.bmx-fly'))return;rg.selectNodeContents(el);add(rg.getBoundingClientRect());});
+    obs.sort(function(a,b){return a[1]-b[1];});}
+  var obsTimer=0;function queueObs(){clearTimeout(obsTimer);obsTimer=setTimeout(function(){collectObs();ag.spot=null;},250);}
+  window.addEventListener('resize',queueObs);window.addEventListener('load',queueObs);
+  if(window.ResizeObserver)new ResizeObserver(queueObs).observe(document.body);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(queueObs);
+  function fits(x,y,w,h){for(var i=0;i<obs.length;i++){var o=obs[i];if(o[1]>=y+h)break;if(o[3]>y&&o[0]<x+w&&o[2]>x)return false;}return true;}
+  function gapsAt(y,h,pad,vw){var iv=[];for(var i=0;i<obs.length;i++){var o=obs[i];if(o[1]>=y+h)break;if(o[3]>y)iv.push(o);}
+    iv.sort(function(a,b){return a[0]-b[0];});var gaps=[],x=pad;
+    iv.forEach(function(o){if(o[0]>x)gaps.push([x,o[0]]);x=Math.max(x,o[2]);});if(vw-pad>x)gaps.push([x,vw-pad]);return gaps;}
+  /* nearest empty patch of screen to (cx,cy); a 30px buffer above and below so it moves before content reaches it */
+  function nearSpot(cx,cy){
+    var vw=document.documentElement.clientWidth,vh=window.innerHeight,pad=Math.max(16,Math.min(44,vw*.034)),sy=window.scrollY,sizes=vw<700?[170,140]:[240,200,160];
+    for(var si=0;si<sizes.length;si++){var h=sizes[si],w=Math.round(h*.72),best=null,bd=1e9;
+      for(var y=80;y+h<=vh-8;y+=20){var gs=gapsAt(y+sy-30,h+60,pad,vw);
+        for(var g=0;g<gs.length;g++){if(gs[g][1]-gs[g][0]<w)continue;var x=Math.max(gs[g][0],Math.min(gs[g][1]-w,cx));var d=Math.hypot(x-cx,y-cy);if(d<bd){bd=d;best={x:x,y:y,w:w,h:h};}}}
+      if(best)return best;}
+    return null;}
 
-  var rs={cur:null,leap:null,pendingFrom:null,x:0,y:-9999,s:1};
-  function visFrac(sp){var a=window.scrollY+76,b=window.scrollY+window.innerHeight;return Math.max(0,Math.min(b,sp.y+sp.h)-Math.max(a,sp.y))/sp.h;}
-  function pickSpot(){var best=null,bd=1e9,mid=window.scrollY+window.innerHeight*.55;
-    spots.forEach(function(sp){if(visFrac(sp)<.999)return;var d=Math.abs(sp.y+sp.h/2-mid);if(d<bd){bd=d;best=sp;}});return best;}
-  function startLeap(to){
-    if(reduce){rs.cur=to;rs.leap=null;rs.pendingFrom=null;return;}
-    var a=window.scrollY+76,b=window.scrollY+window.innerHeight,f;
-    if(rs.pendingFrom)f=rs.pendingFrom;
-    else if(rs.cur)f={x:rs.x,y:rs.y,s:rs.s};
-    else f={x:to.x,y:(to.y+to.h/2>(a+b)/2)?b:a-RH*to.s,s:to.s};
-    f={x:f.x,y:Math.max(a-RH*f.s*.6,Math.min(b-RH*f.s*.4,f.y)),s:f.s};
-    rs.pendingFrom=null;rs.leap={f:f,t:to,k:0};}
-  function applyRoam(){roam.style.transform='translate3d('+rs.x+'px,'+rs.y+'px,0) scale('+rs.s+')';roam.classList.toggle('on',!!(rs.leap||rs.cur));}
-  function roamTick(dt){
-    var out=null;
-    if(rs.leap){var L=rs.leap;L.k=Math.min(1,L.k+dt/.85);var k=L.k,e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
-      var dist=Math.hypot(L.t.x-L.f.x,L.t.y-L.f.y),arc=Math.min(170,40+dist*.3)*Math.sin(Math.PI*k);
-      rs.x=L.f.x+(L.t.x-L.f.x)*e;rs.y=L.f.y+(L.t.y-L.f.y)*e-arc;rs.s=L.f.s+(L.t.s-L.f.s)*e;
-      out={t:.6*Math.abs(Math.cos(Math.PI*k)),spin:Math.PI*2*e};
-      if(k>=1){rs.cur=L.t;rs.leap=null;}}
-    else{
-      if(!(rs.cur&&visFrac(rs.cur)>=.75)){var nx=pickSpot();if(nx&&nx!==rs.cur)startLeap(nx);}
-      if(!rs.leap&&rs.cur){rs.x=rs.cur.x;rs.y=rs.cur.y;rs.s=rs.cur.s;}}
-    applyRoam();return out;}
-
-  var active=null,vis={hero:0,tech:0};
-  function mount(which){if(active===which)return;var prev=active;active=which;if(!which)return;
-    if(which==='roam'){rs.cur=null;rs.leap=null;rs.pendingFrom=null;
-      var ph=prev&&hosts[prev];if(ph){var hb=ph.getBoundingClientRect(),s=Math.max(.6,Math.min(1.5,hb.height/RH));rs.pendingFrom={x:hb.left+window.scrollX+(hb.width-RW*s)/2,y:hb.top+window.scrollY,s:s};}
-      hosts.roam.appendChild(cv);resize();return;}
-    roam.classList.remove('on');
-    hosts[which].appendChild(cv);cv.style.animation='none';void cv.offsetWidth;cv.style.animation='';resize();}
-  function resize(){if(!active)return;var h=hosts[active];var w=h.clientWidth,hh=h.clientHeight||400;r.setSize(w,hh,false);cv.style.width=w+'px';cv.style.height=hh+'px';cam.aspect=w/hh;cam.updateProjectionMatrix();}
+  var active=null,ag={state:'',host:null,x:0,y:0,w:170,h:240,spot:null,lastSearch:0,ph:0,camYaw:.75,cw:0,ch:0};
+  function hostRatio(el){var b=el.getBoundingClientRect(),vh=window.innerHeight;return b.height?Math.max(0,Math.min(vh,b.bottom)-Math.max(0,b.top))/b.height:0;}
+  function wantHost(){if(hostRatio(hosts.hero)>=.5)return 'hero';if(hostRatio(hosts.tech)>=.6)return 'tech';return null;}
+  function setCanvasSize(w,h){w=Math.max(1,Math.round(w));h=Math.max(1,Math.round(h));if(w===ag.cw&&h===ag.ch)return;ag.cw=w;ag.ch=h;r.setSize(w,h,false);cv.style.width=w+'px';cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix();}
+  function steady(){cv.style.animation='none';cv.style.opacity='1';}
+  function placeFly(bob){fly.style.transform='translate3d('+ag.x+'px,'+(ag.y+(bob||0))+'px,0)';fly.style.width=ag.w+'px';fly.style.height=ag.h+'px';setCanvasSize(ag.w,ag.h);}
+  /* sit down in a place where the character works */
+  function dockInto(k,fade){ag.state='docked';ag.host=k;active=k;ag.hidden=false;ag.hopAt=0;hosts[k].appendChild(cv);if(fade){cv.style.animation='';cv.style.opacity='';}else steady();fly.classList.remove('on');setCanvasSize(hosts[k].clientWidth,hosts[k].clientHeight||400);}
+  /* get up and start walking with the visitor */
+  function undock(){var b=hosts[ag.host].getBoundingClientRect();ag.x=b.left;ag.y=b.top;ag.w=b.width;ag.h=b.height;ag.state='free';ag.host=null;ag.spot=null;ag.fromDock=true;ag.hidden=false;ag.hopAt=0;active='fly';fly.appendChild(cv);steady();fly.classList.add('on');placeFly();}
+  /* true if walking in a straight line from the current position to s never crosses content */
+  function pathClear(s){var sy=window.scrollY,w=Math.min(ag.w,s.w),h=Math.min(ag.h,s.h);
+    for(var i=1;i<=8;i++){var k=i/8,x=ag.x+(s.x-ag.x)*k,y=ag.y+(s.y-ag.y)*k;if(!fits(x,y+sy,w,h))return false;}return true;}
+  function resize(){if(ag.state==='docked'&&ag.host)setCanvasSize(hosts[ag.host].clientWidth,hosts[ag.host].clientHeight||400);}
   window.addEventListener('resize',resize);
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){vis[e.target===hosts.hero?'hero':'tech']=e.isIntersecting?e.intersectionRatio:0;});
-    var best=vis.hero>=vis.tech?'hero':'tech';mount(vis[best]>=.15?best:'roam');},{threshold:[0,.15,.3,.6,1]});
-  io.observe(hosts.hero);io.observe(hosts.tech);
+  (function(){var w0=wantHost();if(w0){dockInto(w0,true);return;}
+    ag.state='free';active='fly';ag.hidden=true;fly.appendChild(cv);placeFly();})();
+
+  function agentTick(dt,now){
+    var want=wantHost();
+    if(ag.state==='docked'){if(want===ag.host||hostRatio(hosts[ag.host])>=.4)return {moving:false};undock();}
+    var tx,ty,tw,th;
+    if(want){
+      if(ag.hidden){dockInto(want,true);return {moving:false};} /* was waiting out of sight: just appear in place */
+      var b=hosts[want].getBoundingClientRect();tx=b.left;ty=b.top;tw=b.width;th=b.height;}
+    else{
+      if(ag.spot&&!fits(ag.spot.x,ag.spot.y+window.scrollY-30,ag.spot.w,ag.spot.h+60))ag.spot=null;
+      if(!ag.spot&&now-ag.lastSearch>150){ag.lastSearch=now;var ns=nearSpot(ag.x,ag.y);
+        /* the way there crosses content: fade out and hop instead of walking over it */
+        if(ns&&!ag.hidden&&!ag.fromDock&&!pathClear(ns)){ag.hopAt=now+(reduce?0:260);fly.classList.remove('on');}
+        ag.spot=ns;}
+      if(!ag.spot){if(!ag.hidden){ag.hidden=true;fly.classList.remove('on');}return {moving:false};} /* no empty space on screen: wait out of sight */
+      if(ag.hidden||ag.hopAt){if(ag.hopAt&&now<ag.hopAt)return {moving:false};
+        ag.x=ag.spot.x;ag.y=ag.spot.y;ag.w=ag.spot.w;ag.h=ag.spot.h;ag.hidden=false;ag.hopAt=0;ag.fromDock=false;fly.classList.add('on');placeFly();return {moving:false};}
+      tx=ag.spot.x;ty=ag.spot.y;tw=ag.spot.w;th=ag.spot.h;
+    }
+    var a=reduce?1:1-Math.exp(-dt*5.5),ox=ag.x,oy=ag.y;
+    ag.x+=(tx-ag.x)*a;ag.y+=(ty-ag.y)*a;ag.w+=(tw-ag.w)*a;ag.h+=(th-ag.h)*a;
+    var close=Math.abs(tx-ag.x)<2&&Math.abs(ty-ag.y)<2&&Math.abs(tw-ag.w)<2&&Math.abs(th-ag.h)<2;
+    if(want&&close){dockInto(want);return {moving:false};}
+    if(close)ag.fromDock=false;
+    var vx=(ag.x-ox)/Math.max(dt,1e-3),vy=(ag.y-oy)/Math.max(dt,1e-3),sp=Math.hypot(vx,vy),resting=sp<40;
+    placeFly(resting&&!reduce?Math.sin(now/420)*3:0);
+    return {moving:!resting,dir:Math.abs(vx)>Math.abs(vy)*.5?(vx>0?1:-1):0,speed:sp};}
 
   /* drag to rotate (auto-spin keeps going) */
   var uYaw=0,drag=false,px=0,vel=0;
@@ -1348,15 +1359,20 @@ window.addEventListener('DOMContentLoaded',function(){
   function loop(now){requestAnimationFrame(loop);var dt=Math.min(.05,(now-last)/1000);last=now;
     if(!active||!o||document.hidden)return;
     if(!reduce){clock+=dt;yaw+=dt*.18;}
-    var c=reduce?.25:(clock/3.4)%1;if(c<lcyc)reps++;lcyc=c;var t=.5-.5*Math.cos(c*Math.PI*2),spin=0;
-    if(active==='roam'){var ro=roamTick(dt);if(ro){t=ro.t;spin=ro.spin;}}
-    pose(t);var mode=active==='tech'?(window.BMX_MODE||'see'):'hero';var kd=overlay(mode);
+    var c=reduce?.25:(clock/3.4)%1;if(c<lcyc)reps++;lcyc=c;var t=.5-.5*Math.cos(c*Math.PI*2);
+    var mv=agentTick(dt,now),walking=mv.moving&&!reduce;
+    if(walking){ag.ph+=dt*Math.min(13,5+mv.speed*.01);walk(ag.ph);}else pose(active==='fly'?t*.45:t);
+    var mode=active==='tech'?(window.BMX_MODE||'see'):'hero';var kd=overlay(mode);
+    if(active!=='tech'&&tRead.innerHTML)tRead.innerHTML='';
     if(active==='hero'){if(heroKnee)heroKnee.textContent=kd+'°';}
     else if(active==='tech'){tRead.innerHTML=mode==='measure'?'knee <b>'+kd+'°</b>':(mode==='respond'?'<span class="big">'+String(reps%100).padStart(2,'0')+'</span>rep':'');}
     if(!drag){uYaw+=vel;vel*=.92;}
     var fit=Math.max(1,.62/Math.min(cam.aspect,.9));
     var R=(active==='tech'?3.75:4.3)*fit,look=.84;
-    var yy=(active==='tech'?.9+Math.sin(clock*.3)*.35:yaw)+uYaw+spin;
+    /* while walking, turn side-on so the character faces the way it is going */
+    var ty=active==='tech'?.9+Math.sin(clock*.3)*.35:(walking&&mv.dir?(mv.dir>0?-1.25:1.25):yaw);
+    var dA=Math.atan2(Math.sin(ty-ag.camYaw),Math.cos(ty-ag.camYaw));ag.camYaw+=reduce?dA:dA*(1-Math.exp(-dt*6));
+    var yy=ag.camYaw+uYaw;
     cam.position.set(Math.sin(yy)*R,1.12,Math.cos(yy)*R);cam.lookAt(0,look,0);
     r.render(scene,cam);}
 
@@ -1391,7 +1407,7 @@ window.addEventListener('DOMContentLoaded',function(){
     var mats=[];m.traverse(function(x){if(x.isMesh&&x.material&&x.material.map){var mt=x.material;mt.emissive=new THREE.Color(0xffffff);mt.emissiveMap=mt.map;mt.emissiveIntensity=0;mt.needsUpdate=true;mats.push(mt);}});
     o={m:m,B:B,rest:rest,hipPos:B[P+'Hips'].position.clone(),mats:mats};scene.add(m);
     ['hero','tech'].forEach(function(k){var hn=document.createElement('div');hn.className='drag-hint';hn.textContent='\u2194 Drag to rotate';hosts[k].appendChild(hn);});
-    window.BMX3D=true;document.documentElement.classList.add('has-3d');resize();findSpots();requestAnimationFrame(loop);
+    window.BMX3D=true;document.documentElement.classList.add('has-3d');resize();collectObs();requestAnimationFrame(loop);
   });
 });
 </script>
