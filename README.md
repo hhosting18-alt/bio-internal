@@ -13,12 +13,9 @@ replacing that file with a `.glb` using the standard Mixamo skeleton (bone names
 The 3D only loads over http(s) (Vercel, GitHub Pages, or `python3 -m http.server` locally).
 Opened straight from disk, the page falls back to the flat 2D figure.
 
-The character behaves like a companion that travels with the visitor. It sits in the places it works
-(the hero and the "how it works" panel) and does its squat demo there. When you scroll away it gets up
-and walks alongside you on screen, resting only in empty space (it measures every heading, paragraph,
-button, image and card on the page and avoids them). If content scrolls under it, it moves to the nearest
-free spot: walking if the way is clear, otherwise a quick fade-hop. If there's no free space on screen it
-waits out of sight and comes back as soon as there is. No markup is needed: change the layout and it adapts.
+The character waits in the bottom-right corner of the screen, standing calmly. When a place it works
+comes into view (the hero or the "how it works" panel) it walks up, sits into that spot and does its
+demo. When you scroll past, it walks back to the corner. It only exercises where it works.
 
 ## Deploy to Vercel
 No build step. Either drag this folder into vercel.com/new, or run `vercel` inside it.
