@@ -13,10 +13,10 @@ replacing that file with a `.glb` using the standard Mixamo skeleton (bone names
 The 3D only loads over http(s) (Vercel, GitHub Pages, or `python3 -m http.server` locally).
 Opened straight from disk, the page falls back to the flat 2D figure.
 
-On desktop (wider than 900px) the same character also moves into empty spots further down the page
-(Fitness setup, Physio care loop, Sameeksha steps, "Which app is right for you?"). Each spot is a
-`<div class="dock" data-dock>`: add or remove one to change where the character appears.
-On phones the docks are hidden so nothing crowds the text.
+Below the hero and the engine panel, the same character travels down the page as you scroll.
+On load (and on resize) the page scans its own layout for empty space: anything with text,
+images, cards or buttons is avoided. The character only rests in those empty spots, and leaps with
+a spin to the next one as you scroll. No markup is needed: change the layout and the spots update.
 
 ## Deploy to Vercel
 No build step. Either drag this folder into vercel.com/new, or run `vercel` inside it.

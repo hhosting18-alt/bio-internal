@@ -458,11 +458,10 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .bmx3d-read .big{display:block;font-family:var(--font-display);font-size:clamp(56px,7vw,96px);font-weight:500;letter-spacing:-.05em;line-height:.9;color:var(--lime)}
 .tech-fig{min-height:420px}
 @media (max-width:800px){.tech-fig{min-height:340px;height:340px}}
-/* character docks: empty spots the 3D athlete moves into as you scroll (desktop only, only once 3D has loaded) */
-.dock{display:none;position:relative;flex:none;width:clamp(200px,19vw,270px);height:clamp(240px,23vw,320px)}
-.dock .bmx3d{height:100%}
-.sec-head .dock{justify-self:end}
-@media (min-width:901px){.has-3d .dock{display:block}}
+/* roaming athlete: follows you down the page and only rests in empty space */
+.roam{position:absolute;left:0;top:0;z-index:40;pointer-events:none;transform-origin:0 0;opacity:0;transition:opacity .35s ease;will-change:transform}
+.roam.on{opacity:1}
+.roam .bmx3d{height:100%}
 
 /* ---------- Layout updates ---------- */
 .explain{display:block}
@@ -693,7 +692,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       <div class="feat"><div class="n"><em>06</em><span>Fitness</span></div><h4>Progress you can see</h4><p>Workout history, session summaries and form-quality trends over time, plus short rep clips you can save and review.</p></div>
     </div>
 
-    <div class="sub-h"><h3>Set up once, then just move</h3><div class="dock" data-dock aria-hidden="true"></div></div>
+    <div class="sub-h"><h3>Set up once, then just move</h3></div>
     <div class="steps c4">
       <div class="stp"><div class="k"><span class="dot"></span>1 · Prop up</div><p>Chest height, about 2–2.5 m away, whole body in view.</p></div>
       <div class="stp"><div class="k"><span class="dot"></span>2 · Face the light</div><p>Stand facing a window or lamp, not with the light behind you.</p></div>
@@ -723,7 +722,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       </div>
     </div>
 
-    <div class="sub-h" style="margin-top:0"><div><span class="label">The care loop</span><h3 style="margin-top:10px">One loop, from the clinic to the living room and back.</h3></div><div class="dock" data-dock aria-hidden="true"></div></div>
+    <div class="sub-h" style="margin-top:0"><div><span class="label">The care loop</span><h3 style="margin-top:10px">One loop, from the clinic to the living room and back.</h3></div></div>
     <div class="steps c5">
       <div class="stp"><div class="k"><span class="dot"></span>1 · Examine</div><p>Guided tests measure peak range, symmetry and hold time.</p></div>
       <div class="stp"><div class="k"><span class="dot"></span>2 · Prescribe</div><p>Choose exercises, set reps, holds and range-of-motion targets.</p></div>
@@ -782,7 +781,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 
     <div class="note" style="margin-top:0;margin-bottom:clamp(48px,6vw,80px)"><svg class="plus"><use href="#plus"/></svg><p><b>Screening, not diagnosis.</b> Sameeksha reports what it observes and what may be contributing to it, always as possibilities for a qualified professional to confirm. It doesn't diagnose conditions or replace an examination. If symptoms are severe or worsening, seek medical care.</p></div>
 
-    <div class="sub-h" style="margin-top:0"><div><span class="label">How the assessment works</span><h3 style="margin-top:10px">Five guided steps, one joint at a time.</h3></div><div class="dock" data-dock aria-hidden="true"></div></div>
+    <div class="sub-h" style="margin-top:0"><div><span class="label">How the assessment works</span><h3 style="margin-top:10px">Five guided steps, one joint at a time.</h3></div></div>
     <div class="steps c5">
       <div class="stp"><div class="k"><span class="dot"></span>Step 1</div><h5>About you</h5><p>Age, sex and side, so results compare against people like you.</p></div>
       <div class="stp"><div class="k"><span class="dot"></span>Step 2</div><h5>Your symptoms</h5><p>A questionnaire for the joint you chose, kept in your own words.</p></div>
@@ -811,7 +810,6 @@ tr:last-child th,tr:last-child td{border-bottom:0}
   <div class="wrap">
     <div class="sec-head">
       <div><span class="label">Side by side</span><h2 class="giant h-lg" style="margin-top:18px">Which app is right for you?</h2></div>
-      <div class="dock" data-dock aria-hidden="true"></div>
     </div>
     <div class="tbl-wrap">
       <table>
@@ -1187,8 +1185,6 @@ window.addEventListener('DOMContentLoaded',function(){
   if(!(test.getContext('webgl2')||test.getContext('webgl'))) return;
   var LIME=0xccff00, GREY=0x5c5c5c, WHITE=0xf5f5f5;
   var hosts={hero:document.querySelector('.hero-fig'),tech:document.querySelector('.tech-fig')};
-  /* empty spots further down the page; the character moves into whichever one is in view */
-  document.querySelectorAll('[data-dock]').forEach(function(d,i){hosts['dock'+i]=d;});
   var r=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
   r.setPixelRatio(Math.min(window.innerWidth<800?1.5:2,window.devicePixelRatio||1));
   r.outputEncoding=THREE.sRGBEncoding;r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;r.setClearColor(0,0);
@@ -1265,13 +1261,81 @@ window.addEventListener('DOMContentLoaded',function(){
   var tRead=document.createElement('div');tRead.className='bmx3d-read';techHost.appendChild(tRead);
   var heroKnee=document.querySelector('#kneeRead b');
 
-  var active=null,vis={};Object.keys(hosts).forEach(function(k){vis[k]=0;hosts[k]._bmx=k;});
-  function mount(which){if(active===which)return;active=which;if(!which)return;hosts[which].appendChild(cv);cv.style.animation='none';void cv.offsetWidth;cv.style.animation='';resize();}
+  /* ---------- Roaming athlete ----------
+     Outside the hero and the engine panel, the character travels down the page with you.
+     It scans the layout for empty space (no text, images or cards), rests only there, and
+     leaps with a spin to the next empty spot as you scroll. */
+  var roam=document.createElement('div');roam.className='roam';roam.setAttribute('aria-hidden','true');document.body.appendChild(roam);hosts.roam=roam;
+  var RH,RW,SIZES;
+  function roamDims(){var small=window.innerWidth<700;RH=small?220:300;RW=Math.round(RH*.72);SIZES=small?[220,180]:[300,250,200];roam.style.width=RW+'px';roam.style.height=RH+'px';}
+  roamDims();
+  var OBS_TEXT='h1,h2,h3,h4,h5,p,li,dt,dd,th,td,a,button,.label,.mono,.tag,.readout,.tname,.ban-t';
+  var OBS_BOX='img,figure,.btn,.feat,.stp,.path,.tech,.panel,.note,.extra,.report>div,.values>div,.who>div,.support-box,.acc,.tbl-wrap,.cmp-card,.marquee,.photo-band,.big-line,.checks,.wordbox,.facts,.loop-back,.frame,.hero,.slide-head,.final,svg.plus';
+  var spots=[],obs=[],rg=document.createRange();
+  function fits(x,y,w,h){for(var i=0;i<obs.length;i++){var o=obs[i];if(o[1]>=y+h)break;if(o[3]>y&&o[0]<x+w&&o[2]>x)return false;}return true;}
+  function gapAt(y,w,h,pad,vw){var iv=[];for(var i=0;i<obs.length;i++){var o=obs[i];if(o[1]>=y+h)break;if(o[3]>y)iv.push(o);}
+    iv.sort(function(a,b){return a[0]-b[0];});var gaps=[],x=pad;
+    iv.forEach(function(o){if(o[0]>x)gaps.push([x,o[0]]);x=Math.max(x,o[2]);});if(vw-pad>x)gaps.push([x,vw-pad]);
+    for(var g=gaps.length-1;g>=0;g--)if(gaps[g][1]-gaps[g][0]>=w)return Math.round(gaps[g][1]-w);return null;}
+  function findSpots(){
+    roamDims();
+    var sx=window.scrollX,sy=window.scrollY,M=20,vw=document.documentElement.clientWidth,pad=Math.max(16,Math.min(44,vw*.034)),docH=document.documentElement.scrollHeight;
+    obs=[];
+    function add(b){if(b.width>2&&b.height>2)obs.push([b.left+sx-M,b.top+sy-M,b.right+sx+M,b.bottom+sy+M]);}
+    document.querySelectorAll(OBS_BOX).forEach(function(el){if(!el.closest('.nav,.mnav,.roam'))add(el.getBoundingClientRect());});
+    document.querySelectorAll(OBS_TEXT).forEach(function(el){if(el.closest('.nav,.mnav,.roam'))return;rg.selectNodeContents(el);add(rg.getBoundingClientRect());});
+    obs.sort(function(a,b){return a[1]-b[1];});
+    spots=[];var y=0,STEP=16;
+    while(y<docH){var f=null;
+      for(var si=0;si<SIZES.length&&!f;si++){var h=SIZES[si],w=Math.round(h*.72),x=gapAt(y,w,h,pad,vw);if(x!==null)f={x:x,w:w,h:h};}
+      if(!f){y+=STEP;continue;}
+      var y1=y;while(y1+STEP+f.h<docH&&fits(f.x,y1+STEP,f.w,f.h))y1+=STEP;
+      spots.push({x:f.x,y:Math.round((y+y1)/2),w:f.w,h:f.h,s:f.h/RH});
+      y=y1+f.h+40;}
+    if(active==='roam'){resize();rs.pendingFrom=rs.cur||rs.leap?{x:rs.x,y:rs.y,s:rs.s}:null;rs.cur=null;rs.leap=null;}
+  }
+  var spotTimer=0;function queueSpots(){clearTimeout(spotTimer);spotTimer=setTimeout(findSpots,300);}
+  window.addEventListener('resize',queueSpots);window.addEventListener('load',queueSpots);
+  if(window.ResizeObserver)new ResizeObserver(queueSpots).observe(document.body);
+  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(queueSpots);
+
+  var rs={cur:null,leap:null,pendingFrom:null,x:0,y:-9999,s:1};
+  function visFrac(sp){var a=window.scrollY+76,b=window.scrollY+window.innerHeight;return Math.max(0,Math.min(b,sp.y+sp.h)-Math.max(a,sp.y))/sp.h;}
+  function pickSpot(){var best=null,bd=1e9,mid=window.scrollY+window.innerHeight*.55;
+    spots.forEach(function(sp){if(visFrac(sp)<.999)return;var d=Math.abs(sp.y+sp.h/2-mid);if(d<bd){bd=d;best=sp;}});return best;}
+  function startLeap(to){
+    if(reduce){rs.cur=to;rs.leap=null;rs.pendingFrom=null;return;}
+    var a=window.scrollY+76,b=window.scrollY+window.innerHeight,f;
+    if(rs.pendingFrom)f=rs.pendingFrom;
+    else if(rs.cur)f={x:rs.x,y:rs.y,s:rs.s};
+    else f={x:to.x,y:(to.y+to.h/2>(a+b)/2)?b:a-RH*to.s,s:to.s};
+    f={x:f.x,y:Math.max(a-RH*f.s*.6,Math.min(b-RH*f.s*.4,f.y)),s:f.s};
+    rs.pendingFrom=null;rs.leap={f:f,t:to,k:0};}
+  function applyRoam(){roam.style.transform='translate3d('+rs.x+'px,'+rs.y+'px,0) scale('+rs.s+')';roam.classList.toggle('on',!!(rs.leap||rs.cur));}
+  function roamTick(dt){
+    var out=null;
+    if(rs.leap){var L=rs.leap;L.k=Math.min(1,L.k+dt/.85);var k=L.k,e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+      var dist=Math.hypot(L.t.x-L.f.x,L.t.y-L.f.y),arc=Math.min(170,40+dist*.3)*Math.sin(Math.PI*k);
+      rs.x=L.f.x+(L.t.x-L.f.x)*e;rs.y=L.f.y+(L.t.y-L.f.y)*e-arc;rs.s=L.f.s+(L.t.s-L.f.s)*e;
+      out={t:.6*Math.abs(Math.cos(Math.PI*k)),spin:Math.PI*2*e};
+      if(k>=1){rs.cur=L.t;rs.leap=null;}}
+    else{
+      if(!(rs.cur&&visFrac(rs.cur)>=.75)){var nx=pickSpot();if(nx&&nx!==rs.cur)startLeap(nx);}
+      if(!rs.leap&&rs.cur){rs.x=rs.cur.x;rs.y=rs.cur.y;rs.s=rs.cur.s;}}
+    applyRoam();return out;}
+
+  var active=null,vis={hero:0,tech:0};
+  function mount(which){if(active===which)return;var prev=active;active=which;if(!which)return;
+    if(which==='roam'){rs.cur=null;rs.leap=null;rs.pendingFrom=null;
+      var ph=prev&&hosts[prev];if(ph){var hb=ph.getBoundingClientRect(),s=Math.max(.6,Math.min(1.5,hb.height/RH));rs.pendingFrom={x:hb.left+window.scrollX+(hb.width-RW*s)/2,y:hb.top+window.scrollY,s:s};}
+      hosts.roam.appendChild(cv);resize();return;}
+    roam.classList.remove('on');
+    hosts[which].appendChild(cv);cv.style.animation='none';void cv.offsetWidth;cv.style.animation='';resize();}
   function resize(){if(!active)return;var h=hosts[active];var w=h.clientWidth,hh=h.clientHeight||400;r.setSize(w,hh,false);cv.style.width=w+'px';cv.style.height=hh+'px';cam.aspect=w/hh;cam.updateProjectionMatrix();}
   window.addEventListener('resize',resize);
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){vis[e.target._bmx]=e.isIntersecting?e.intersectionRatio:0;});
-    var best=null,bv=0;Object.keys(vis).forEach(function(k){if(vis[k]>bv){bv=vis[k];best=k;}});mount(best);},{threshold:[0,.1,.3,.6,1]});
-  Object.keys(hosts).forEach(function(k){io.observe(hosts[k]);});
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){vis[e.target===hosts.hero?'hero':'tech']=e.isIntersecting?e.intersectionRatio:0;});
+    var best=vis.hero>=vis.tech?'hero':'tech';mount(vis[best]>=.15?best:'roam');},{threshold:[0,.15,.3,.6,1]});
+  io.observe(hosts.hero);io.observe(hosts.tech);
 
   /* drag to rotate (auto-spin keeps going) */
   var uYaw=0,drag=false,px=0,vel=0;
@@ -1284,14 +1348,15 @@ window.addEventListener('DOMContentLoaded',function(){
   function loop(now){requestAnimationFrame(loop);var dt=Math.min(.05,(now-last)/1000);last=now;
     if(!active||!o||document.hidden)return;
     if(!reduce){clock+=dt;yaw+=dt*.18;}
-    var c=reduce?.25:(clock/3.4)%1;if(c<lcyc)reps++;lcyc=c;var t=.5-.5*Math.cos(c*Math.PI*2);
+    var c=reduce?.25:(clock/3.4)%1;if(c<lcyc)reps++;lcyc=c;var t=.5-.5*Math.cos(c*Math.PI*2),spin=0;
+    if(active==='roam'){var ro=roamTick(dt);if(ro){t=ro.t;spin=ro.spin;}}
     pose(t);var mode=active==='tech'?(window.BMX_MODE||'see'):'hero';var kd=overlay(mode);
     if(active==='hero'){if(heroKnee)heroKnee.textContent=kd+'°';}
     else if(active==='tech'){tRead.innerHTML=mode==='measure'?'knee <b>'+kd+'°</b>':(mode==='respond'?'<span class="big">'+String(reps%100).padStart(2,'0')+'</span>rep':'');}
     if(!drag){uYaw+=vel;vel*=.92;}
     var fit=Math.max(1,.62/Math.min(cam.aspect,.9));
     var R=(active==='tech'?3.75:4.3)*fit,look=.84;
-    var yy=(active==='tech'?.9+Math.sin(clock*.3)*.35:yaw)+uYaw;
+    var yy=(active==='tech'?.9+Math.sin(clock*.3)*.35:yaw)+uYaw+spin;
     cam.position.set(Math.sin(yy)*R,1.12,Math.cos(yy)*R);cam.lookAt(0,look,0);
     r.render(scene,cam);}
 
@@ -1325,8 +1390,8 @@ window.addEventListener('DOMContentLoaded',function(){
     var rest={};for(var k in B)rest[k]=B[k].quaternion.clone();
     var mats=[];m.traverse(function(x){if(x.isMesh&&x.material&&x.material.map){var mt=x.material;mt.emissive=new THREE.Color(0xffffff);mt.emissiveMap=mt.map;mt.emissiveIntensity=0;mt.needsUpdate=true;mats.push(mt);}});
     o={m:m,B:B,rest:rest,hipPos:B[P+'Hips'].position.clone(),mats:mats};scene.add(m);
-    Object.keys(hosts).forEach(function(k){var hn=document.createElement('div');hn.className='drag-hint';hn.textContent='\u2194 Drag to rotate';hosts[k].appendChild(hn);});
-    window.BMX3D=true;document.documentElement.classList.add('has-3d');resize();requestAnimationFrame(loop);
+    ['hero','tech'].forEach(function(k){var hn=document.createElement('div');hn.className='drag-hint';hn.textContent='\u2194 Drag to rotate';hosts[k].appendChild(hn);});
+    window.BMX3D=true;document.documentElement.classList.add('has-3d');resize();findSpots();requestAnimationFrame(loop);
   });
 });
 </script>
