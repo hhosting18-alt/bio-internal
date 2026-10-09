@@ -1,0 +1,1335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'><rect x='.5' y='.5' width='25' height='25' rx='5' fill='%23ccff00'/><path fill-rule='evenodd' d='M7 6h7.2c2.8 0 4.4 1.4 4.4 3.5 0 1.4-.8 2.4-2 2.8 1.6.4 2.6 1.6 2.6 3.2 0 2.4-1.8 3.9-4.8 3.9H7zM10.4 8.7v2.9h3.2c1.1 0 1.7-.5 1.7-1.45s-.6-1.45-1.7-1.45zM10.4 14.1v3.2h3.5c1.2 0 1.9-.6 1.9-1.6s-.7-1.6-1.9-1.6z'/></svg>">
+<title>Biomechanix — MoveMentor movement intelligence platform</title>
+<meta name="description" content="Biomechanix builds MoveMentor — an on-device platform that turns a phone camera into a trained eye for movement.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ---------- Tokens (Biomechanix colour sample) ---------- */
+:root{
+  --black:#000000;
+  --bg:#000000;
+  --bg-2:#0a0a0a;
+  --card:#111111;
+  --card-2:#161616;
+  --line:#1f1f1f;
+  --line-2:#2c2c2c;
+  --text:#f5f5f5;
+  --muted:#a3a3a3;
+  --faint:#5c5c5c;
+  --ghost:#262626;
+  --lime:#ccff00;
+  --lime-dim:rgba(204,255,0,.12);
+  --lime-glow:rgba(204,255,0,.35);
+  --cyan:#22d3ee;
+  --cyan-dim:rgba(34,211,238,.12);
+  --on-lime:#000000;
+  --font-display:'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --pad:clamp(16px,3.4vw,44px);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+/* Brand is dark-first: same palette in both viewer themes */
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#000000; --text:#f5f5f5; } }
+:root[data-theme="dark"]{ --bg:#000000; --text:#f5f5f5; }
+html{overflow-x:clip;scrollbar-width:thin;scrollbar-color:#3a3a3a transparent;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px);scroll-behavior:smooth;background:var(--bg)}
+*,*::before,*::after{box-sizing:border-box}
+body{overflow-x:clip;max-width:100%;margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4,p{margin:0}
+a{color:inherit;text-decoration:none}
+ul{margin:0;padding:0;list-style:none}
+img,svg{display:block;max-width:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+::-webkit-scrollbar{width:6px;height:0}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#3a3a3a;border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#ccff00}
+.giant{overflow-wrap:break-word}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+::selection{background:var(--lime);color:var(--on-lime)}
+
+.wrap{padding-left:var(--pad);padding-right:var(--pad)}
+.mono{font-family:var(--font-mono);font-size:11px;letter-spacing:.02em;text-transform:uppercase;line-height:1.4}
+.label{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--faint);letter-spacing:.02em}
+.label.lime{color:var(--lime)}
+.giant{font-weight:500;text-transform:uppercase;letter-spacing:-.045em;line-height:.86}
+.h-xl{font-size:clamp(44px,8.2vw,132px)}
+.h-lg{font-size:clamp(38px,6vw,96px)}
+.h-md{font-size:clamp(28px,3.6vw,52px);font-weight:500;letter-spacing:-.035em;line-height:1}
+.lead{font-size:clamp(20px,2.1vw,30px);font-weight:500;letter-spacing:-.025em;line-height:1.12}
+.body{font-size:15px;line-height:1.45;color:var(--muted);max-width:60ch}
+.body-sm{font-size:13.5px;line-height:1.45;color:var(--muted)}
+
+/* ---------- Buttons: TPL label + arrow tile ---------- */
+.btn{display:inline-flex;align-items:stretch;gap:2px;min-height:40px;max-width:100%}
+.btn span{padding-top:10px!important;padding-bottom:10px!important;line-height:1.25}
+@media (max-width:480px){.btn span{white-space:normal!important}}
+.btn span{display:flex;align-items:center;padding:0 16px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.02em;background:var(--lime);color:var(--on-lime);white-space:nowrap}
+.btn i{display:flex;align-items:center;justify-content:center;width:40px;flex:none;background:var(--lime);color:var(--on-lime);font-style:normal}
+.btn i svg{width:16px;height:16px;transition:transform .35s var(--ease)}
+.btn:hover i svg{transform:translateX(3px)}
+.btn.dark span,.btn.dark i{background:var(--card);color:var(--text);border:1px solid var(--line-2)}
+.btn.dark i{border-left:0}
+.btn.ink span,.btn.ink i{background:var(--black);color:var(--lime)}
+.btn.ghost span{background:transparent;color:var(--text);border:1px solid var(--line-2)}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px}
+.ulink{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px;color:var(--text)}
+.ulink:hover{color:var(--lime)}
+
+/* ---------- Plus markers / framed panels ---------- */
+.plus{width:12px;height:12px;color:var(--lime);flex:none}
+.plus.grey{color:var(--faint)}
+.frame{position:relative;border:1px solid var(--line)}
+.frame>.c{position:absolute;width:12px;height:12px;color:var(--lime)}
+.frame>.c.tl{top:-6px;left:-6px}.frame>.c.tr{top:-6px;right:-6px}
+.frame>.c.bl{bottom:-6px;left:-6px}.frame>.c.br{bottom:-6px;right:-6px}
+.frame>.c.grey{color:var(--faint)}
+.plus-row{display:flex;justify-content:space-between;align-items:center}
+
+/* ---------- Nav ---------- */
+.nav{position:fixed;left:0;right:0;top:0;z-index:50;padding-top:env(safe-area-inset-top,0px);transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.nav.solid{background:rgba(0,0,0,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-color:var(--line)}
+.nav-in{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;height:68px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo svg{width:30px;height:30px;filter:drop-shadow(0 0 10px rgba(204,255,0,.55))}
+.logo b{font-weight:700;font-size:17px;letter-spacing:-.02em;color:#fff}
+.nav-links{display:flex;gap:22px}
+.nav-links a{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--text);opacity:.85}
+.nav-links a:hover{color:var(--lime);opacity:1}
+.nav-cta{justify-self:end;display:flex;align-items:center;gap:10px}
+.nav-cta .solo{height:36px;display:flex;align-items:center;padding:0 16px;background:var(--lime);color:var(--on-lime);font-family:var(--font-mono);font-size:11px;text-transform:uppercase}
+.burger{display:none;width:36px;height:36px;border:1px solid var(--line-2);align-items:center;justify-content:center}
+.burger svg{width:16px;height:16px}
+.mnav{display:none}
+@media (max-width:960px){
+  .nav-in{grid-template-columns:minmax(0,1fr) auto}
+  .nav-links{display:none}
+  .burger{display:flex}
+  .mnav{position:fixed;inset:0;top:calc(env(safe-area-inset-top,0px) + 68px);background:var(--bg);z-index:49;padding:24px var(--pad);flex-direction:column;gap:6px}
+  .mnav.open{display:flex}
+  .mnav a{font-size:34px;font-weight:500;letter-spacing:-.03em;text-transform:uppercase;border-bottom:1px solid var(--line);padding:10px 0}
+}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;min-height:max(100vh,860px);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;background:
+  radial-gradient(60% 55% at 72% 38%, rgba(204,255,0,.10), transparent 70%),
+  radial-gradient(40% 40% at 55% 60%, rgba(34,211,238,.05), transparent 70%),
+  var(--bg)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(70% 70% at 70% 40%,#000 20%,transparent 75%);-webkit-mask-image:radial-gradient(70% 70% at 70% 40%,#000 20%,transparent 75%);opacity:.55}
+.hero-fig{position:absolute;right:var(--pad);top:96px;bottom:330px;width:min(34vw,440px);display:flex;align-items:center;justify-content:center}
+.hero-fig svg{height:100%;width:auto;overflow:visible}
+.readout{position:absolute;z-index:2;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--muted);display:flex;gap:8px;align-items:center}
+.readout b{color:var(--lime);font-weight:500}
+.hero-bottom{position:relative;display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:40px;align-items:end;padding-bottom:44px}
+.hero h1{font-size:clamp(44px,6.4vw,108px)}
+.hero h1 .dim{color:var(--faint)}
+.hero-side{display:flex;flex-direction:column;gap:18px;max-width:420px;justify-self:end}
+.hero-side p{font-size:14px;line-height:1.45;color:var(--muted)}
+.hero-side p strong{color:var(--text);font-weight:500}
+.hero-eyebrow{position:relative;margin-bottom:22px}
+@media (max-width:900px){
+  .hero{display:flex;flex-direction:column;justify-content:flex-start;min-height:auto;padding-top:calc(68px + clamp(28px,6vw,48px))}
+  .hero-bottom{display:contents}
+  .hero-bottom>div:first-child{order:1;padding:0 var(--pad);position:relative}
+  .hero-fig{order:2;position:relative;inset:auto;right:auto;top:auto;bottom:auto;transform:none;align-self:center;width:min(100% - 2*var(--pad),520px);height:clamp(300px,62vw,480px);margin:clamp(28px,5vw,44px) auto 0}
+  .hero-side{order:3;justify-self:auto;max-width:560px;padding:clamp(28px,5vw,40px) var(--pad) 48px;position:relative}
+  .hero h1{font-size:clamp(40px,10.4vw,84px)}
+}
+@media (min-width:901px) and (max-width:1200px){
+  .hero-bottom{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+  .hero h1{font-size:clamp(44px,6vw,80px)}
+  .hero-fig{width:min(34vw,380px);bottom:360px}
+}
+
+
+/* ---------- Marquee ---------- */
+.marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-2);overflow:hidden;height:64px;display:flex;align-items:center}
+.mq-track{display:flex;gap:56px;white-space:nowrap;animation:mq 38s linear infinite;padding-left:56px}
+.mq-track span{display:flex;align-items:center;gap:14px;font-size:20px;font-weight:500;letter-spacing:-.02em;color:var(--muted)}
+.mq-track span svg{width:18px;height:18px}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ---------- Generic section ---------- */
+.sec{padding:clamp(64px,8vw,120px) 0;position:relative}
+.sec.alt{background:var(--bg-2)}
+.sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end;margin-bottom:56px}
+.sec-head .right{display:flex;flex-direction:column;gap:18px;justify-self:end;max-width:460px}
+@media (max-width:900px){.sec-head{grid-template-columns:minmax(0,1fr)}.sec-head .right{justify-self:start}}
+
+/* scroll-lit paragraph (TPL mission text) */
+.lit{font-size:clamp(26px,3.5vw,52px);font-weight:500;letter-spacing:-.035em;line-height:1.02;text-indent:clamp(0px,14vw,200px);position:relative}
+.lit .w{color:var(--ghost);transition:color .25s}
+.lit .w.on{color:var(--text)}
+.lit-wrap{position:relative}
+.lit-wrap .label{position:absolute;top:clamp(6px,1vw,16px);left:0}
+@media (max-width:700px){.lit{text-indent:0}.lit-wrap .label{position:static;display:block;margin-bottom:14px}}
+
+/* ---------- Paths (TPL service cards) ---------- */
+.paths{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line);margin-top:72px;position:relative}
+.path{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px;display:flex;flex-direction:column;position:relative}
+.path .ph{display:grid;grid-template-columns:110px minmax(0,1fr) auto;margin-bottom:14px}
+.path .ph .t{color:var(--text)}
+.path-vis{aspect-ratio:16/9;background:var(--card);position:relative;overflow:hidden;border:1px solid var(--line)}
+.path-vis svg{position:absolute;inset:0;width:100%;height:100%}
+.path-vis .word{position:absolute;left:18px;bottom:6px;font-size:clamp(40px,6vw,92px);font-weight:500;letter-spacing:-.05em;text-transform:uppercase;line-height:.8;color:transparent;-webkit-text-stroke:1px var(--line-2)}
+.path h3{font-size:clamp(20px,1.9vw,26px);font-weight:500;letter-spacing:-.025em;line-height:1.08;margin:28px 0 10px;max-width:22ch}
+.path p{font-size:14px;color:var(--muted);max-width:46ch;line-height:1.45}
+.path .btn{margin-top:24px}
+@media (max-width:420px){.path .ph{grid-template-columns:auto 1fr auto;gap:10px}}
+.paths .c{position:absolute;width:12px;height:12px;color:var(--lime);z-index:2}
+@media (max-width:760px){.paths{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- Big sliding headline ---------- */
+.slide-head{overflow:hidden;padding:clamp(40px,6vw,80px) 0}
+.slide-head .line{white-space:nowrap;font-size:clamp(70px,13vw,210px);will-change:transform}
+
+/* ---------- Tech tabs (TPL Technology & approach) ---------- */
+.tech{position:relative;background:var(--card);border:1px solid var(--line);min-height:clamp(520px,58vw,720px);display:flex;flex-direction:column;overflow:hidden}
+.tech-body{flex:1;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:30px;padding:clamp(20px,3vw,40px)}
+.tech-copy{display:flex;flex-direction:column;gap:18px;max-width:560px}
+.tech-copy .step-n{font-family:var(--font-mono);font-size:11px;color:var(--lime);text-transform:uppercase}
+.tech-copy h3{font-size:clamp(40px,6vw,96px);font-weight:500;letter-spacing:-.05em;line-height:.86;text-transform:uppercase}
+.tech-copy p{font-size:clamp(18px,1.8vw,26px);font-weight:500;letter-spacing:-.02em;line-height:1.15;max-width:26ch}
+.tech-fig{position:relative;display:flex;align-items:center;justify-content:center;min-height:320px}
+.tech-fig svg{height:100%;max-height:520px;width:auto;overflow:visible}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line-2)}
+.tab{height:52px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--muted);border-right:1px solid var(--line-2);position:relative;text-align:center}
+.tab:last-child{border-right:0}
+.tab[aria-selected="true"]{color:var(--on-lime);background:var(--lime)}
+.tab:not([aria-selected="true"]):hover{color:var(--text);background:var(--card-2)}
+.tab .bar{position:absolute;left:0;top:-1px;height:2px;background:var(--lime);width:0}
+.tab[aria-selected="true"] .bar{display:none}
+@media (max-width:560px){.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.tab:nth-child(2){border-right:0}.tab:nth-child(-n+2){border-bottom:1px solid var(--line-2)}}
+@media (max-width:800px){.tech-body{grid-template-columns:minmax(0,1fr)}.tech-fig{min-height:300px;height:300px}}
+
+/* two-column explainer (TPL "We give you answers") */
+.explain{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);margin-top:clamp(64px,8vw,120px)}
+.explain h4{font-size:clamp(22px,2.2vw,32px);font-weight:500;letter-spacing:-.03em;line-height:1.05;margin:14px 0 16px;max-width:20ch}
+.explain p{font-size:15px;line-height:1.5;color:var(--muted);max-width:54ch}
+@media (max-width:800px){.explain{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- Product sections ---------- */
+.prod-head{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:40px;align-items:end;margin-bottom:clamp(48px,6vw,88px)}
+.prod-head .right{display:flex;flex-direction:column;gap:20px;max-width:440px;justify-self:end}
+.prod-head .right p{font-size:15px;line-height:1.45;color:var(--muted)}
+.tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;padding:5px 10px;border:1px solid;width:max-content}
+.tag.lime{color:var(--lime);border-color:rgba(204,255,0,.35);background:var(--lime-dim)}
+.tag.cyan{color:var(--cyan);border-color:rgba(34,211,238,.35);background:var(--cyan-dim)}
+.tag.grey{color:var(--text);border-color:var(--line-2);background:var(--card-2)}
+@media (max-width:900px){.prod-head{grid-template-columns:minmax(0,1fr)}.prod-head .right{justify-self:start}}
+
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.feat{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 22px 30px;min-height:230px;display:flex;flex-direction:column;background:transparent;transition:background .25s}
+.feat:hover{background:var(--card)}
+.feat .n{font-family:var(--font-mono);font-size:11px;color:var(--faint);display:flex;justify-content:space-between}
+.feat .n em{font-style:normal;color:var(--lime)}
+.feat h4{font-size:22px;font-weight:500;letter-spacing:-.025em;line-height:1.08;margin:auto 0 10px;padding-top:40px}
+.feat p{font-size:14px;line-height:1.45;color:var(--muted)}
+@media (max-width:900px){.feat-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+@media (max-width:600px){.feat-grid{grid-template-columns:minmax(0,1fr)}.feat{min-height:0}}
+
+.sub-h{display:flex;justify-content:space-between;align-items:end;gap:24px;margin:clamp(56px,7vw,96px) 0 22px}
+.sub-h h3{font-size:clamp(24px,2.6vw,38px);font-weight:500;letter-spacing:-.03em;line-height:1.02;max-width:24ch}
+
+.steps{display:grid;gap:0;border:1px solid var(--line);background:var(--card)}
+.steps.c4{grid-template-columns:repeat(4,1fr)}
+.steps.c5{grid-template-columns:repeat(5,1fr)}
+.stp{padding:20px 18px 24px;border-right:1px solid var(--line);position:relative}
+.stp:last-child{border-right:0}
+.stp .k{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--lime);margin-bottom:34px;display:flex;align-items:center;gap:8px}
+.stp .k .dot{width:6px;height:6px;background:var(--lime)}
+.stp h5{font-size:19px;font-weight:500;letter-spacing:-.02em;margin:0 0 8px}
+.stp p{font-size:13.5px;line-height:1.45;color:var(--muted)}
+.loop-back{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--faint);margin-top:12px}
+.loop-back svg{width:100%;height:14px;flex:1}
+@media (max-width:1000px){.steps.c5{grid-template-columns:repeat(3,1fr)}.steps.c5 .stp:nth-child(3){border-right:0}.steps.c5 .stp:nth-child(-n+3){border-bottom:1px solid var(--line)}}
+@media (max-width:800px){.steps.c4{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.steps.c4 .stp:nth-child(2){border-right:0}.steps.c4 .stp:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+@media (max-width:560px){.steps.c4,.steps.c5{grid-template-columns:minmax(0,1fr)}.stp{border-right:0!important;border-bottom:1px solid var(--line)}.stp:last-child{border-bottom:0}.stp .k{margin-bottom:16px}}
+
+.note{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:start;margin-top:40px;padding:18px 20px;border:1px solid var(--line);border-left:2px solid var(--lime);background:var(--bg-2)}
+.note .plus{margin-top:3px}
+.note p{font-size:14px;line-height:1.5;color:var(--muted);max-width:90ch}
+.note p b{color:var(--text);font-weight:500}
+.note a{color:var(--lime);text-decoration:underline;text-underline-offset:3px}
+
+.duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(16px,2vw,24px);margin-top:clamp(48px,6vw,80px)}
+.panel{padding:clamp(22px,2.6vw,34px);background:var(--card)}
+.panel h4{font-size:clamp(22px,2.2vw,30px);font-weight:500;letter-spacing:-.03em;line-height:1.05;margin:14px 0 18px}
+.panel p{font-size:15px;line-height:1.5;color:var(--muted)}
+.dash-list li{padding:12px 0;border-top:1px solid var(--line);font-size:16px;letter-spacing:-.01em;display:grid;grid-template-columns:20px minmax(0,1fr);gap:8px}
+.dash-list li::before{content:"";width:8px;height:1px;background:var(--lime);margin-top:.7em}
+@media (max-width:800px){.duo{grid-template-columns:minmax(0,1fr)}}
+
+.report{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line-2)}
+.report>div{padding:22px 24px 26px 0;border-right:1px solid var(--line);padding-left:24px}
+.report>div:first-child{padding-left:0}
+.report>div:last-child{border-right:0}
+.report .k{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--lime)}
+.report h5{font-size:22px;font-weight:500;letter-spacing:-.025em;margin:26px 0 10px}
+.report p{font-size:14px;line-height:1.45;color:var(--muted)}
+@media (max-width:800px){.report{grid-template-columns:minmax(0,1fr)}.report>div{padding-left:0;border-right:0;border-bottom:1px solid var(--line)}}
+
+.extras{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.extra{border:1px solid var(--line);padding:20px;background:var(--bg-2)}
+.extra .k{font-family:var(--font-mono);font-size:11px;color:var(--lime);text-transform:uppercase}
+.extra h5{font-size:20px;font-weight:500;letter-spacing:-.02em;margin:24px 0 8px}
+.extra p{font-size:14px;line-height:1.45;color:var(--muted)}
+@media (max-width:800px){.extras{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- Compare ---------- */
+.tbl-wrap{border:1px solid var(--line)}
+.cmp-cards{display:none}
+@media (max-width:760px){.tbl-wrap{display:none}.cmp-cards{display:grid;gap:14px}.cmp-card{border:1px solid var(--line);background:var(--card);padding:18px}.cmp-card h3{font-size:22px;font-weight:500;letter-spacing:-.02em;margin:12px 0 10px}.cmp-card dl{margin:0}.cmp-card dt{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--faint);margin-top:14px}.cmp-card dd{margin:4px 0 0;font-size:15px;color:var(--muted)}.cmp-all{font-size:15px;color:var(--text);padding:14px 18px;border:1px solid var(--line)}}
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:18px 20px;border-bottom:1px solid var(--line);vertical-align:top;font-size:15px;line-height:1.4}
+thead th{font-size:20px;font-weight:500;letter-spacing:-.02em;background:var(--card);border-bottom:1px solid var(--line-2)}
+thead th:first-child{background:transparent}
+thead th .tag{margin-bottom:12px}
+tbody th{font-family:var(--font-mono);font-size:11px;font-weight:400;text-transform:uppercase;color:var(--faint);width:18%}
+tbody td{color:var(--muted)}
+td+td,th+th,th+td{border-left:1px solid var(--line)}
+tr.span td{color:var(--text);text-align:center}
+tr:last-child th,tr:last-child td{border-bottom:0}
+
+/* ---------- Privacy (TPL numbers block) ---------- */
+.big-lines{border-top:1px solid var(--line-2)}
+.big-line{display:grid;grid-template-columns:minmax(0,1fr) auto 300px;gap:clamp(16px,3vw,48px);align-items:center;padding:clamp(22px,3vw,40px) 0;border-bottom:1px solid var(--line-2)}
+.big-line .gl{font-size:clamp(34px,6.2vw,104px)}
+.big-line .ar{width:clamp(28px,4vw,64px);color:var(--lime)}
+.big-line p{font-size:15px;line-height:1.45;color:var(--muted)}
+.big-line:hover .gl{color:var(--lime)}
+.big-line .gl{transition:color .3s}
+@media (max-width:900px){.big-line{grid-template-columns:minmax(0,1fr)}.big-line .ar{display:none}}
+
+/* ---------- Enterprise ---------- */
+.ent{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px)}
+.ent-left .giant{font-size:clamp(40px,5.8vw,92px)}
+.ent-right{display:flex;flex-direction:column;gap:22px}
+.ent-right>p{font-size:clamp(17px,1.5vw,21px);letter-spacing:-.015em;line-height:1.3}
+.checks li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;padding:14px 0;border-top:1px solid var(--line);font-size:14.5px;line-height:1.45;color:var(--muted)}
+.checks li b{color:var(--text);font-weight:500}
+.checks li svg{width:14px;height:14px;margin-top:3px;color:var(--lime)}
+.honest{font-size:14.5px;line-height:1.5;color:var(--muted);padding-left:16px;border-left:1px solid var(--lime)}
+.who{margin-top:clamp(56px,7vw,96px);display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line-2)}
+.who>div{padding:22px 24px 0 0}
+.who>div+div{padding-left:24px;border-left:1px solid var(--line)}
+.who h5{font-size:clamp(22px,2.2vw,30px);font-weight:500;letter-spacing:-.03em;margin:22px 0 10px}
+.who p{font-size:14px;line-height:1.45;color:var(--muted)}
+@media (max-width:900px){.ent{grid-template-columns:minmax(0,1fr)}.who{grid-template-columns:minmax(0,1fr)}.who>div+div{padding-left:0;border-left:0;border-top:1px solid var(--line);margin-top:22px}}
+
+/* ---------- Company / Team ---------- */
+.company-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);align-items:start}
+.company-top .giant{font-size:clamp(40px,6vw,96px)}
+.company-top .txt{display:flex;flex-direction:column;gap:18px}
+.company-top .txt p{font-size:15px;line-height:1.5;color:var(--muted)}
+.company-top .txt p.first{font-size:clamp(18px,1.6vw,22px);color:var(--text);letter-spacing:-.015em;line-height:1.3}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line-2);margin-top:8px}
+.facts div{padding:16px 12px 0 0}
+.facts b{display:block;font-size:17px;font-weight:500;letter-spacing:-.02em}
+.facts span{font-size:13px;color:var(--muted)}
+.team{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);margin-top:clamp(80px,10vw,140px);align-items:start}
+.team-names{display:flex;flex-direction:column;gap:4px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 100px)}
+@media (max-width:800px){.team-names{position:static}}
+.team-names .label{margin-bottom:22px}
+.tname{display:flex;align-items:center;gap:16px;font-size:clamp(34px,4.6vw,68px);font-weight:500;letter-spacing:-.045em;line-height:1.02;color:var(--ghost);text-align:left;transition:color .3s}
+.tname svg{width:0;height:clamp(28px,3vw,42px);opacity:0;transition:width .4s var(--ease),opacity .3s;flex:none}
+.tname[aria-selected="true"]{color:var(--text)}
+.tname[aria-selected="true"] svg{width:clamp(28px,3vw,42px);opacity:1}
+.tname:hover{color:var(--muted)}
+.tname[aria-selected="true"]:hover{color:var(--text)}
+.tcard{max-width:460px}
+.tcard .frame{padding:10px}
+.mono-portrait{aspect-ratio:4/5;background:var(--card);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.mono-portrait b{font-size:clamp(90px,12vw,180px);font-weight:500;letter-spacing:-.06em;color:var(--lime);line-height:1}
+.mono-portrait svg{position:absolute;inset:0;width:100%;height:100%;opacity:.5}
+.tcard .role{display:flex;gap:10px;margin:22px 0 12px}
+.tcard .role .mono{color:var(--text)}
+.tcard p{font-size:clamp(16px,1.4vw,19px);letter-spacing:-.015em;line-height:1.3}
+@media (max-width:800px){.company-top,.team{grid-template-columns:minmax(0,1fr)}.facts{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+
+.values{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:clamp(64px,8vw,120px);border-top:1px solid var(--line-2)}
+.values>div{padding:20px 20px 0 0}
+.values>div+div{padding-left:20px;border-left:1px solid var(--line)}
+.values .k{font-family:var(--font-mono);font-size:11px;color:var(--lime)}
+.values h5{font-size:22px;font-weight:500;letter-spacing:-.025em;margin:40px 0 10px}
+.values p{font-size:14px;line-height:1.45;color:var(--muted)}
+@media (max-width:900px){.values{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.values>div:nth-child(3){padding-left:0;border-left:0}.values>div:nth-child(n+3){margin-top:28px}}
+@media (max-width:520px){.values{grid-template-columns:minmax(0,1fr)}.values>div+div{padding-left:0;border-left:0;margin-top:28px}}
+
+/* ---------- FAQ (TPL contact) ---------- */
+.faq-hero{text-align:center;position:relative;padding:clamp(20px,4vw,40px) 0 clamp(56px,7vw,96px)}
+.faq-hero .giant{font-size:clamp(52px,10vw,168px)}
+.faq-hero p{margin-top:22px;font-size:clamp(17px,1.5vw,21px);letter-spacing:-.015em}
+.faq-hero .plus{position:absolute;top:50%}
+.faq-hero .plus.l{left:0}.faq-hero .plus.r{right:0}
+.faq-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(24px,6vw,120px);align-items:start}
+.acc{border-top:1px solid var(--line-2)}
+.acc-item{border-bottom:1px solid var(--line-2)}
+.acc-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px 0;text-align:left;font-size:17px;letter-spacing:-.015em}
+.acc-q svg{width:14px;height:14px;flex:none;transition:transform .35s var(--ease);color:var(--text)}
+.acc-q[aria-expanded="true"] svg{transform:rotate(45deg);color:var(--lime)}
+.acc-a{display:grid;grid-template-rows:minmax(0,0fr);transition:grid-template-rows .4s var(--ease)}
+.acc-a>div{overflow:hidden}
+.acc-a p{font-size:14.5px;line-height:1.5;color:var(--muted);padding:0 40px 20px 0}
+.acc-q[aria-expanded="true"]+.acc-a{grid-template-rows:minmax(0,1fr)}
+.support-box{background:var(--card);border:1px solid var(--line);padding:clamp(22px,2.6vw,32px)}
+.support-box h4{font-size:clamp(24px,2.4vw,34px);font-weight:500;letter-spacing:-.03em;line-height:1.02;margin:0 0 14px}
+.support-box p{font-size:14.5px;line-height:1.5;color:var(--muted)}
+.support-box .btn-row{margin-top:26px}
+.support-meta{margin-top:30px;display:flex;flex-direction:column;gap:16px}
+.support-meta a{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px}
+.support-meta a:hover{color:var(--lime)}
+@media (max-width:860px){.faq-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- Final CTA (lime band) ---------- */
+.final{background:var(--lime);color:var(--on-lime);padding:clamp(56px,8vw,110px) 0 clamp(40px,5vw,64px);overflow:hidden}
+.final .giant{font-size:clamp(52px,11.4vw,196px);line-height:.84}
+.final .row{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap}
+.final .plus{color:var(--on-lime)}
+.final .btn.ink span,.final .btn.ink i{background:#000;color:var(--lime)}
+.final .btn.outline span{background:transparent;color:#000;border:1px solid #000}
+.final .btn.outline i{background:transparent;color:#000;border:1px solid #000;border-left:0}
+
+/* ---------- Footer (TPL) ---------- */
+.foot{background:var(--bg-2);border-top:1px solid var(--line);padding-top:clamp(40px,5vw,64px)}
+.foot-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px}
+.foot-top .about{max-width:420px;display:flex;flex-direction:column;gap:16px}
+.foot-top .about p{font-size:14px;line-height:1.5;color:var(--muted)}
+.fgroup{margin-bottom:22px}
+.fgroup .label{display:block;margin-bottom:8px}
+.fgroup .links{display:flex;flex-wrap:wrap;gap:6px 18px}
+.fgroup .links a{font-size:clamp(17px,1.5vw,21px);letter-spacing:-.02em;border-bottom:1px solid var(--text);padding-bottom:1px}
+.fgroup .links a:hover{color:var(--lime);border-color:var(--lime)}
+.wordbox{position:relative;margin:clamp(28px,4vw,48px) 6px 0;border-top:2px solid var(--text);border-bottom:2px solid var(--text);padding:clamp(14px,2vw,26px) clamp(10px,2vw,26px)}
+.wordbox::before,.wordbox::after{content:"";position:absolute;top:-2px;bottom:-2px;width:2px;background:var(--text)}
+.wordbox::before{left:14px}.wordbox::after{right:14px}
+.wordbox .x{position:absolute;width:22px;height:22px;color:var(--lime)}
+.wordbox .x.tl{top:-12px;left:4px}.wordbox .x.tr{top:-12px;right:4px}.wordbox .x.bl{bottom:-12px;left:4px}.wordbox .x.br{bottom:-12px;right:4px}
+.wordbox svg.word{width:100%;height:auto;overflow:visible}
+.foot-bot{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:20px;padding:18px 0 24px;align-items:center}
+.foot-bot .label a:hover{color:var(--lime)}
+.foot-bot .mid{display:flex;gap:14px}
+.foot-bot .mid a{color:var(--text)}
+@media (max-width:800px){.foot-top{grid-template-columns:minmax(0,1fr)}.foot-bot{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- Placeholder photography ---------- */
+.hero-photo{position:absolute;inset:0;background:url(assets/img/hero-runner.webp) center/cover no-repeat;filter:grayscale(.15)}
+.hero-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.72) 45%,rgba(0,0,0,.45) 100%),linear-gradient(0deg,rgba(0,0,0,.9) 0%,transparent 45%)}
+.path-vis img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(.2)}
+.path-vis::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.75),rgba(0,0,0,.15) 60%)}
+.path-vis svg,.path-vis .word{z-index:1}
+.path-vis .word{-webkit-text-stroke:1px rgba(245,245,245,.55)}
+.banner{position:relative;margin:0 0 clamp(40px,5vw,72px);aspect-ratio:21/8;border:1px solid var(--line)}
+.banner img{width:100%;height:100%;object-fit:cover}
+.banner::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.55),transparent 55%)}
+.banner .c{position:absolute;width:12px;height:12px;color:var(--lime);z-index:2}
+.banner .cap{position:absolute;left:16px;right:16px;bottom:12px;z-index:2;display:flex;justify-content:space-between;color:var(--text)}
+.mono-portrait img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.05)}
+.mono-portrait::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.7),rgba(0,0,0,.1) 60%)}
+.mono-portrait b{z-index:1}
+.mono-portrait svg{display:none}
+.mono-portrait b{position:absolute;left:18px;bottom:10px;font-size:clamp(56px,6vw,96px)}
+.photo-band{position:relative;height:clamp(280px,42vw,560px);overflow:hidden}
+.photo-band img{width:100%;height:100%;object-fit:cover;filter:grayscale(1)}
+.photo-band::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,var(--bg-2) 0%,transparent 25%,transparent 70%,var(--bg) 100%)}
+.foot-photo{aspect-ratio:4/3;overflow:hidden;max-width:520px}
+.foot-photo img{width:100%;height:100%;object-fit:cover;filter:grayscale(1)}
+@media (max-width:700px){.banner{aspect-ratio:16/10}}
+
+/* ---------- 3D athlete ---------- */
+.drag-hint{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);z-index:3;font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;color:var(--faint);pointer-events:none;white-space:nowrap;animation:bmxIn .8s ease forwards;opacity:0}
+.tech-fig .drag-hint{bottom:10px}
+.bmx3d{position:absolute;inset:0;display:block;opacity:0;animation:bmxIn .8s ease forwards}
+@keyframes bmxIn{to{opacity:1}}
+.has-3d #heroPose,.has-3d #techPose{visibility:hidden}
+.tech-fig .bmx3d{height:100%}
+.bmx3d-read{position:absolute;right:0;top:0;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--muted);text-align:right;z-index:2;pointer-events:none}
+.bmx3d-read b{color:var(--lime);font-weight:500}
+.bmx3d-read .big{display:block;font-family:var(--font-display);font-size:clamp(56px,7vw,96px);font-weight:500;letter-spacing:-.05em;line-height:.9;color:var(--lime)}
+.tech-fig{min-height:420px}
+@media (max-width:800px){.tech-fig{min-height:340px;height:340px}}
+/* character docks: empty spots the 3D athlete moves into as you scroll (desktop only, only once 3D has loaded) */
+.dock{display:none;position:relative;flex:none;width:clamp(200px,19vw,270px);height:clamp(240px,23vw,320px)}
+.dock .bmx3d{height:100%}
+.sec-head .dock{justify-self:end}
+@media (min-width:901px){.has-3d .dock{display:block}}
+
+/* ---------- Layout updates ---------- */
+.explain{display:block}
+.ex-row{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(20px,5vw,80px);align-items:start;padding:clamp(28px,4vw,56px) 0}
+.ex-row h4.giant{font-size:clamp(34px,4.6vw,72px);font-weight:500;margin:0;max-width:none}
+.ex-row p{font-size:14px;line-height:1.55;color:var(--muted);max-width:44ch;justify-self:end;padding-top:.6em}
+.banner .cap{display:none}
+.banner::after{background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,transparent 45%),linear-gradient(0deg,rgba(0,0,0,.35),transparent 40%)}
+.ban-cap{position:absolute;inset:0;z-index:2;display:flex;justify-content:space-between;align-items:flex-start;padding:clamp(16px,2.4vw,32px);gap:16px;pointer-events:none}
+.ban-t{font-size:clamp(30px,5vw,80px);color:var(--text);overflow-wrap:normal;word-break:normal;hyphens:none}
+.ban-meta{display:flex;flex-direction:column;align-items:flex-end;gap:clamp(12px,2vw,28px);color:var(--lime);text-align:right}
+.ban-meta b{font-weight:500}
+.ent2 .ent-h{font-size:clamp(34px,3.9vw,72px);margin-top:18px;max-width:28ch}
+.lime-t{color:var(--lime)}
+.ent-lit{margin:clamp(48px,7vw,110px) 0 clamp(40px,5vw,72px)}
+.ent-lit .lit{font-size:clamp(20px,2.3vw,36px);max-width:54ch}
+.ent-row{display:grid;grid-template-columns:minmax(0,.55fr) minmax(0,1.75fr) minmax(0,1.75fr) minmax(0,1.45fr);grid-template-rows:auto auto;column-gap:clamp(20px,3vw,48px);row-gap:24px;align-items:start}
+.ent-row .ent-photo{grid-column:2;grid-row:1/3}
+.ent-row .checks{grid-column:3;grid-row:1}
+.ent-row .ent-cta{grid-column:3/5;grid-row:2;align-self:end;max-width:560px}
+.ent-photo{margin:0;padding:0;border:0;aspect-ratio:1/1.04;overflow:hidden}
+.ent-photo img{width:100%;height:100%;object-fit:cover}
+.ent-cta{display:flex;flex-direction:column;gap:22px;align-self:end}
+.ent-cta .btn span{white-space:normal}
+.ent-row .checks li:first-child{border-top:0}
+.team{grid-template-columns:minmax(0,1.1fr) minmax(0,.8fr) minmax(0,1fr);gap:clamp(20px,3.5vw,56px)}
+.tcard-photo{max-width:360px}
+.team .tname{font-size:clamp(28px,3.3vw,52px);white-space:nowrap}
+@media (max-width:420px){.team .tname{font-size:clamp(24px,7.4vw,32px)}}
+.tcard-photo .frame{padding:10px}
+.tcard .role{margin:0 0 12px}
+.team+.label{margin-top:clamp(48px,6vw,88px)!important}
+@media (max-width:1000px){.ent-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.ent-row .ent-photo{grid-column:1;grid-row:1}.ent-row .checks{grid-column:2;grid-row:1}.ent-row .ent-cta{grid-column:1/-1;grid-row:2;max-width:none}}
+@media (max-width:900px){.team{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.team-names{grid-column:1/-1}}
+@media (max-width:700px){.ex-row{grid-template-columns:minmax(0,1fr)}.ex-row p{justify-self:start;padding-top:0}
+  .ent-row{grid-template-columns:minmax(0,1fr)}.ent-row .ent-photo,.ent-row .checks,.ent-row .ent-cta{grid-column:1;grid-row:auto}.ent-photo{aspect-ratio:4/3}
+  .team{grid-template-columns:minmax(0,1fr)}.tcard-photo{max-width:none}
+  .ban-cap{flex-direction:column;justify-content:space-between}.ban-meta{flex-direction:row;align-self:flex-start;gap:12px}}
+
+@media (prefers-reduced-motion:reduce){
+  .mq-track{animation:none}
+  html{scroll-behavior:auto}
+  *{transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<!-- SVG sprites -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="plus" viewBox="0 0 19.342 19.342"><path fill="currentColor" d="M11.5222 5.35187C11.5222 6.71487 12.6271 7.81981 13.9901 7.81981H19.342V11.5217H13.9901C12.6271 11.5217 11.5222 12.6267 11.5222 13.9897V19.342H7.82029V13.9897C7.82029 12.6267 6.71536 11.5217 5.35235 11.5217H0L0 7.81981H5.35235C6.71536 7.81981 7.82029 6.71487 7.82029 5.35187V0L11.5222 0V5.35187Z"/></symbol>
+    <symbol id="arrow" viewBox="0 0 20 20"><path fill="currentColor" d="M13.48 10.83H3.33V9.17h10.15L9.01 4.7l1.18-1.18L16.67 10l-6.48 6.48-1.18-1.18z"/></symbol>
+    <symbol id="mark" viewBox="0 0 26 26"><rect x="0.5" y="0.5" width="25" height="25" rx="5" fill="var(--tile,#ccff00)"/><path fill-rule="evenodd" fill="var(--glyph,#000)" d="M7 6h7.2c2.8 0 4.4 1.4 4.4 3.5 0 1.4-.8 2.4-2 2.8 1.6.4 2.6 1.6 2.6 3.2 0 2.4-1.8 3.9-4.8 3.9H7zM10.4 8.7v2.9h3.2c1.1 0 1.7-.5 1.7-1.45s-.6-1.45-1.7-1.45zM10.4 14.1v3.2h3.5c1.2 0 1.9-.6 1.9-1.6s-.7-1.6-1.9-1.6z"/></symbol>
+    <symbol id="check" viewBox="0 0 16 16"><path fill="none" stroke="currentColor" stroke-width="1.8" d="M2 8.5l4 4 8-9"/></symbol>
+    <symbol id="cross" viewBox="0 0 22 22"><path fill="currentColor" d="M9.6 0h2.8v7.2a2.4 2.4 0 0 0 2.4 2.4H22v2.8h-7.2a2.4 2.4 0 0 0-2.4 2.4V22H9.6v-7.2a2.4 2.4 0 0 0-2.4-2.4H0V9.6h7.2a2.4 2.4 0 0 0 2.4-2.4z"/></symbol>
+  </defs>
+</svg>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-in">
+    <a href="#top" class="logo" aria-label="Biomechanix home"><svg><use href="#mark"/></svg><b>BIOMECHANIX</b></a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#how">Platform</a>
+      <a href="#fitness">Fitness</a>
+      <a href="#physio">Physio</a>
+      <a href="#sameeksha">Sameeksha</a>
+      <a href="#partners">Clinics &amp; Partners</a>
+      <a href="#company">Company</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#apps" class="solo">Get the app</a>
+      <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mnav"><svg viewBox="0 0 16 16"><path d="M1 4h14M1 8h14M1 12h14" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    </div>
+  </div>
+</header>
+<nav class="mnav" id="mnav" aria-label="Mobile">
+  <a href="#how">Platform</a><a href="#fitness">Fitness</a><a href="#physio">Physio</a><a href="#sameeksha">Sameeksha</a><a href="#partners">Clinics &amp; Partners</a><a href="#company">Company</a>
+</nav>
+
+<main>
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-photo" aria-hidden="true"></div>
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-fig" aria-hidden="true">
+    <svg id="heroPose" viewBox="60 40 280 530"></svg>
+    <div class="readout" style="top:8%;left:0"><b>Full-body</b> tracking</div>
+    <div class="readout" style="top:8%;right:0"><b>Real-time</b></div>
+    <div class="readout" id="kneeRead" style="bottom:4%;left:0">knee <b>180°</b></div>
+    <div class="readout" style="bottom:4%;right:0">on-device</div>
+  </div>
+  <div class="wrap hero-bottom">
+    <div>
+      <div class="label lime hero-eyebrow">Movement intelligence · one platform, three products</div>
+      <h1 class="giant">One camera.<br>One movement engine.<br><span class="dim">Three ways to move better.</span></h1>
+    </div>
+    <div class="hero-side">
+      <p>Biomechanix builds MoveMentor — an on-device platform that turns a phone camera into a trained eye for movement. It coaches a workout, measures range of motion for a physiotherapist, and screens a joint problem before you decide what to do about it.</p>
+      <p><strong>No wearables to buy. No video call to schedule. Nothing you do in front of the camera ever leaves your phone.</strong></p>
+      <div class="btn-row">
+        <a class="btn" href="#apps"><span>See the three apps</span><i><svg><use href="#arrow"/></svg></i></a>
+        <a class="btn dark" href="#partners"><span>Talk to us — clinics &amp; partners</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<div class="marquee" aria-label="Highlights">
+  <div class="mq-track" id="mq">
+    <span><svg><use href="#mark"/></svg>On-device analysis</span>
+    <span><svg><use href="#mark"/></svg>Camera only, no wearables</span>
+    <span><svg><use href="#mark"/></svg>India &amp; USA team</span>
+    <span><svg><use href="#mark"/></svg>MoveMentor Fitness</span>
+    <span><svg><use href="#mark"/></svg>MoveMentor Physio</span>
+    <span><svg><use href="#mark"/></svg>Sameeksha</span>
+  </div>
+</div>
+
+<!-- ============ START HERE / PATHS ============ -->
+<section class="sec" id="apps">
+  <div class="wrap">
+    <div class="plus-row" style="margin-bottom:60px"><svg class="plus grey"><use href="#plus"/></svg><svg class="plus grey"><use href="#plus"/></svg></div>
+    <div class="lit-wrap">
+      <span class="label">Start here</span>
+      <p class="lit" data-lit>Four reasons to be on this page. Pick yours. Every Biomechanix app runs on the same engine underneath — but what you need from it depends on why you're here.</p>
+    </div>
+
+    <div class="paths" id="paths">
+      <article class="path">
+        <div class="ph mono"><span style="color:var(--faint)">Start here</span><span class="t">Training</span><span style="color:var(--faint)">001</span></div>
+        <div class="path-vis"><img src="assets/img/path-training.webp" alt="Athlete sprinting on a track" loading="lazy"><svg data-mini="fit" viewBox="0 0 400 225"></svg><span class="word">Train</span></div>
+        <h3>I want to train with better form</h3>
+        <p>Live coaching, rep counting and spoken cues for strength, mobility, yoga and sport-specific work.</p>
+        <a class="btn" href="#fitness"><span>MoveMentor Fitness</span><i><svg><use href="#arrow"/></svg></i></a>
+      </article>
+      <article class="path">
+        <div class="ph mono"><span style="color:var(--faint)">Start here</span><span class="t">Rehabilitation</span><span style="color:var(--faint)">002</span></div>
+        <div class="path-vis"><img src="assets/img/path-rehab.webp" alt="Therapist working with an athlete" loading="lazy"><svg data-mini="physio" viewBox="0 0 400 225"></svg><span class="word">Rehab</span></div>
+        <h3>I run a physiotherapy practice</h3>
+        <p>Camera-measured exams, dose-adjusted prescriptions and adherence data from every patient's home programme.</p>
+        <a class="btn" href="#physio"><span>MoveMentor Physio</span><i><svg><use href="#arrow"/></svg></i></a>
+      </article>
+      <article class="path">
+        <div class="ph mono"><span style="color:var(--faint)">Start here</span><span class="t">Self-assessment</span><span style="color:var(--faint)">003</span></div>
+        <div class="path-vis"><img src="assets/img/path-self-assessment.webp" alt="Runner mid-stride" loading="lazy"><svg data-mini="sam" viewBox="0 0 400 225"></svg><span class="word">Screen</span></div>
+        <h3>I have joint pain and don't know what it means</h3>
+        <p>A guided self-screening for knee, back, shoulder or elbow that ends in one clear next step.</p>
+        <a class="btn" href="#sameeksha"><span>Sameeksha</span><i><svg><use href="#arrow"/></svg></i></a>
+      </article>
+      <article class="path">
+        <div class="ph mono"><span style="color:var(--faint)">Start here</span><span class="t">Enterprise</span><span style="color:var(--faint)">004</span></div>
+        <div class="path-vis"><img src="assets/img/path-enterprise.webp" alt="Basketball players in motion" loading="lazy"><svg data-mini="ent" viewBox="0 0 400 225"></svg><span class="word">Scale</span></div>
+        <h3>I'm evaluating this for an insurer, practice or academy</h3>
+        <p>Standardised, camera-based movement data, without a wearables rollout or a clinic visit for every reading.</p>
+        <a class="btn" href="#partners"><span>Clinics &amp; Partners</span><i><svg><use href="#arrow"/></svg></i></a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PLATFORM / HOW IT WORKS ============ -->
+<section class="sec alt" id="how" style="padding-top:clamp(40px,6vw,80px)">
+  <div class="slide-head" aria-hidden="true"><div class="line giant" id="slideLine">From camera to coaching cue, before your next rep. From camera to coaching cue.</div></div>
+  <div class="wrap">
+    <h2 class="sr">From camera to coaching cue, before your next rep.</h2>
+    <div class="lit-wrap" style="margin-bottom:clamp(56px,7vw,100px)">
+      <span class="label">The MoveMentor platform</span>
+      <p class="lit" data-lit>Every Biomechanix app runs on the same on-device engine. It doesn't just detect that you moved — it understands the movement: which joint drives it, which joints should stay still, and what a small compensation usually means.</p>
+    </div>
+
+    <div class="tech" id="tech">
+      <div class="frame" style="position:absolute;inset:0;border:0;pointer-events:none"></div>
+      <div class="tech-body">
+        <div class="tech-copy" aria-live="polite">
+          <span class="step-n" id="techN">Step 1</span>
+          <h3 id="techT">See</h3>
+          <p id="techP">Your phone’s camera tracks every joint as you move, faster and more precisely than the human eye can follow — on your phone, not in a data centre.</p>
+        </div>
+        <div class="tech-fig"><svg id="techPose" viewBox="60 40 280 530" aria-hidden="true"></svg></div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="How the engine works">
+        <button class="tab" role="tab" aria-selected="true" data-i="0"><span class="bar"></span>01 See</button>
+        <button class="tab" role="tab" aria-selected="false" data-i="1"><span class="bar"></span>02 Measure</button>
+        <button class="tab" role="tab" aria-selected="false" data-i="2"><span class="bar"></span>03 Understand</button>
+        <button class="tab" role="tab" aria-selected="false" data-i="3"><span class="bar"></span>04 Respond</button>
+      </div>
+    </div>
+
+    <div class="note"><svg class="plus"><use href="#plus"/></svg><p><b>Your privacy, built in.</b> Everything the camera sees is analysed on your phone. Images and video never leave your device. Only results like reps and scores sync, and only if you choose to sign in.</p></div>
+
+    <div class="explain">
+      <div class="ex-row">
+        <h4 class="giant">What “markerless” actually means</h4>
+        <p>No markers, no sensors, nothing to charge or misplace. “Markerless motion capture” just means the camera itself finds your joints as you move, using a model trained to recognise a human body in ordinary video — the same underlying idea used in sports-science labs, running on the phone already in your hand.</p>
+      </div>
+      <div class="ex-row">
+        <h4 class="giant">Built to extend the expert, not replace them</h4>
+        <p>A physiotherapist, coach or trainer teaches the model what correct movement looks like for their specialty. They set the targets and make the calls that need a professional. MoveMentor does the watching in between — at home, in the gym, wherever the expert isn't standing next to you.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FITNESS ============ -->
+<section class="sec" id="fitness">
+  <div class="wrap">
+    <figure class="banner"><img src="assets/img/fitness-banner.webp" alt="Runner in motion" loading="lazy"><svg class="c" style="top:-6px;left:-6px"><use href="#plus"/></svg><svg class="c" style="bottom:-6px;right:-6px"><use href="#plus"/></svg><figcaption class="ban-cap"><span class="giant ban-t">MoveMentor Fitness</span><span class="ban-meta mono"><b>01</b><span>Training</span></span></figcaption></figure>
+    <div class="prod-head">
+      <div>
+        <span class="tag lime" style="margin-bottom:24px">MoveMentor Fitness · Training</span>
+        <h2 class="giant h-lg">Your camera, working like a personal trainer.</h2>
+      </div>
+      <div class="right">
+        <p>Stand your phone up, step back, and get live coaching on every rep — automatic counting, spoken corrections, and a record of how your form is trending, without booking a session every time you train.</p>
+        <a class="btn" href="#"><span>Get it on Google Play</span><i><svg><use href="#arrow"/></svg></i></a>
+      </div>
+    </div>
+
+    <div class="feat-grid">
+      <div class="feat"><div class="n"><em>01</em><span>Fitness</span></div><h4>Real-time form feedback</h4><p>Every joint tracked in real time, faster than the human eye can follow. Each rep is scored against how the exercise should move: the joint that drives it, the joints that should stay still, and the common compensations.</p></div>
+      <div class="feat"><div class="n"><em>02</em><span>Fitness</span></div><h4>Voice cues you can act on</h4><p>Short spoken cues and haptics guide each phase — get set, go down, hold, come up — so a correction arrives while there's still time to fix the next rep.</p></div>
+      <div class="feat"><div class="n"><em>03</em><span>Fitness</span></div><h4>Automatic rep counting</h4><p>Reps are counted from your movement, with no tapping. A rep only counts when you reach the target range, and holds are timed at the top.</p></div>
+      <div class="feat"><div class="n"><em>04</em><span>Fitness</span></div><h4>Guided workouts</h4><p>Warm-up, full body, lower body, core and posture, and mobility, plus yoga poses and sport-specific programs, from beginner to advanced.</p></div>
+      <div class="feat"><div class="n"><em>05</em><span>Fitness</span></div><h4>Perspiration Mode</h4><p>A workout that makes music with your body — your movements trigger beats and rhythms, so a sweat session turns into a jam session.</p></div>
+      <div class="feat"><div class="n"><em>06</em><span>Fitness</span></div><h4>Progress you can see</h4><p>Workout history, session summaries and form-quality trends over time, plus short rep clips you can save and review.</p></div>
+    </div>
+
+    <div class="sub-h"><h3>Set up once, then just move</h3><div class="dock" data-dock aria-hidden="true"></div></div>
+    <div class="steps c4">
+      <div class="stp"><div class="k"><span class="dot"></span>1 · Prop up</div><p>Chest height, about 2–2.5 m away, whole body in view.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>2 · Face the light</div><p>Stand facing a window or lamp, not with the light behind you.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>3 · Clear space</div><p>About 2 × 2 m is enough for every workout.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>4 · Start</div><p>Line up with the on-screen guide. The app waits until it can see you.</p></div>
+    </div>
+
+    <div class="note"><svg class="plus"><use href="#plus"/></svg><p><b>Fitness, not medicine.</b> MoveMentor Fitness is a fitness and wellness app. It doesn't diagnose, prescribe or treat. Recovering from an injury? Ask a physiotherapist about <a href="#physio">MoveMentor Physio</a> instead.</p></div>
+  </div>
+</section>
+
+<!-- ============ PHYSIO ============ -->
+<section class="sec alt" id="physio">
+  <div class="wrap">
+    <figure class="banner"><img src="assets/img/physio-banner.webp" alt="Physiotherapy session" loading="lazy"><svg class="c" style="top:-6px;left:-6px"><use href="#plus"/></svg><svg class="c" style="bottom:-6px;right:-6px"><use href="#plus"/></svg><figcaption class="ban-cap"><span class="giant ban-t">MoveMentor Physio</span><span class="ban-meta mono"><b>02</b><span>Rehabilitation</span></span></figcaption></figure>
+    <div class="prod-head">
+      <div>
+        <span class="tag cyan" style="margin-bottom:24px">MoveMentor Physio · Rehabilitation</span>
+        <h2 class="giant h-lg">Examine, prescribe and follow up — with one camera.</h2>
+      </div>
+      <div class="right">
+        <p>A clinic app for physiotherapists and their patients. Measure how a patient moves, prescribe the right exercises at the right dose, and send them home with a coach that watches every rep.</p>
+        <div class="btn-row">
+          <a class="btn" href="#"><span>Get it on Google Play</span><i><svg><use href="#arrow"/></svg></i></a>
+          <a class="btn dark" href="#partners"><span>Bring it to your clinic</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-h" style="margin-top:0"><div><span class="label">The care loop</span><h3 style="margin-top:10px">One loop, from the clinic to the living room and back.</h3></div><div class="dock" data-dock aria-hidden="true"></div></div>
+    <div class="steps c5">
+      <div class="stp"><div class="k"><span class="dot"></span>1 · Examine</div><p>Guided tests measure peak range, symmetry and hold time.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>2 · Prescribe</div><p>Choose exercises, set reps, holds and range-of-motion targets.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>3 · Deliver</div><p>Send as a QR code, a file, or online to a linked account.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>4 · Perform</div><p>Patient exercises at home with real-time feedback at the prescribed dose.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>5 · Review</div><p>Completed sets, reps and peak range come back for each prescription.</p></div>
+    </div>
+    <div class="loop-back" aria-hidden="true"><svg viewBox="0 0 1000 14" preserveAspectRatio="none"><path d="M995 1v6H5V1" fill="none" stroke="#ccff00" stroke-width="1" vector-effect="non-scaling-stroke"/></svg></div>
+
+    <div class="sub-h"><h3>For clinicians — objective measures, without a goniometer in your hand</h3></div>
+    <div class="feat-grid">
+      <div class="feat"><div class="n"><em>01</em><span>Physio</span></div><h4>Camera-measured exams</h4><p>Guided tests record achieved range, symmetry and hold duration, saved to the patient's record.</p></div>
+      <div class="feat"><div class="n"><em>02</em><span>Physio</span></div><h4>Dose-adjusted prescriptions</h4><p>Start from a validated exercise and adjust reps, hold time, range and difficulty. The movement model stays intact.</p></div>
+      <div class="feat"><div class="n"><em>03</em><span>Physio</span></div><h4>Contraindication checks</h4><p>Prescriptions are checked against the patient's condition. Absolute contraindications block the exercise; relative ones show a warning you review.</p></div>
+      <div class="feat"><div class="n"><em>04</em><span>Physio</span></div><h4>Author your own exercises</h4><p>Build exercises in a visual editor — pick the moving joints, set the range, rehearse on camera, then prescribe.</p></div>
+      <div class="feat"><div class="n"><em>05</em><span>Physio</span></div><h4>Your library, your patients</h4><p>Exercises you author stay private to you. Submit one for peer review to add it to the shared library.</p></div>
+      <div class="feat"><div class="n"><em>06</em><span>Physio</span></div><h4>Works offline</h4><p>Examine, prescribe and share by QR or file without a connection. Sign in for online delivery and adherence reports.</p></div>
+    </div>
+
+    <div class="duo">
+      <div class="panel frame">
+        <svg class="c tl"><use href="#plus"/></svg><svg class="c br"><use href="#plus"/></svg>
+        <h4 style="margin-top:0">For patients</h4>
+        <ul class="dash-list">
+          <li>Exact reps, holds and targets from your prescription</li>
+          <li>Real-time cues when your form drifts</li>
+          <li>A record of every session against what was prescribed</li>
+          <li>Results can go back to your clinician, so your plan adjusts between visits</li>
+        </ul>
+      </div>
+      <div class="panel frame">
+        <svg class="c tr"><use href="#plus"/></svg><svg class="c bl"><use href="#plus"/></svg>
+        <h4 style="margin-top:0">Will this replace my judgement?</h4>
+        <p>No. MoveMentor measures and delivers; you decide. Exercise selection, dosage and interpretation of measurements stay the clinician's professional call — contraindication checks flag what needs your review, they don't override it.</p>
+      </div>
+    </div>
+
+    <div class="note"><svg class="plus"><use href="#plus"/></svg><p><b>A tool for clinicians, not a replacement.</b> MoveMentor Physio supports a qualified physiotherapist's assessment and treatment. Live analysis stays on the phone, and patient records created in the clinic are stored on the clinician's device.</p></div>
+  </div>
+</section>
+
+<!-- ============ SAMEEKSHA ============ -->
+<section class="sec" id="sameeksha">
+  <div class="wrap">
+    <figure class="banner"><img src="assets/img/sameeksha-banner.webp" alt="Athlete standing in a studio" loading="lazy"><svg class="c" style="top:-6px;left:-6px"><use href="#plus"/></svg><svg class="c" style="bottom:-6px;right:-6px"><use href="#plus"/></svg><figcaption class="ban-cap"><span class="giant ban-t">Sameeksha</span><span class="ban-meta mono"><b>03</b><span>Self-assessment</span></span></figcaption></figure>
+    <div class="prod-head">
+      <div>
+        <span class="tag grey" style="margin-bottom:24px">Sameeksha · Musculoskeletal self-assessment</span>
+        <h2 class="giant h-lg">Understand your joint pain, and know what to do next.</h2>
+      </div>
+      <div class="right">
+        <p>Sameeksha takes you through a structured check of your knee, lower back, shoulder or elbow using your phone and its camera. At the end you get a clear screening report and one recommended next step.</p>
+        <a class="btn" href="#"><span>Get it on Google Play</span><i><svg><use href="#arrow"/></svg></i></a>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:0;margin-bottom:clamp(48px,6vw,80px)"><svg class="plus"><use href="#plus"/></svg><p><b>Screening, not diagnosis.</b> Sameeksha reports what it observes and what may be contributing to it, always as possibilities for a qualified professional to confirm. It doesn't diagnose conditions or replace an examination. If symptoms are severe or worsening, seek medical care.</p></div>
+
+    <div class="sub-h" style="margin-top:0"><div><span class="label">How the assessment works</span><h3 style="margin-top:10px">Five guided steps, one joint at a time.</h3></div><div class="dock" data-dock aria-hidden="true"></div></div>
+    <div class="steps c5">
+      <div class="stp"><div class="k"><span class="dot"></span>Step 1</div><h5>About you</h5><p>Age, sex and side, so results compare against people like you.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>Step 2</div><h5>Your symptoms</h5><p>A questionnaire for the joint you chose, kept in your own words.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>Step 3</div><h5>Safety screen</h5><p>Warning-sign questions that take priority over everything else.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>Step 4</div><h5>Movement tests</h5><p>Short camera-guided tests measure range, control and symmetry.</p></div>
+      <div class="stp"><div class="k"><span class="dot"></span>Step 5</div><h5>Walking check</h5><p>For knee and back, a short recording of how you walk.</p></div>
+    </div>
+
+    <div class="sub-h"><h3>Your report — more than a single score</h3></div>
+    <div class="report">
+      <div><span class="k">01</span><h5>Individual findings</h5><p>Each observation is graded normal, mild, moderate, significant or a safety indicator. The same issue across several tests counts for more.</p></div>
+      <div><span class="k">02</span><h5>Three risk dimensions</h5><p>Symptoms, movement and safety are each scored out of 100, weighted for the joint you assessed. Skipping a test never counts as failing it.</p></div>
+      <div><span class="k">03</span><h5>One clear next step</h5><p>A warning sign always overrides the scores and points to medical care. Otherwise, a practical plan, with home exercises where appropriate.</p></div>
+    </div>
+
+    <div class="extras">
+      <div class="extra"><span class="k">EN · HI · PA · TA · TE · KN</span><h5>Six languages</h5><p>The whole assessment, including the safety wording, is available in English, Hindi, Punjabi, Tamil, Telugu and Kannada.</p></div>
+      <div class="extra"><span class="k">Caregiver</span><h5>Assisted mode</h5><p>A family member or caregiver can hold the phone and answer for the person being assessed. The report records that it was assisted.</p></div>
+      <div class="extra"><span class="k">Share</span><h5>Take it to your clinician</h5><p>Export as a PDF or share a structured file. A referral letter quotes your own words, unchanged.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPARE ============ -->
+<section class="sec alt" id="compare">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><span class="label">Side by side</span><h2 class="giant h-lg" style="margin-top:18px">Which app is right for you?</h2></div>
+      <div class="dock" data-dock aria-hidden="true"></div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr><th scope="col"></th>
+            <th scope="col"><span class="tag lime">Training</span><br>MoveMentor Fitness</th>
+            <th scope="col"><span class="tag cyan">Rehabilitation</span><br>MoveMentor Physio</th>
+            <th scope="col"><span class="tag grey">Self-assessment</span><br>Sameeksha</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Best for</th><td>Getting fitter with good form</td><td>Treatment guided by a physiotherapist</td><td>Understanding joint pain before seeking care</td></tr>
+          <tr><th scope="row">Who uses it</th><td>Individuals</td><td>Clinicians and patients</td><td>Individuals and caregivers</td></tr>
+          <tr><th scope="row">Account</th><td>Optional (guest mode)</td><td>Optional (works offline)</td><td>Optional (backup when signed in)</td></tr>
+          <tr><th scope="row">Medical use</th><td>Fitness and wellness only</td><td>Supports a qualified clinician</td><td>Screening, not diagnosis</td></tr>
+          <tr class="span"><th scope="row">Camera analysis</th><td colspan="3">Runs on your device. Live camera video is never uploaded.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cmp-cards"><div class="cmp-card"><span class="tag lime">Training</span><h3>MoveMentor Fitness</h3><dl><dt>Best for</dt><dd>Getting fitter with good form</dd><dt>Who uses it</dt><dd>Individuals</dd><dt>Account</dt><dd>Optional (guest mode)</dd><dt>Medical use</dt><dd>Fitness and wellness only</dd></dl></div><div class="cmp-card"><span class="tag cyan">Rehabilitation</span><h3>MoveMentor Physio</h3><dl><dt>Best for</dt><dd>Treatment guided by a physiotherapist</dd><dt>Who uses it</dt><dd>Clinicians and patients</dd><dt>Account</dt><dd>Optional (works offline)</dd><dt>Medical use</dt><dd>Supports a qualified clinician</dd></dl></div><div class="cmp-card"><span class="tag grey">Self-assessment</span><h3>Sameeksha</h3><dl><dt>Best for</dt><dd>Understanding joint pain before seeking care</dd><dt>Who uses it</dt><dd>Individuals and caregivers</dd><dt>Account</dt><dd>Optional (backup when signed in)</dd><dt>Medical use</dt><dd>Screening, not diagnosis</dd></dl></div><p class="cmp-all"><span class="label" style="display:block;margin-bottom:6px">Camera analysis</span>Runs on your device. Live camera video is never uploaded.</p></div>
+    <div class="note"><svg class="plus"><use href="#plus"/></svg><p><b>Not sure where to start?</b> If you're recovering from an injury, ask your physiotherapist about MoveMentor Physio. If you have pain and aren't sure what it means, start with Sameeksha.</p></div>
+  </div>
+</section>
+
+<!-- ============ PRIVACY ============ -->
+<section class="sec" id="privacy">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><span class="label">The part most movement apps don't explain</span><h2 class="giant h-lg" style="margin-top:18px">Your camera feed stays on your phone. Full stop.</h2></div>
+      <div class="right"><p class="body">Most movement-tracking products either need a wearable you buy and charge, or send your video to a server to be analysed. MoveMentor does neither — the analysis happens where the camera already is.</p></div>
+    </div>
+    <div class="big-lines">
+      <div class="big-line"><span class="giant gl">On-device processing</span><svg class="ar"><use href="#arrow"/></svg><p>What the camera sees is analysed on your phone and discarded right after.</p></div>
+      <div class="big-line"><span class="giant gl">No facial recognition</span><svg class="ar"><use href="#arrow"/></svg><p>The engine tracks joints, never identity.</p></div>
+      <div class="big-line"><span class="giant gl">Never sold, never used for ads</span><svg class="ar"><use href="#arrow"/></svg><p>That's a firm line, not a setting.</p></div>
+      <div class="big-line"><span class="giant gl">Only results sync</span><svg class="ar"><use href="#arrow"/></svg><p>If you sign in, structured results — reps, scores, assessment answers — sync to your account, shared only with people you choose.</p></div>
+    </div>
+    <div style="margin-top:32px"><a class="btn dark" href="#privacy-policy"><span>Read the full privacy policy</span><i><svg><use href="#arrow"/></svg></i></a></div>
+  </div>
+</section>
+
+<!-- ============ CLINICS & PARTNERS ============ -->
+<section class="sec alt" id="partners">
+  <div class="wrap">
+    <div class="ent2">
+      <span class="label">For insurers, pain-management practices and academies</span>
+      <h2 class="giant ent-h">Standardise how you measure movement, <span class="lime-t">at a scale one clinic room can't reach.</span></h2>
+      <div class="lit-wrap ent-lit"><p class="lit" data-lit>The same engine already produces objective, camera-based range-of-motion, symmetry and adherence data inside MoveMentor Physio. We're now in early conversations with insurers, pain-management practices and sports academies who want that data at a scale a single clinic room can't reach — for underwriting, utilisation review, or expanding a service line without expanding headcount.</p></div>
+      <div class="ent-row">
+        <figure class="ent-photo frame"><img src="assets/img/partners-photo.webp" alt="Sprinter in motion" loading="lazy"></figure>
+        <ul class="checks">
+          <li><svg><use href="#check"/></svg><span><b>One engine, already in clinical use</b> — the same measurement model behind MoveMentor Physio, not a separate prototype built for this pitch.</span></li>
+          <li><svg><use href="#check"/></svg><span><b>Camera-only data collection</b> — no wearables to distribute, pair or replace across a population.</span></li>
+          <li><svg><use href="#check"/></svg><span><b>A governance answer most vendors can't give</b> — on-device processing means patient video never has to leave the point of capture.</span></li>
+          <li><svg><use href="#check"/></svg><span><b>A clinical lead who shaped the model</b> — Dr. Gaurav Sharma, 15+ years in sports physiotherapy, on every conversation.</span></li>
+        </ul>
+        <div class="ent-cta">
+          <p class="honest">We're early, and we'd rather say so than overstate it. If you're exploring how objective, camera-based movement data could fit your underwriting model, care pathway or programme, we'd like to talk it through with you — pilot terms included.</p>
+          <div><a class="btn" href="https://biomechanix.ai" target="_blank" rel="noopener"><span>Start the conversation at biomechanix.ai</span><i><svg><use href="#arrow"/></svg></i></a></div>
+        </div>
+      </div>
+    </div>
+    <div class="who">
+      <div><span class="label lime">Who this is for</span><h5>Insurance underwriters</h5><p>Standardised MSK risk data instead of inconsistent, manual assessment.</p></div>
+      <div><span class="label lime">Who this is for</span><h5>Pain-management practices</h5><p>Scalable objective monitoring between in-person visits.</p></div>
+      <div><span class="label lime">Who this is for</span><h5>Sports academies</h5><p>The same movement engine, applied to performance tracking instead of rehab.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="photo-band" aria-hidden="true"><img src="assets/img/partners-banner.webp" alt="" loading="lazy"></div>
+
+<!-- ============ COMPANY / TEAM ============ -->
+<section class="sec" id="company">
+  <div class="wrap">
+    <div class="company-top">
+      <div><span class="label">About Biomechanix</span><h2 class="giant" style="margin-top:18px">Expert movement coaching, for everyone.</h2></div>
+      <div class="txt">
+        <p class="first">Good coaching changes lives, but most people can't get it. Sessions are expensive, experts are busy, and nobody is watching when you practise alone. Biomechanix Inc. builds MoveMentor so a good coach or physiotherapist can keep an eye on your movement wherever you are.</p>
+        <p>Our team has deep roots in physiotherapy, sports science and rehabilitation, drawing on more than a decade of hands-on clinical experience. That shapes how every movement is modelled — we look beyond where the joints are to what a small deviation means for injury risk and performance.</p>
+        <div class="facts">
+          <div><b>Sports &amp; therapy</b><span>One engine for both</span></div>
+          <div><b>Camera only</b><span>No sensors or wearables</span></div>
+          <div><b>India &amp; USA</b><span>Remote-friendly team</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="team" id="team">
+      <div class="team-names" role="tablist" aria-label="Team">
+        <button class="tname" role="tab" aria-selected="true" data-p="0"><svg><use href="#mark"/></svg>Dr. Gaurav Sharma</button>
+        <button class="tname" role="tab" aria-selected="false" data-p="1"><svg><use href="#mark"/></svg>Raghunandan S K</button>
+      </div>
+      <div class="tcard-photo">
+        <div class="frame"><svg class="c tl"><use href="#plus"/></svg><svg class="c tr"><use href="#plus"/></svg><svg class="c bl"><use href="#plus"/></svg><svg class="c br"><use href="#plus"/></svg>
+          <div class="mono-portrait"><img id="tImg" src="assets/img/team-gaurav.webp" alt="Dr. Gaurav Sharma"><svg id="portraitPose" viewBox="60 40 280 530" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg><b id="tInit">GS</b></div>
+        </div>
+      </div>
+      <div class="tcard" aria-live="polite">
+        <div class="role"><span class="mono" id="tRole">Chief Revenue Officer</span></div>
+        <p id="tBio">A veteran sports physiotherapist with more than 15 years of experience, specialising in mental agility and performance vision. His work combines physical rehabilitation with cognitive neuroscience in tech-driven training that improves athletic performance. Focused on taking these solutions to sports and wellness markets globally.</p>
+      </div>
+    </div>
+
+    <p class="label" style="margin-top:clamp(64px,8vw,120px)">What we believe</p>
+    <div class="values" style="margin-top:18px">
+      <div><span class="k">01</span><h5>Outcomes first</h5><p>If a feature doesn't help someone move better, we don't ship it.</p></div>
+      <div><span class="k">02</span><h5>Experts stay in charge</h5><p>We help coaches, therapists and trainers do more. We don't replace them.</p></div>
+      <div><span class="k">03</span><h5>Accessible by default</h5><p>No expensive equipment or complicated setup. A phone camera and a few minutes.</p></div>
+      <div><span class="k">04</span><h5>Ship early, learn fast</h5><p>We build for real people with real problems, and improve on what they tell us.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="sec alt" id="faq">
+  <div class="wrap">
+    <div class="faq-hero">
+      <svg class="plus l"><use href="#plus"/></svg><svg class="plus r"><use href="#plus"/></svg>
+      <span class="label">Before you ask</span>
+      <h2 class="giant" style="margin-top:18px">Common<br>questions</h2>
+    </div>
+    <div class="faq-grid">
+      <div class="acc" id="acc">
+        <div class="acc-item"><button class="acc-q" aria-expanded="true">Is a Sameeksha report a diagnosis?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>No. It's a structured screening that reports observations and possibilities for a qualified professional to confirm. If you have severe or worsening symptoms, seek medical care directly.</p></div></div></div>
+        <div class="acc-item"><button class="acc-q" aria-expanded="false">Will MoveMentor Physio replace my physiotherapist's judgement?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>No. It measures and delivers a prescription at the dose the clinician sets. Exercise selection, dosage and interpretation stay theirs.</p></div></div></div>
+        <div class="acc-item"><button class="acc-q" aria-expanded="false">Do any of the apps need a wearable or extra hardware?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>No. A phone camera and about 2×2 m of floor space is enough for every workout, exam or assessment.</p></div></div></div>
+        <div class="acc-item"><button class="acc-q" aria-expanded="false">Is my camera video ever uploaded?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>No. Pose analysis runs on-device. Camera images are discarded right after analysis; only structured results sync, and only if you choose to sign in.</p></div></div></div>
+        <div class="acc-item"><button class="acc-q" aria-expanded="false">Which languages does Sameeksha support?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>English, Hindi, Punjabi, Tamil, Telugu and Kannada — including the safety-screen wording.</p></div></div></div>
+        <div class="acc-item"><button class="acc-q" aria-expanded="false">Does MoveMentor Physio work without internet in the clinic?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>Yes. Examine, prescribe and share by QR code or file offline. Sign in when you want online delivery and adherence reports.</p></div></div></div>
+      </div>
+      <aside class="support-box">
+        <h4>More questions?</h4>
+        <p>Visit Support.</p>
+        <div class="btn-row"><a class="btn" href="#support"><span>Support</span><i><svg><use href="#arrow"/></svg></i></a></div>
+        <div class="support-meta">
+          <div><span class="label" style="display:block;margin-bottom:6px">Visit</span><a href="https://biomechanix.ai" target="_blank" rel="noopener">biomechanix.ai</a></div>
+          <div><span class="label" style="display:block;margin-bottom:6px">Help &amp; legal</span><a href="#privacy-policy">Privacy Policy</a></div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="final">
+  <div class="wrap">
+    <div class="plus-row" style="margin-bottom:34px"><svg class="plus"><use href="#plus"/></svg><svg class="plus"><use href="#plus"/></svg></div>
+    <h2 class="giant">Pick your path,<br>and start<br>moving better.</h2>
+    <div class="row" style="margin-top:40px">
+      <div class="btn-row">
+        <a class="btn ink" href="#apps"><span>Explore the apps</span><i><svg><use href="#arrow"/></svg></i></a>
+        <a class="btn outline" href="#partners"><span>Talk to us — clinics &amp; partners</span><i><svg><use href="#arrow"/></svg></i></a>
+      </div>
+      <svg style="width:52px;height:52px;--tile:#000;--glyph:#ccff00"><use href="#mark"/></svg>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="about">
+        <a href="#top" class="logo"><svg><use href="#mark"/></svg><b>BIOMECHANIX</b></a>
+        <p>Phone-camera movement analysis for training, rehabilitation and self-assessment. Pose analysis runs on your device, and live camera video is never uploaded.</p>
+        <div class="foot-photo"><img src="assets/img/footer-photo.webp" alt="Athlete training" loading="lazy"></div>
+      </div>
+      <div>
+        <div class="fgroup"><span class="label">Company &amp; apps</span>
+          <div class="links"><a href="#compare">All applications</a><a href="#fitness">MoveMentor Fitness</a><a href="#physio">MoveMentor Physio</a><a href="#sameeksha">Sameeksha</a><a href="#how">MoveMentor platform</a><a href="#company">About Biomechanix</a></div></div>
+        <div class="fgroup"><span class="label">Help &amp; legal</span>
+          <div class="links"><a href="#support">Support</a><a href="#privacy-policy">Privacy Policy</a><a href="https://biomechanix.ai" target="_blank" rel="noopener">biomechanix.ai</a></div></div>
+        <a class="btn" href="#apps"><span>Get the app</span><i><svg><use href="#arrow"/></svg></i></a>
+      </div>
+    </div>
+
+    <div class="wordbox" aria-hidden="true">
+      <svg class="x tl"><use href="#cross"/></svg><svg class="x tr"><use href="#cross"/></svg><svg class="x bl"><use href="#cross"/></svg><svg class="x br"><use href="#cross"/></svg>
+      <svg class="word" id="wordmark" viewBox="0 0 1000 120"><text x="500" y="102" text-anchor="middle" textLength="970" lengthAdjust="spacingAndGlyphs" fill="currentColor" style="font:500 136px 'Inter Tight',Helvetica,Arial,sans-serif;letter-spacing:-6px">BIOMECHANIX</text></svg>
+    </div>
+
+    <div class="foot-bot">
+      <span class="label">© 2026 Biomechanix Inc.</span>
+      <span class="mid mono"><a href="#privacy-policy">Privacy Policy</a><a href="#support">Support</a></span>
+      <span class="label"><a href="https://biomechanix.ai" target="_blank" rel="noopener">biomechanix.ai</a></span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NS='http://www.w3.org/2000/svg';
+
+  /* ---------- Nav ---------- */
+  var nav=document.getElementById('nav');
+  function onScrollNav(){ nav.classList.toggle('solid', window.scrollY>40); }
+  var burger=document.getElementById('burger'), mnav=document.getElementById('mnav');
+  burger.addEventListener('click',function(){var o=mnav.classList.toggle('open');burger.setAttribute('aria-expanded',o);});
+  mnav.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){mnav.classList.remove('open');burger.setAttribute('aria-expanded','false');});});
+
+  /* ---------- Marquee duplicate ---------- */
+  var mq=document.getElementById('mq'); mq.innerHTML+=mq.innerHTML;
+
+  /* ---------- 33-landmark pose model ---------- */
+  function face(nx,ny){ return [[nx,ny],[nx+7,ny-8],[nx+12,ny-8],[nx+17,ny-8],[nx-7,ny-8],[nx-12,ny-8],[nx-17,ny-8],[nx+24,ny-2],[nx-24,ny-2],[nx+6,ny+14],[nx-6,ny+14]]; }
+  var STAND = face(200,80).concat([
+    [245,130],[155,130],[262,210],[138,210],[268,285],[132,285],
+    [272,302],[128,302],[266,306],[134,306],[260,298],[140,298],
+    [225,300],[175,300],[230,410],[170,410],[232,515],[168,515],
+    [228,530],[172,530],[245,540],[155,540]]);
+  var SQUAT = face(200,178).concat([
+    [245,228],[155,228],[262,238],[138,238],[252,226],[148,226],
+    [254,218],[146,218],[248,214],[152,214],[244,222],[156,222],
+    [232,388],[168,388],[258,422],[142,422],[236,515],[164,515],
+    [230,530],[170,530],[248,540],[152,540]]);
+  var EDGES=[[0,1],[1,2],[2,3],[3,7],[0,4],[4,5],[5,6],[6,8],[9,10],
+    [11,12],[11,13],[13,15],[15,17],[15,19],[15,21],[17,19],[12,14],[14,16],[16,18],[16,20],[16,22],[18,20],
+    [11,23],[12,24],[23,24],[23,25],[25,27],[27,29],[29,31],[27,31],[24,26],[26,28],[28,30],[30,32],[28,32]];
+  function lerp(a,b,t){return a.map(function(p,i){return [p[0]+(b[i][0]-p[0])*t,p[1]+(b[i][1]-p[1])*t];});}
+  function angle(a,b,c){var v1=[a[0]-b[0],a[1]-b[1]],v2=[c[0]-b[0],c[1]-b[1]];var d=(v1[0]*v2[0]+v1[1]*v2[1])/(Math.hypot(v1[0],v1[1])*Math.hypot(v2[0],v2[1]));return Math.round(Math.acos(Math.max(-1,Math.min(1,d)))*180/Math.PI);}
+  // left-side hip-knee-ankle measured on a side-projected estimate so the number reads like a squat
+  function kneeDeg(t){return Math.round(178-t*88);}
+
+  function buildPose(svg,opt){
+    opt=opt||{};
+    svg.innerHTML='';
+    var gL=document.createElementNS(NS,'g'), gX=document.createElementNS(NS,'g'), gP=document.createElementNS(NS,'g');
+    svg.appendChild(gX);svg.appendChild(gL);svg.appendChild(gP);
+    var lines=EDGES.map(function(e){var l=document.createElementNS(NS,'line');l.setAttribute('stroke-width',opt.lw||1.6);l.setAttribute('stroke-linecap','round');gL.appendChild(l);return l;});
+    var dots=STAND.map(function(_,i){var c=document.createElementNS(NS,'circle');c.setAttribute('r',i<11?(opt.fr||2.6):(opt.r||4.2));gP.appendChild(c);return c;});
+    return {svg:svg,lines:lines,dots:dots,extra:gX,opt:opt};
+  }
+  var DRIVE=[23,25,27,24,26,28], STILL=[11,12,0], COMP=[25,26];
+  function drawPose(P,pts,mode,t){
+    var o=P.opt, showLines = mode!=='see', base=o.base||'#f5f5f5';
+    P.lines.forEach(function(l,i){var e=EDGES[i];l.setAttribute('x1',pts[e[0]][0]);l.setAttribute('y1',pts[e[0]][1]);l.setAttribute('x2',pts[e[1]][0]);l.setAttribute('y2',pts[e[1]][1]);
+      var col=o.lineCol||'rgba(245,245,245,.35)';
+      if(mode==='understand'){ var d=DRIVE.indexOf(e[0])>-1&&DRIVE.indexOf(e[1])>-1; col=d?'#ccff00':'rgba(245,245,245,.18)'; }
+      if(mode==='measure'){ col='rgba(245,245,245,.55)'; }
+      l.setAttribute('stroke',col); l.style.opacity=showLines?1:0; });
+    P.dots.forEach(function(c,i){c.setAttribute('cx',pts[i][0]);c.setAttribute('cy',pts[i][1]);
+      var f=o.dotCol||'#ccff00';
+      if(mode==='understand'){ f = DRIVE.indexOf(i)>-1?'#ccff00':(STILL.indexOf(i)>-1?'#f5f5f5':'#5c5c5c'); }
+      if(mode==='see'){ f='#ccff00'; }
+      c.setAttribute('fill',f); });
+    // extras
+    P.extra.innerHTML='';
+    if(mode==='measure'||o.arc){
+      [[23,25,27],[24,26,28]].forEach(function(tr,k){
+        var h=pts[tr[0]],kn=pts[tr[1]];var r=26;var a0=Math.atan2(h[1]-kn[1],h[0]-kn[0]),a1=Math.atan2(pts[tr[2]][1]-kn[1],pts[tr[2]][0]-kn[0]);
+        var p=document.createElementNS(NS,'path');var sx=kn[0]+r*Math.cos(a0),sy=kn[1]+r*Math.sin(a0),ex=kn[0]+r*Math.cos(a1),ey=kn[1]+r*Math.sin(a1);
+        p.setAttribute('d','M'+sx+' '+sy+' A'+r+' '+r+' 0 0 '+(k?0:1)+' '+ex+' '+ey);p.setAttribute('fill','none');p.setAttribute('stroke','#ccff00');p.setAttribute('stroke-width','1.4');P.extra.appendChild(p);
+      });
+      if(mode==='measure'){
+        var tx=document.createElementNS(NS,'text');tx.setAttribute('x',pts[25][0]+34);tx.setAttribute('y',pts[25][1]+4);tx.setAttribute('fill','#ccff00');tx.setAttribute('style','font:500 14px JetBrains Mono,monospace');tx.textContent=kneeDeg(t)+'°';P.extra.appendChild(tx);
+        var tx2=document.createElementNS(NS,'text');tx2.setAttribute('x',pts[26][0]-72);tx2.setAttribute('y',pts[26][1]+4);tx2.setAttribute('fill','#ccff00');tx2.setAttribute('style','font:500 14px JetBrains Mono,monospace');tx2.textContent=(kneeDeg(t)+2)+'°';P.extra.appendChild(tx2);
+        var sym=document.createElementNS(NS,'line');sym.setAttribute('x1',pts[23][0]);sym.setAttribute('y1',pts[23][1]);sym.setAttribute('x2',pts[24][0]);sym.setAttribute('y2',pts[24][1]);sym.setAttribute('stroke','#22d3ee');sym.setAttribute('stroke-dasharray','3 4');sym.setAttribute('stroke-width','1.4');P.extra.appendChild(sym);
+      }
+    }
+    if(mode==='understand'){
+      COMP.forEach(function(i){var c=document.createElementNS(NS,'circle');c.setAttribute('cx',pts[i][0]);c.setAttribute('cy',pts[i][1]);c.setAttribute('r',14);c.setAttribute('fill','none');c.setAttribute('stroke','#f5f5f5');c.setAttribute('stroke-dasharray','3 4');P.extra.appendChild(c);});
+      var ln=document.createElementNS(NS,'line');ln.setAttribute('x1',200);ln.setAttribute('y1',pts[0][1]-30);ln.setAttribute('x2',200);ln.setAttribute('y2',560);ln.setAttribute('stroke','rgba(245,245,245,.25)');ln.setAttribute('stroke-dasharray','2 6');P.extra.appendChild(ln);
+    }
+    if(mode==='respond'){
+      var big=document.createElementNS(NS,'text');big.setAttribute('x',330);big.setAttribute('y',150);big.setAttribute('text-anchor','end');big.setAttribute('fill','#ccff00');big.setAttribute('style','font:500 96px Inter Tight,Helvetica,Arial,sans-serif;letter-spacing:-5px');big.textContent=String(P.reps||0).padStart(2,'0');P.extra.appendChild(big);
+      var bar=document.createElementNS(NS,'rect');bar.setAttribute('x',70);bar.setAttribute('y',560);bar.setAttribute('height',4);bar.setAttribute('width',260*t);bar.setAttribute('fill','#ccff00');P.extra.appendChild(bar);
+      var bg=document.createElementNS(NS,'rect');bg.setAttribute('x',70);bg.setAttribute('y',560);bg.setAttribute('height',4);bg.setAttribute('width',260);bg.setAttribute('fill','rgba(245,245,245,.12)');P.extra.insertBefore(bg,bar);
+    }
+  }
+
+  /* hero: continuous squat loop */
+  var hero=buildPose(document.getElementById('heroPose'),{r:4.6,lw:1.6,lineCol:'rgba(245,245,245,.42)',arc:true});
+  var kneeRead=document.getElementById('kneeRead').querySelector('b');
+  /* tech tab figure */
+  var tech=buildPose(document.getElementById('techPose'),{r:4.4,lw:1.8}); tech.reps=0;
+  var techMode='see';
+  /* portrait figure */
+  var port=buildPose(document.getElementById('portraitPose'),{r:3,lw:1,lineCol:'rgba(245,245,245,.12)',dotCol:'rgba(204,255,0,.25)'});
+  drawPose(port,lerp(STAND,SQUAT,.35),'plain',0);
+
+  function ease(x){return .5-.5*Math.cos(Math.PI*2*x);}
+  var start=performance.now(), lastPhase=0;
+  function frame(now){
+    if(window.BMX3D){requestAnimationFrame(frame);return;}
+    var cyc=((now-start)/3200)%1, t=ease(cyc);
+    drawPose(hero,lerp(STAND,SQUAT,t),'plain',t);
+    kneeRead.textContent=kneeDeg(t)+'°';
+    if(cyc<lastPhase){ tech.reps=(tech.reps%12)+1; }
+    lastPhase=cyc;
+    drawPose(tech,lerp(STAND,SQUAT,t),techMode,t);
+    requestAnimationFrame(frame);
+  }
+  if(reduce){ var t0=.55; drawPose(hero,lerp(STAND,SQUAT,t0),'plain',t0); kneeRead.textContent=kneeDeg(t0)+'°'; tech.reps=8; drawPose(tech,lerp(STAND,SQUAT,t0),techMode,t0); }
+  else requestAnimationFrame(frame);
+
+  /* ---------- Tabs ---------- */
+  var STEPS=[
+    ['see','See','Your phone\u2019s camera tracks every joint as you move, faster and more precisely than the human eye can follow — on your phone, not in a data centre.'],
+    ['measure','Measure','Landmarks become joint angles, range of motion, left–right symmetry and hold times — a goniometer\u2019s readings, produced automatically.'],
+    ['understand','Understand','Each movement is modelled as the joint that drives it, the joints that should stay still, and the compensations worth watching.'],
+    ['respond','Respond','Reps are counted and form is scored. A spoken cue arrives while there\u2019s still time to fix the next rep, not in a report you read later.']];
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  var tN=document.getElementById('techN'),tT=document.getElementById('techT'),tP=document.getElementById('techP');
+  var auto=true, cur=0, tabStart=performance.now(), TAB_MS=6500;
+  function setTab(i){ cur=i; techMode=STEPS[i][0]; window.BMX_MODE=techMode; tN.textContent='Step '+(i+1); tT.textContent=STEPS[i][1]; tP.textContent=STEPS[i][2];
+    tabs.forEach(function(b,k){b.setAttribute('aria-selected',k===i);}); tabStart=performance.now();
+    if(reduce){ var t0=.55; drawPose(tech,lerp(STAND,SQUAT,t0),techMode,t0); } }
+  tabs.forEach(function(b){b.addEventListener('click',function(){auto=false;setTab(+b.dataset.i);});});
+  function tabTick(now){
+    if(auto){ var p=(now-tabStart)/TAB_MS; var nb=tabs[(cur+1)%4].querySelector('.bar'); tabs.forEach(function(b){b.querySelector('.bar').style.width='0';});
+      nb.style.width=Math.min(100,p*100)+'%'; if(p>=1) setTab((cur+1)%4); }
+    else tabs.forEach(function(b){b.querySelector('.bar').style.width='0';});
+    requestAnimationFrame(tabTick);
+  }
+  if(!reduce) requestAnimationFrame(tabTick);
+
+  /* ---------- Mini path visuals ---------- */
+  document.querySelectorAll('[data-mini]').forEach(function(svg){
+    var kind=svg.dataset.mini, g=document.createElementNS(NS,'g');
+    var tt={fit:.9,physio:.25,sam:0,ent:.5}[kind];
+    var pts=lerp(STAND,SQUAT,tt);
+    var sc=.36, ox=kind==='ent'?40:270, oy=12;
+    function add(tag,attrs){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);g.appendChild(e);return e;}
+    var copies = kind==='ent'?[0,80,160,240]:[0];
+    copies.forEach(function(dx,ci){
+      EDGES.forEach(function(e){var a=pts[e[0]],b=pts[e[1]];add('line',{x1:ox+dx+a[0]*sc,y1:oy+a[1]*sc,x2:ox+dx+b[0]*sc,y2:oy+b[1]*sc,stroke:'rgba(245,245,245,.28)','stroke-width':1});});
+      pts.forEach(function(p,i){ if(i<11&&i!==0) return; var hi = kind==='sam'?(i===25||i===26):(kind==='physio'?(i===13||i===15||i===11):true);
+        add('circle',{cx:ox+dx+p[0]*sc,cy:oy+p[1]*sc,r:hi?2.6:1.6,fill:hi?'#ccff00':'#5c5c5c'});});
+    });
+    if(kind==='sam'){ [25,26].forEach(function(i){add('circle',{cx:ox+pts[i][0]*sc,cy:oy+pts[i][1]*sc,r:9,fill:'none',stroke:'#ccff00','stroke-dasharray':'2 3'});}); }
+    if(kind==='physio'){ var s=pts[11],w=pts[15]; add('path',{d:'M'+(ox+s[0]*sc)+' '+(oy+s[1]*sc+18)+' a18 18 0 0 0 16 -12',fill:'none',stroke:'#22d3ee','stroke-width':1.4}); }
+    svg.appendChild(g);
+  });
+
+  /* ---------- Scroll-lit paragraphs ---------- */
+  var lits=[].slice.call(document.querySelectorAll('[data-lit]'));
+  lits.forEach(function(p){ p.innerHTML=p.textContent.trim().split(/\s+/).map(function(w){return '<span class="w">'+w+'</span>';}).join(' '); p._w=[].slice.call(p.querySelectorAll('.w')); });
+  function litUpdate(){ var vh=window.innerHeight; lits.forEach(function(p){ var r=p.getBoundingClientRect(); var prog=(vh*0.85-r.top)/(r.height+vh*0.35); prog=reduce?1:Math.max(0,Math.min(1,prog)); var n=Math.round(prog*p._w.length); p._w.forEach(function(w,i){w.classList.toggle('on',i<n);}); }); }
+
+  /* ---------- Sliding giant headline ---------- */
+  var sl=document.getElementById('slideLine');
+  function slideUpdate(){ if(reduce) return; var r=sl.parentNode.getBoundingClientRect(); var p=(window.innerHeight-r.top)/(window.innerHeight+r.height); sl.style.transform='translateX('+(-p*45+5)+'%)'; }
+
+  function onScroll(){ onScrollNav(); litUpdate(); slideUpdate(); }
+  window.addEventListener('scroll',onScroll,{passive:true}); window.addEventListener('resize',onScroll); onScroll();
+
+  /* ---------- Team ---------- */
+  var TEAM=[['GS','Chief Revenue Officer','A veteran sports physiotherapist with more than 15 years of experience, specialising in mental agility and performance vision. His work combines physical rehabilitation with cognitive neuroscience in tech-driven training that improves athletic performance. Focused on taking these solutions to sports and wellness markets globally.'],
+            ['RS','Head of Research and Development','Leads research and development of the MoveMentor movement engine — the pose analysis, the movement modelling, and the clinical-authoring tools behind every Biomechanix app.']];
+  var tnames=[].slice.call(document.querySelectorAll('.tname'));
+  tnames.forEach(function(b){ function act(){var i=+b.dataset.p; tnames.forEach(function(x,k){x.setAttribute('aria-selected',k===i);}); document.getElementById('tInit').textContent=TEAM[i][0]; var ti=document.getElementById('tImg'); ti.src='assets/img/'+(i?'team-raghunandan':'team-gaurav')+'.webp'; ti.alt=i?'Raghunandan S K':'Dr. Gaurav Sharma'; document.getElementById('tRole').textContent=TEAM[i][1]; document.getElementById('tBio').textContent=TEAM[i][2]; drawPose(port,lerp(STAND,SQUAT,i?.8:.35),'plain',0);} b.addEventListener('click',act); b.addEventListener('mouseenter',act); });
+
+  /* ---------- Accordion ---------- */
+  document.querySelectorAll('.acc-q').forEach(function(q){ q.addEventListener('click',function(){ var open=q.getAttribute('aria-expanded')==='true'; document.querySelectorAll('.acc-q').forEach(function(x){x.setAttribute('aria-expanded','false');}); q.setAttribute('aria-expanded',!open); }); });
+
+  /* ---------- Paths: plus markers at grid intersections ---------- */
+  var paths=document.getElementById('paths');
+  function placePlus(){ paths.querySelectorAll('.c').forEach(function(c){c.remove();}); var cols=getComputedStyle(paths).gridTemplateColumns.split(' ').length; var cards=paths.querySelectorAll('.path'); var rows=Math.ceil(cards.length/cols); var W=paths.offsetWidth,H=paths.offsetHeight;
+    for(var r=0;r<=rows;r++)for(var c=0;c<=cols;c++){ var s=document.createElementNS(NS,'svg'); s.setAttribute('class','c'); s.innerHTML='<use href="#plus"/>'; var y=r===rows?H:(r===0?0:cards[r*cols].offsetTop); s.style.left=(c*W/cols-6)+'px'; s.style.top=(y-6)+'px'; if((r+c)%2) s.style.color='#5c5c5c'; paths.appendChild(s);} }
+  window.addEventListener('resize',placePlus); window.addEventListener('load',placePlus); placePlus();
+})();
+</script>
+<script src="assets/js/three.min.js" defer></script>
+<script src="assets/js/GLTFLoader.js" defer></script>
+<script defer>
+/* ---------- 3D athlete (hero + engine tabs). Falls back to the SVG figure if WebGL or the model is unavailable. ---------- */
+window.addEventListener('DOMContentLoaded',function(){
+  if(!window.THREE||!THREE.GLTFLoader) return;
+  var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var test=document.createElement('canvas');
+  if(!(test.getContext('webgl2')||test.getContext('webgl'))) return;
+  var LIME=0xccff00, GREY=0x5c5c5c, WHITE=0xf5f5f5;
+  var hosts={hero:document.querySelector('.hero-fig'),tech:document.querySelector('.tech-fig')};
+  /* empty spots further down the page; the character moves into whichever one is in view */
+  document.querySelectorAll('[data-dock]').forEach(function(d,i){hosts['dock'+i]=d;});
+  var r=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
+  r.setPixelRatio(Math.min(window.innerWidth<800?1.5:2,window.devicePixelRatio||1));
+  r.outputEncoding=THREE.sRGBEncoding;r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;r.setClearColor(0,0);
+  var cv=r.domElement;cv.className='bmx3d';cv.setAttribute('aria-hidden','true');
+  var scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,1,.1,50);
+  var hemi=new THREE.HemisphereLight(0xffffff,0x202020,.85);scene.add(hemi);
+  var key=new THREE.DirectionalLight(0xffffff,1.3);key.position.set(2.2,4,3);key.castShadow=true;key.shadow.mapSize.set(1024,1024);
+  key.shadow.camera.left=key.shadow.camera.bottom=-2;key.shadow.camera.right=key.shadow.camera.top=2;scene.add(key);
+  var rim=new THREE.DirectionalLight(LIME,1.2);rim.position.set(-2.5,2.2,-2.5);scene.add(rim);
+  var fl=new THREE.Mesh(new THREE.PlaneGeometry(8,8),new THREE.ShadowMaterial({opacity:.6}));fl.rotation.x=-Math.PI/2;fl.receiveShadow=true;scene.add(fl);
+  var ring=new THREE.Mesh(new THREE.RingGeometry(.52,.534,72),new THREE.MeshBasicMaterial({color:LIME,transparent:true,opacity:.5,side:THREE.DoubleSide}));ring.rotation.x=-Math.PI/2;ring.position.y=.003;scene.add(ring);
+
+  var P='mixamorig';
+  var TRACK=['Head','Neck','LeftArm','RightArm','LeftForeArm','RightForeArm','LeftHand','RightHand','LeftUpLeg','RightUpLeg','LeftLeg','RightLeg','LeftFoot','RightFoot','LeftToeBase','RightToeBase'];
+  var DRIVE=['LeftUpLeg','RightUpLeg','LeftLeg','RightLeg','LeftFoot','RightFoot'],STILL=['Head','Neck','LeftArm','RightArm'],COMP=['LeftLeg','RightLeg'];
+  var EDGES=[['Neck','Head'],['LeftArm','RightArm'],['LeftArm','LeftForeArm'],['LeftForeArm','LeftHand'],['RightArm','RightForeArm'],['RightForeArm','RightHand'],['LeftArm','LeftUpLeg'],['RightArm','RightUpLeg'],['LeftUpLeg','RightUpLeg'],['LeftUpLeg','LeftLeg'],['LeftLeg','LeftFoot'],['LeftFoot','LeftToeBase'],['RightUpLeg','RightLeg'],['RightLeg','RightFoot'],['RightFoot','RightToeBase']];
+  var dots={},wp={};
+  TRACK.forEach(function(n){wp[n]=new THREE.Vector3();var d=new THREE.Mesh(new THREE.SphereGeometry(n==='Head'?.024:.018,12,10),new THREE.MeshBasicMaterial({color:LIME,depthTest:false,transparent:true,opacity:.7}));d.renderOrder=10;scene.add(d);dots[n]=d;});
+  var halos=COMP.map(function(){var h=new THREE.Mesh(new THREE.RingGeometry(.07,.078,40),new THREE.MeshBasicMaterial({color:WHITE,depthTest:false,transparent:true,opacity:.9,side:THREE.DoubleSide}));h.renderOrder=11;scene.add(h);return h;});
+  var lg=new THREE.BufferGeometry(),lp=new Float32Array(EDGES.length*6),lc=new Float32Array(EDGES.length*6);
+  lg.setAttribute('position',new THREE.BufferAttribute(lp,3));lg.setAttribute('color',new THREE.BufferAttribute(lc,3));
+  var lines=new THREE.LineSegments(lg,new THREE.LineBasicMaterial({vertexColors:true,depthTest:false,transparent:true,opacity:.4}));lines.renderOrder=9;scene.add(lines);
+  /* engine-panel overlay: solid tubes + dark-outlined dots so tracking reads clearly on the model */
+  var tubeGeo=new THREE.CylinderGeometry(1,1,1,8,1,true),tubes=EDGES.map(function(){
+    var out=new THREE.Mesh(tubeGeo,new THREE.MeshBasicMaterial({color:0x000000,depthTest:false,transparent:true,opacity:.85}));out.renderOrder=12;
+    var t=new THREE.Mesh(tubeGeo,new THREE.MeshBasicMaterial({color:LIME,depthTest:false,transparent:true,opacity:1}));t.renderOrder=13;
+    scene.add(out);scene.add(t);return {t:t,out:out};});
+  var rings={};TRACK.forEach(function(n){var d=new THREE.Mesh(new THREE.SphereGeometry(n==='Head'?.034:.028,14,12),new THREE.MeshBasicMaterial({color:0x000000,depthTest:false,transparent:true,opacity:.9}));d.renderOrder=14;scene.add(d);rings[n]=d;});
+  var upV=new THREE.Vector3(0,1,0),tv=new THREE.Vector3();
+  function setTube(tb,a,b,r){tv.subVectors(b,a);var L=tv.length();tb.position.copy(a).add(b).multiplyScalar(.5);tb.scale.set(r,L,r);tb.quaternion.setFromUnitVectors(upV,tv.normalize());}
+
+  var o=null;
+  var Xa=new THREE.Vector3(1,0,0),Za=new THREE.Vector3(0,0,1),q=new THREE.Quaternion(),pw=new THREE.Quaternion(),inv=new THREE.Quaternion();
+  function rw(b,axis,a){if(!b)return;o.m.updateMatrixWorld(true);b.parent.getWorldQuaternion(pw);q.setFromAxisAngle(axis,a);inv.copy(pw).invert();b.quaternion.premultiply(inv.multiply(q).multiply(pw));}
+  var a0=new THREE.Vector3(),a1=new THREE.Vector3(),hw=new THREE.Vector3();
+  function pose(t){var B=o.B,d=Math.PI/180;
+    for(var k in o.rest)B[k].quaternion.copy(o.rest[k]);B[P+'Hips'].position.copy(o.hipPos);
+    o.m.updateMatrixWorld(true);B[P+'LeftFoot'].getWorldPosition(a0);
+    rw(B[P+'LeftArm'],Za,-72*d);rw(B[P+'RightArm'],Za,72*d);
+    rw(B[P+'LeftArm'],Xa,-(10+80*t)*d);rw(B[P+'RightArm'],Xa,-(10+80*t)*d);
+    rw(B[P+'LeftForeArm'],Xa,-(16*(1-t)+4)*d);rw(B[P+'RightForeArm'],Xa,-(16*(1-t)+4)*d);
+    var th=92*t,ph=30*t,lam=42*t;
+    ['Left','Right'].forEach(function(s){rw(B[P+s+'UpLeg'],Xa,-th*d);rw(B[P+s+'Leg'],Xa,(th+ph)*d);rw(B[P+s+'Foot'],Xa,-ph*d);});
+    rw(B[P+'Spine'],Xa,lam*.45*d);rw(B[P+'Spine1'],Xa,lam*.35*d);rw(B[P+'Spine2'],Xa,lam*.2*d);rw(B[P+'Neck'],Xa,-lam*.5*d);
+    o.m.updateMatrixWorld(true);B[P+'LeftFoot'].getWorldPosition(a1);
+    var h=B[P+'Hips'];h.getWorldPosition(hw);hw.y+=a0.y-a1.y;hw.z+=a0.z-a1.z;h.parent.worldToLocal(hw);h.position.copy(hw);o.m.updateMatrixWorld(true);}
+  var cL=new THREE.Color(LIME),cG=new THREE.Color(0x3a3a3a),cW=new THREE.Color(0xbdbdbd);
+  function overlay(mode){
+    TRACK.forEach(function(n){var b=o.B[P+n];if(b)b.getWorldPosition(wp[n]);});wp.Head.y+=.08;
+    var showLines=mode!=='see';
+    TRACK.forEach(function(n){var d=dots[n];d.position.copy(wp[n]);var c=LIME;
+      if(mode==='understand')c=DRIVE.indexOf(n)>-1?LIME:(STILL.indexOf(n)>-1?WHITE:GREY);d.material.color.setHex(c);});
+    EDGES.forEach(function(e,i){var a=wp[e[0]],b=wp[e[1]];lp.set([a.x,a.y,a.z,b.x,b.y,b.z],i*6);
+      var col=mode==='understand'?(DRIVE.indexOf(e[0])>-1&&DRIVE.indexOf(e[1])>-1?cL:cG):(mode==='measure'?cW:cL);
+      lc.set([col.r,col.g,col.b,col.r,col.g,col.b],i*6);});
+    lg.attributes.position.needsUpdate=true;lg.attributes.color.needsUpdate=true;
+    var panel=mode!=='hero';
+    lines.visible=showLines&&!panel;lines.material.opacity=.32;
+    TRACK.forEach(function(n){var d=dots[n];d.renderOrder=panel?15:10;d.material.opacity=panel?1:.7;d.scale.setScalar(panel?1.15:1);
+      rings[n].visible=panel;rings[n].position.copy(wp[n]);});
+    EDGES.forEach(function(e,i){var tb=tubes[i];tb.t.visible=tb.out.visible=panel&&showLines;if(!tb.t.visible)return;
+      var a=wp[e[0]],b=wp[e[1]];setTube(tb.out,a,b,.011);setTube(tb.t,a,b,.0065);
+      var drive=DRIVE.indexOf(e[0])>-1&&DRIVE.indexOf(e[1])>-1;
+      tb.t.material.color.setHex(mode==='understand'?(drive?LIME:0x4a4a4a):LIME);});
+    /* lighter model inside the engine panel */
+    hemi.intensity=panel?1.7:.85;key.intensity=panel?1.9:1.3;
+    if(o.mats)o.mats.forEach(function(mt){if(mt.emissiveMap)mt.emissiveIntensity=panel?.42:0;});
+    halos.forEach(function(h,i){h.visible=mode==='understand';h.position.copy(wp[COMP[i]]);h.lookAt(cam.position);});
+    var v1=new THREE.Vector3().subVectors(wp.LeftUpLeg,wp.LeftLeg).normalize(),v2=new THREE.Vector3().subVectors(wp.LeftFoot,wp.LeftLeg).normalize();
+    return Math.round(Math.acos(Math.max(-1,Math.min(1,v1.dot(v2))))*180/Math.PI);}
+
+  /* readouts inside the engine panel */
+  var techHost=hosts.tech;techHost.style.position='relative';
+  var tRead=document.createElement('div');tRead.className='bmx3d-read';techHost.appendChild(tRead);
+  var heroKnee=document.querySelector('#kneeRead b');
+
+  var active=null,vis={};Object.keys(hosts).forEach(function(k){vis[k]=0;hosts[k]._bmx=k;});
+  function mount(which){if(active===which)return;active=which;if(!which)return;hosts[which].appendChild(cv);cv.style.animation='none';void cv.offsetWidth;cv.style.animation='';resize();}
+  function resize(){if(!active)return;var h=hosts[active];var w=h.clientWidth,hh=h.clientHeight||400;r.setSize(w,hh,false);cv.style.width=w+'px';cv.style.height=hh+'px';cam.aspect=w/hh;cam.updateProjectionMatrix();}
+  window.addEventListener('resize',resize);
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){vis[e.target._bmx]=e.isIntersecting?e.intersectionRatio:0;});
+    var best=null,bv=0;Object.keys(vis).forEach(function(k){if(vis[k]>bv){bv=vis[k];best=k;}});mount(best);},{threshold:[0,.1,.3,.6,1]});
+  Object.keys(hosts).forEach(function(k){io.observe(hosts[k]);});
+
+  /* drag to rotate (auto-spin keeps going) */
+  var uYaw=0,drag=false,px=0,vel=0;
+  cv.style.touchAction='pan-y';cv.style.cursor='grab';
+  cv.addEventListener('pointerdown',function(e){drag=true;px=e.clientX;vel=0;try{cv.setPointerCapture(e.pointerId);}catch(_){}cv.style.cursor='grabbing';});
+  cv.addEventListener('pointermove',function(e){if(!drag)return;var dx=e.clientX-px;px=e.clientX;uYaw-=dx*.012;vel=-dx*.012;});
+  function endDrag(){drag=false;cv.style.cursor='grab';}
+  cv.addEventListener('pointerup',endDrag);cv.addEventListener('pointercancel',endDrag);cv.addEventListener('lostpointercapture',endDrag);
+  var clock=0,last=performance.now(),reps=0,lcyc=0,yaw=.75;
+  function loop(now){requestAnimationFrame(loop);var dt=Math.min(.05,(now-last)/1000);last=now;
+    if(!active||!o||document.hidden)return;
+    if(!reduce){clock+=dt;yaw+=dt*.18;}
+    var c=reduce?.25:(clock/3.4)%1;if(c<lcyc)reps++;lcyc=c;var t=.5-.5*Math.cos(c*Math.PI*2);
+    pose(t);var mode=active==='tech'?(window.BMX_MODE||'see'):'hero';var kd=overlay(mode);
+    if(active==='hero'){if(heroKnee)heroKnee.textContent=kd+'°';}
+    else if(active==='tech'){tRead.innerHTML=mode==='measure'?'knee <b>'+kd+'°</b>':(mode==='respond'?'<span class="big">'+String(reps%100).padStart(2,'0')+'</span>rep':'');}
+    if(!drag){uYaw+=vel;vel*=.92;}
+    var fit=Math.max(1,.62/Math.min(cam.aspect,.9));
+    var R=(active==='tech'?3.75:4.3)*fit,look=.84;
+    var yy=(active==='tech'?.9+Math.sin(clock*.3)*.35:yaw)+uYaw;
+    cam.position.set(Math.sin(yy)*R,1.12,Math.cos(yy)*R);cam.lookAt(0,look,0);
+    r.render(scene,cam);}
+
+  new THREE.GLTFLoader().load('assets/models/athlete.glb',function(g){
+    var m=g.scene,B={};m.traverse(function(x){if(x.isMesh){x.castShadow=true;x.frustumCulled=false;}if(x.isBone)B[x.name.replace(':','')]=x;});
+    if(!B[P+'Hips'])return;
+    /* clean hair: one high bun at the crown + flush patches (original hair puffs were removed from the model) */
+    (function(){
+  var hd=B[P+'Head'];if(!hd)return;
+  m.updateMatrixWorld(true);
+  var hs=new THREE.Vector3();hd.getWorldScale(hs);var s0=hs.x;
+  var hq=new THREE.Quaternion();hd.getWorldQuaternion(hq);var hqi=hq.clone().invert();
+  var mat=new THREE.MeshStandardMaterial({color:new THREE.Color(0x120d0b).convertSRGBToLinear(),roughness:.5,metalness:.05});
+  var C=new THREE.Vector3(0,1.47,-.02),Z=new THREE.Vector3(0,0,1);
+  function put(wpos,wnorm,r,sz){
+    var g=new THREE.SphereGeometry(r/s0,28,20);var me=new THREE.Mesh(g,mat);me.castShadow=true;
+    var q=new THREE.Quaternion().setFromUnitVectors(Z,wnorm.clone().normalize());
+    me.quaternion.copy(hqi.clone().multiply(q));me.scale.set(1,1,sz);
+    me.position.copy(hd.worldToLocal(wpos.clone()));hd.add(me);}
+  // flush patches over the old side openings
+  [1,-1].forEach(function(sx){var p=new THREE.Vector3(.089*sx,1.505,-.066);var n=p.clone().sub(C);put(p.clone().addScaledVector(n.clone().normalize(),-.018),n,.058,.3);});
+  // one clean high bun at the back of the crown
+  var bp=new THREE.Vector3(0,1.572,-.108);put(bp,bp.clone().sub(C),.06,.8);
+  var bn=new THREE.Vector3(0,1.548,-.082);put(bn,bn.clone().sub(C),.052,.45); // base blending bun into scalp
+})();
+    m.updateMatrixWorld(true);var vh=new THREE.Vector3(),vf=new THREE.Vector3(),vp=new THREE.Vector3();
+    (B[P+'HeadTop_End']||B[P+'Head']).getWorldPosition(vh);(B[P+'LeftToeBase']||B[P+'LeftFoot']).getWorldPosition(vf);
+    var ht=(vh.y-vf.y)*(B[P+'HeadTop_End']?1.02:1.1);if(ht>0.01){m.scale.multiplyScalar(1.72/ht);}m.updateMatrixWorld(true);
+    (B[P+'LeftToeBase']||B[P+'LeftFoot']).getWorldPosition(vf);B[P+'Hips'].getWorldPosition(vp);
+    m.position.y-=vf.y-0.03;m.position.x-=vp.x;m.position.z-=vp.z;m.updateMatrixWorld(true);
+    var rest={};for(var k in B)rest[k]=B[k].quaternion.clone();
+    var mats=[];m.traverse(function(x){if(x.isMesh&&x.material&&x.material.map){var mt=x.material;mt.emissive=new THREE.Color(0xffffff);mt.emissiveMap=mt.map;mt.emissiveIntensity=0;mt.needsUpdate=true;mats.push(mt);}});
+    o={m:m,B:B,rest:rest,hipPos:B[P+'Hips'].position.clone(),mats:mats};scene.add(m);
+    Object.keys(hosts).forEach(function(k){var hn=document.createElement('div');hn.className='drag-hint';hn.textContent='\u2194 Drag to rotate';hosts[k].appendChild(hn);});
+    window.BMX3D=true;document.documentElement.classList.add('has-3d');resize();requestAnimationFrame(loop);
+  });
+});
+</script>
+
+</body>
+</html>
