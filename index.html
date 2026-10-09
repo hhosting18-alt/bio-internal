@@ -1328,7 +1328,7 @@ window.addEventListener('DOMContentLoaded',function(){
   var clock=0,last=performance.now(),reps=0,lcyc=0,yaw=.75;
   function loop(now){requestAnimationFrame(loop);var dt=Math.min(.05,(now-last)/1000);last=now;
     if(!active||!o||document.hidden)return;
-    if(!reduce){clock+=dt;yaw+=dt*.18;}
+    if(!reduce){clock+=dt;yaw+=dt*(active==='fly'?.6:.18);} /* turns faster while waiting in the corner */
     var c=reduce?.25:(clock/3.4)%1;if(c<lcyc)reps++;lcyc=c;var t=.5-.5*Math.cos(c*Math.PI*2);
     agentTick(dt);
     /* exercises only where it works (fading in and out), with the walking stride layered on while travelling */
