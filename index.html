@@ -572,15 +572,19 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .sam-stage{display:none;position:relative;align-self:stretch;min-height:520px}
 @media (min-width:1101px){.sam-demo{grid-template-columns:minmax(0,340px) minmax(0,480px) minmax(240px,1fr)}.sam-stage{display:block}}
 
-/* ---------- Safety block (top of the privacy section) ---------- */
+/* ---------- Safety block (top of the privacy section): copy | 3D athlete climbing stairs | phone, phone as tall as the copy ---------- */
 .scr.auto{aspect-ratio:auto}
-.safe{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,6vw,96px);align-items:center;padding-bottom:clamp(48px,6vw,88px);margin-bottom:clamp(48px,6vw,88px);border-bottom:1px solid var(--line-2)}
-.safe-copy{display:flex;flex-direction:column;gap:20px}
-.safe-copy .giant{font-size:clamp(36px,5vw,80px)}
+.safe{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.9fr);gap:clamp(28px,4vw,56px);align-items:stretch;padding-bottom:clamp(48px,6vw,88px);margin-bottom:clamp(48px,6vw,88px);border-bottom:1px solid var(--line-2)}
+.safe-copy{display:flex;flex-direction:column;gap:20px;align-self:center}
+.safe-copy .giant{font-size:clamp(36px,3.8vw,76px)}
 .safe-punch{font-size:clamp(18px,1.6vw,22px);letter-spacing:-.015em;color:var(--text)}
 .safe-copy .checks{max-width:520px}
-.safe-phone{justify-self:center;width:min(100%,340px)}
-@media (max-width:860px){.safe{grid-template-columns:minmax(0,1fr)}.safe-phone{justify-self:start}}
+.safe-stage{display:none;position:relative;min-height:460px}
+.safe-phone{display:flex;width:100%;max-width:460px;justify-self:end}
+.safe-phone .shot-f{flex:1;display:flex}
+.safe-phone .scr{flex:1;display:flex;flex-direction:column;justify-content:center}
+@media (min-width:1101px){.safe{grid-template-columns:minmax(0,1.1fr) minmax(220px,.7fr) minmax(320px,440px)}.safe-stage{display:block}}
+@media (max-width:860px){.safe{grid-template-columns:minmax(0,1fr)}.safe-phone{justify-self:start;max-width:420px}}
 
 @media (prefers-reduced-motion:reduce){
   .mq-track{animation:none}
@@ -965,6 +969,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
           <li><svg><use href="#check"/></svg><span><b>Stress view</b> shows the load on your working joints while you move.</span></li>
         </ul>
       </div>
+      <div class="safe-stage" aria-hidden="true"></div>
       <div class="safe-phone"><div class="shot-f"><div class="scr auto" role="img" aria-label="MoveMentor Fitness answering &ldquo;my knee hurts when I climb stairs&rdquo; with general guidance and a link to a physio instead of a workout">
         <div class="s-input" style="color:var(--ink)">my knee hurts when I climb stairs<span class="s-caret"></span></div>
         <div class="s-btn pri mt12" style="display:flex;padding:.95em">Tell me what you want</div>
@@ -1332,8 +1337,9 @@ window.addEventListener('DOMContentLoaded',function(){
   if(!(test.getContext('webgl2')||test.getContext('webgl'))) return;
   var LIME=0xccff00, GREY=0x5c5c5c, WHITE=0xf5f5f5;
   /* places where the character docks and works; sam = empty column beside the Sameeksha demo (desktop only) */
-  var hosts={hero:document.querySelector('.hero-fig'),tech:document.querySelector('.tech-fig'),sam:document.querySelector('.sam-stage')};
+  var hosts={hero:document.querySelector('.hero-fig'),tech:document.querySelector('.tech-fig'),sam:document.querySelector('.sam-stage'),safe:document.querySelector('.safe-stage')};
   if(!hosts.sam)delete hosts.sam;
+  if(!hosts.safe)delete hosts.safe;
   var r=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
   r.setPixelRatio(Math.min(window.innerWidth<800?1.5:2,window.devicePixelRatio||1));
   r.outputEncoding=THREE.sRGBEncoding;r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;r.setClearColor(0,0);
@@ -1368,11 +1374,23 @@ window.addEventListener('DOMContentLoaded',function(){
   var o=null;
   var Xa=new THREE.Vector3(1,0,0),Za=new THREE.Vector3(0,0,1),q=new THREE.Quaternion(),pw=new THREE.Quaternion(),inv=new THREE.Quaternion();
   function rw(b,axis,a){if(!b)return;o.m.updateMatrixWorld(true);b.parent.getWorldQuaternion(pw);q.setFromAxisAngle(axis,a);inv.copy(pw).invert();b.quaternion.premultiply(inv.multiply(q).multiply(pw));}
-  var a0=new THREE.Vector3(),a1=new THREE.Vector3(),hw=new THREE.Vector3();
-  function pose(t,ex){var B=o.B,d=Math.PI/180;
+  var a0=new THREE.Vector3(),a1=new THREE.Vector3(),hw=new THREE.Vector3(),r1=new THREE.Vector3(),stepT=null,stairs=null,stairMat=null,edgeMat=null;
+  function pose(t,ex,w){var B=o.B,d=Math.PI/180;w=w==null?1:w;
     for(var k in o.rest)B[k].quaternion.copy(o.rest[k]);B[P+'Hips'].position.copy(o.hipPos);
     o.m.updateMatrixWorld(true);B[P+'LeftFoot'].getWorldPosition(a0);
     rw(B[P+'LeftArm'],Za,-72*d);rw(B[P+'RightArm'],Za,72*d);
+    if(ex==='stepup'){
+      /* climbing a stair: right foot planted on the step, body rises over it, back leg comes up; w blends it in/out so it starts and ends standing */
+      var rh=(44*(1-t)+4)*w,rk=(70*(1-t)+6)*w,lh=(40*t)*w,lk=(78*t)*w,lean=(16*(1-t)+5)*w,sw=(14*t)*w;
+      rw(B[P+'LeftArm'],Xa,-(8+sw)*d);rw(B[P+'RightArm'],Xa,(sw-4)*d);
+      rw(B[P+'RightUpLeg'],Xa,-rh*d);rw(B[P+'RightLeg'],Xa,rk*d);rw(B[P+'RightFoot'],Xa,-(rk-rh)*d);
+      rw(B[P+'LeftUpLeg'],Xa,-lh*d);rw(B[P+'LeftLeg'],Xa,lk*d);rw(B[P+'LeftFoot'],Xa,-(lk-lh)*.6*d);
+      rw(B[P+'Spine'],Xa,lean*.45*d);rw(B[P+'Spine1'],Xa,lean*.35*d);rw(B[P+'Spine2'],Xa,lean*.2*d);rw(B[P+'Neck'],Xa,-lean*.5*d);
+      o.m.updateMatrixWorld(true);B[P+'LeftFoot'].getWorldPosition(a1);B[P+'RightFoot'].getWorldPosition(r1);
+      var sy=a0.y-a1.y,sz=a0.z-a1.z;
+      if(stepT){sy+=((stepT.y-r1.y)-sy)*w;sz+=((stepT.z-r1.z)-sz)*w;}
+      var hs=B[P+'Hips'];hs.getWorldPosition(hw);hw.y+=sy;hw.z+=sz;hs.parent.worldToLocal(hw);hs.position.copy(hw);o.m.updateMatrixWorld(true);return;
+    }
     if(ex==='armraise'){
       /* Sameeksha movement test: forward arm raise, both arms from the sides to overhead, legs and trunk still */
       var sh=6+168*t;
@@ -1388,6 +1406,16 @@ window.addEventListener('DOMContentLoaded',function(){
     }
     o.m.updateMatrixWorld(true);B[P+'LeftFoot'].getWorldPosition(a1);
     var h=B[P+'Hips'];h.getWorldPosition(hw);hw.y+=a0.y-a1.y;hw.z+=a0.z-a1.z;h.parent.worldToLocal(hw);h.position.copy(hw);o.m.updateMatrixWorld(true);}
+  /* two stairs sized to the model: the first step's top sits exactly under the planted right foot */
+  function buildStairs(){
+    pose(0,'stepup',1);var rf=new THREE.Vector3();o.B[P+'RightFoot'].getWorldPosition(rf);stepT=rf.clone();
+    var top=Math.max(.1,stepT.y-o.footY0),dep=.34,wid=.62,sx=stepT.x>0?wid/2-.14:-(wid/2-.14);
+    stairMat=new THREE.MeshStandardMaterial({color:0x1d1d1d,roughness:.9,transparent:true,opacity:0});
+    edgeMat=new THREE.LineBasicMaterial({color:LIME,transparent:true,opacity:0});
+    stairs=new THREE.Group();
+    [1,2].forEach(function(n){var bx=new THREE.BoxGeometry(wid,top*n,dep),me=new THREE.Mesh(bx,stairMat);me.position.set(sx,top*n/2,stepT.z-.06+dep/2+(n-1)*dep);me.castShadow=me.receiveShadow=true;stairs.add(me);
+      var ed=new THREE.LineSegments(new THREE.EdgesGeometry(bx),edgeMat);ed.position.copy(me.position);stairs.add(ed);});
+    stairs.visible=false;scene.add(stairs);}
   /* walking stride layered on top of the current pose; amp 0..1 so the stride fades out as it arrives */
   function walkAdd(ph,amp){var B=o.B,d=Math.PI/180*amp,s=Math.sin(ph),c=Math.cos(ph);
     rw(B[P+'LeftArm'],Xa,s*22*d);rw(B[P+'RightArm'],Xa,-s*22*d);
@@ -1425,6 +1453,11 @@ window.addEventListener('DOMContentLoaded',function(){
   var heroKnee=document.querySelector('#kneeRead b');
   /* readout beside the Sameeksha demo: shoulder angle during the forward arm raise */
   var sRead=null;if(hosts.sam){sRead=document.createElement('div');sRead.className='bmx3d-read';hosts.sam.appendChild(sRead);}
+  /* safety stage: knee readout + pulsing red ring on the right knee while it climbs */
+  var fRead=null;if(hosts.safe){fRead=document.createElement('div');fRead.className='bmx3d-read';hosts.safe.appendChild(fRead);}
+  var painRing=new THREE.Mesh(new THREE.RingGeometry(.075,.092,40),new THREE.MeshBasicMaterial({color:0xff4d4d,depthTest:false,transparent:true,opacity:0,side:THREE.DoubleSide}));painRing.renderOrder=16;painRing.visible=false;scene.add(painRing);
+  function kneeRDeg(){var v1=new THREE.Vector3().subVectors(wp.RightUpLeg,wp.RightLeg).normalize(),v2=new THREE.Vector3().subVectors(wp.RightFoot,wp.RightLeg).normalize();
+    return Math.round(Math.acos(Math.max(-1,Math.min(1,v1.dot(v2))))*180/Math.PI);}
   function shoulderDeg(){var v1=new THREE.Vector3().subVectors(wp.LeftForeArm,wp.LeftArm).normalize(),v2=new THREE.Vector3().subVectors(wp.LeftUpLeg,wp.LeftArm).normalize();
     return Math.round(Math.acos(Math.max(-1,Math.min(1,v1.dot(v2))))*180/Math.PI);}
 
@@ -1436,7 +1469,7 @@ window.addEventListener('DOMContentLoaded',function(){
 
   var active=null,ag={state:'',host:null,target:null,cx:0,cy:0,h:200,ox:0,oy:0,oh:0,vx:0,vy:0,vh:0,ph:0,amp:0,dir:1,work:0,settled:false,camYaw:.45,R:4.3,cw:0,ch:0};
   function hostRatio(el){var b=el.getBoundingClientRect(),vh=window.innerHeight;return b.height?Math.max(0,Math.min(vh,b.bottom)-Math.max(0,b.top))/b.height:0;}
-  function wantHost(){if(hostRatio(hosts.hero)>=.5)return 'hero';if(hostRatio(hosts.tech)>=.6)return 'tech';if(hosts.sam&&hostRatio(hosts.sam)>=.6)return 'sam';return null;}
+  function wantHost(){if(hostRatio(hosts.hero)>=.5)return 'hero';if(hostRatio(hosts.tech)>=.6)return 'tech';if(hosts.sam&&hostRatio(hosts.sam)>=.6)return 'sam';if(hosts.safe&&hostRatio(hosts.safe)>=.6)return 'safe';return null;}
   function setCanvasSize(w,h){w=Math.max(1,Math.round(w));h=Math.max(1,Math.round(h));if(w===ag.cw&&h===ag.ch)return;ag.cw=w;ag.ch=h;r.setSize(w,h,false);cv.style.width=w+'px';cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix();}
   function steady(){cv.style.animation='none';cv.style.opacity='1';}
   /* while travelling the canvas keeps one resolution and is scaled on the GPU, so nothing is reallocated mid-move */
@@ -1494,18 +1527,22 @@ window.addEventListener('DOMContentLoaded',function(){
     agentTick(dt);
     /* exercises only where it works (fading in and out), with the walking stride layered on while travelling */
     /* which exercise: chosen where it docks, kept while it walks so the arms never jump mid-move */
-    if(active!=='fly')ag.ex=active==='sam'?'armraise':'squat';
-    pose(t*ag.work,ag.ex||'squat');if(ag.amp>.01&&!reduce)walkAdd(ag.ph,ag.amp);
+    if(active!=='fly')ag.ex=active==='sam'?'armraise':(active==='safe'?'stepup':'squat');
+    if(ag.ex==='stepup'&&stepT)pose(t,'stepup',ag.work);else pose(t*ag.work,ag.ex==='stepup'?'squat':(ag.ex||'squat'));if(ag.amp>.01&&!reduce)walkAdd(ag.ph,ag.amp);
+    if(stairs){var sv=ag.ex==='stepup'?ag.work:0;stairs.visible=sv>.02;stairMat.opacity=sv;edgeMat.opacity=.7*sv;}
     var mode=active==='tech'?(window.BMX_MODE||'see'):'hero';var kd=overlay(mode);
     if(active!=='tech'&&tRead.innerHTML)tRead.innerHTML='';
     if(active==='hero'){if(heroKnee)heroKnee.textContent=kd+'°';}
     else if(active==='tech'){tRead.innerHTML=mode==='measure'?'knee <b>'+kd+'°</b>':(mode==='respond'?'<span class="big">'+String(reps%100).padStart(2,'0')+'</span>rep':'');}
     if(sRead){if(active==='sam'&&ag.work>.5)sRead.innerHTML='<span class="big">'+shoulderDeg()+'°</span>forward arm raise';else if(sRead.innerHTML)sRead.innerHTML='';}
+    var pain=active==='safe'&&ag.work>.3;painRing.visible=pain;
+    if(pain){painRing.position.copy(wp.RightLeg);painRing.lookAt(cam.position);painRing.material.opacity=(.35+.65*(.5+.5*Math.sin(clock*7)))*Math.min(1,(1-t)*1.4+.2);dots.RightLeg.material.color.setHex(0xff4d4d);}
+    if(fRead){if(active==='safe'&&ag.work>.5)fRead.innerHTML='<span class="big" style="color:#ff5d5d">'+kneeRDeg()+'\u00b0</span>right knee \u00b7 pain flagged';else if(fRead.innerHTML)fRead.innerHTML='';}
     if(!drag){uYaw+=vel;vel*=.92;}
     var fit=Math.max(1,.62/Math.min(cam.aspect,.9));
-    var Rt=(active==='tech'?3.75:4.3)*fit,look=active==='sam'?1.0:.84;ag.R+=(Rt-ag.R)*(reduce?1:1-Math.exp(-dt*4));var R=ag.R;
+    var Rt=(active==='tech'?3.75:4.3)*fit,look=active==='sam'?1.0:(active==='safe'?.95:.84);ag.R+=(Rt-ag.R)*(reduce?1:1-Math.exp(-dt*4));var R=ag.R;
     /* travelling: turn side-on to face the way it is going; otherwise keep slowly rotating */
-    var side=ag.dir>0?-1.25:1.25,ty=active==='tech'?.9+Math.sin(clock*.3)*.35:active==='sam'?1.15+Math.sin(clock*.3)*.25:yaw+Math.atan2(Math.sin(side-yaw),Math.cos(side-yaw))*ag.amp;
+    var side=ag.dir>0?-1.25:1.25,ty=active==='tech'?.9+Math.sin(clock*.3)*.35:active==='sam'?1.15+Math.sin(clock*.3)*.25:active==='safe'?.9+Math.sin(clock*.3)*.2:yaw+Math.atan2(Math.sin(side-yaw),Math.cos(side-yaw))*ag.amp;
     var dA=Math.atan2(Math.sin(ty-ag.camYaw),Math.cos(ty-ag.camYaw));ag.camYaw+=reduce?dA:dA*(1-Math.exp(-dt*4));
     var yy=ag.camYaw+uYaw;
     cam.position.set(Math.sin(yy)*R,1.12,Math.cos(yy)*R);cam.lookAt(0,look,0);
@@ -1541,6 +1578,7 @@ window.addEventListener('DOMContentLoaded',function(){
     var rest={};for(var k in B)rest[k]=B[k].quaternion.clone();
     var mats=[];m.traverse(function(x){if(x.isMesh&&x.material&&x.material.map){var mt=x.material;mt.emissive=new THREE.Color(0xffffff);mt.emissiveMap=mt.map;mt.emissiveIntensity=0;mt.needsUpdate=true;mats.push(mt);}});
     o={m:m,B:B,rest:rest,hipPos:B[P+'Hips'].position.clone(),mats:mats};scene.add(m);
+    var fy0=new THREE.Vector3();B[P+'LeftFoot'].getWorldPosition(fy0);o.footY0=fy0.y;if(hosts.safe)buildStairs();
     Object.keys(hosts).forEach(function(k){var hn=document.createElement('div');hn.className='drag-hint';hn.textContent='\u2194 Drag to rotate';hosts[k].appendChild(hn);});
     window.BMX3D=true;document.documentElement.classList.add('has-3d');resize();requestAnimationFrame(loop);
   });
