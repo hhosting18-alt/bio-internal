@@ -160,7 +160,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
 @keyframes mq{to{transform:translateX(-50%)}}
 
 /* ---------- Generic section ---------- */
-.sec{padding:clamp(64px,8vw,120px) 0;position:relative}
+.sec{padding:clamp(48px,5.5vw,84px) 0;position:relative}
 .sec.alt{background:var(--bg-2)}
 .sec-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:end;margin-bottom:56px}
 .sec-head .right{display:flex;flex-direction:column;gap:18px;justify-self:end;max-width:460px}
@@ -175,7 +175,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
 @media (max-width:700px){.lit{text-indent:0}.lit-wrap .label{position:static;display:block;margin-bottom:14px}}
 
 /* ---------- Paths (TPL service cards) ---------- */
-.paths{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line);margin-top:72px;position:relative}
+.paths{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-top:1px solid var(--line);border-left:1px solid var(--line);margin-top:clamp(44px,5vw,64px);position:relative}
 .path{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:14px;display:flex;flex-direction:column;position:relative}
 .path .ph{display:grid;grid-template-columns:110px minmax(0,1fr) auto;margin-bottom:14px}
 .path .ph .t{color:var(--text)}
@@ -213,7 +213,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
 @media (max-width:800px){.tech-body{grid-template-columns:minmax(0,1fr)}.tech-fig{min-height:300px;height:300px}}
 
 /* two-column explainer (TPL "We give you answers") */
-.explain{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);margin-top:clamp(64px,8vw,120px)}
+.explain{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);margin-top:clamp(40px,5vw,80px)}
 .explain h4{font-size:clamp(22px,2.2vw,32px);font-weight:500;letter-spacing:-.03em;line-height:1.05;margin:14px 0 16px;max-width:20ch}
 .explain p{font-size:15px;line-height:1.5;color:var(--muted);max-width:54ch}
 @media (max-width:800px){.explain{grid-template-columns:minmax(0,1fr)}}
@@ -238,7 +238,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
 @media (max-width:900px){.feat-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 @media (max-width:600px){.feat-grid{grid-template-columns:minmax(0,1fr)}.feat{min-height:0}}
 
-.sub-h{display:flex;justify-content:space-between;align-items:end;gap:24px;margin:clamp(56px,7vw,96px) 0 22px}
+.sub-h{display:flex;justify-content:space-between;align-items:end;gap:24px;margin:clamp(44px,5.5vw,76px) 0 22px}
 .sub-h h3{font-size:clamp(24px,2.6vw,38px);font-weight:500;letter-spacing:-.03em;line-height:1.02;max-width:24ch}
 
 .steps{display:grid;gap:0;border:1px solid var(--line);background:var(--card)}
@@ -337,7 +337,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .facts div{padding:16px 12px 0 0}
 .facts b{display:block;font-size:17px;font-weight:500;letter-spacing:-.02em}
 .facts span{font-size:13px;color:var(--muted)}
-.team{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);margin-top:clamp(80px,10vw,140px);align-items:start}
+.team{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);margin-top:clamp(56px,7vw,100px);align-items:start}
 .team-names{display:flex;flex-direction:column;gap:4px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 100px)}
 @media (max-width:800px){.team-names{position:static}}
 .team-names .label{margin-bottom:22px}
@@ -367,7 +367,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 @media (max-width:520px){.values{grid-template-columns:minmax(0,1fr)}.values>div+div{padding-left:0;border-left:0;margin-top:28px}}
 
 /* ---------- FAQ (TPL contact) ---------- */
-.faq-hero{text-align:center;position:relative;padding:clamp(20px,4vw,40px) 0 clamp(56px,7vw,96px)}
+.faq-hero{text-align:center;position:relative;padding:clamp(20px,4vw,40px) 0 clamp(40px,5vw,72px)}
 .faq-hero .giant{font-size:clamp(52px,10vw,168px)}
 .faq-hero p{margin-top:22px;font-size:clamp(17px,1.5vw,21px);letter-spacing:-.015em}
 .faq-hero .plus{position:absolute;top:50%}
@@ -476,7 +476,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .ban-meta b{font-weight:500}
 .ent2 .ent-h{font-size:clamp(34px,3.9vw,72px);margin-top:18px;max-width:28ch}
 .lime-t{color:var(--lime)}
-.ent-lit{margin:clamp(48px,7vw,110px) 0 clamp(40px,5vw,72px)}
+.ent-lit{margin:clamp(40px,5vw,80px) 0 clamp(32px,4vw,56px)}
 .ent-lit .lit{font-size:clamp(20px,2.3vw,36px);max-width:54ch}
 .ent-row{display:grid;grid-template-columns:minmax(0,.55fr) minmax(0,1.75fr) minmax(0,1.75fr) minmax(0,1.45fr);grid-template-rows:auto auto;column-gap:clamp(20px,3vw,48px);row-gap:24px;align-items:start}
 .ent-row .ent-photo{grid-column:2;grid-row:1/3}
@@ -571,6 +571,16 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 /* empty column where the 3D athlete docks and does the forward arm raise (wide screens only) */
 .sam-stage{display:none;position:relative;align-self:stretch;min-height:520px}
 @media (min-width:1101px){.sam-demo{grid-template-columns:minmax(0,340px) minmax(0,480px) minmax(240px,1fr)}.sam-stage{display:block}}
+
+/* ---------- Safety block (top of the privacy section) ---------- */
+.scr.auto{aspect-ratio:auto}
+.safe{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,6vw,96px);align-items:center;padding-bottom:clamp(48px,6vw,88px);margin-bottom:clamp(48px,6vw,88px);border-bottom:1px solid var(--line-2)}
+.safe-copy{display:flex;flex-direction:column;gap:20px}
+.safe-copy .giant{font-size:clamp(36px,5vw,80px)}
+.safe-punch{font-size:clamp(18px,1.6vw,22px);letter-spacing:-.015em;color:var(--text)}
+.safe-copy .checks{max-width:520px}
+.safe-phone{justify-self:center;width:min(100%,340px)}
+@media (max-width:860px){.safe{grid-template-columns:minmax(0,1fr)}.safe-phone{justify-self:start}}
 
 @media (prefers-reduced-motion:reduce){
   .mq-track{animation:none}
@@ -944,6 +954,26 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 <!-- ============ PRIVACY ============ -->
 <section class="sec" id="privacy">
   <div class="wrap">
+    <div class="safe">
+      <div class="safe-copy">
+        <span class="label">Safety, built in</span>
+        <h2 class="giant">It knows when it shouldn't give a workout.</h2>
+        <p class="body">Type &ldquo;my knee hurts when I climb stairs&rdquo; into MoveMentor Fitness. Instead of building a squat routine, it recognises pain and offers to link you to a physiotherapist or start a guided movement check.</p>
+        <p class="safe-punch">A rep counter would have counted the squats.</p>
+        <ul class="checks">
+          <li><svg><use href="#check"/></svg><span><b>Adaptive coaching</b> eases the target when a rep is out of reach, instead of pushing you past it.</span></li>
+          <li><svg><use href="#check"/></svg><span><b>Stress view</b> shows the load on your working joints while you move.</span></li>
+        </ul>
+      </div>
+      <div class="safe-phone"><div class="shot-f"><div class="scr auto" role="img" aria-label="MoveMentor Fitness answering &ldquo;my knee hurts when I climb stairs&rdquo; with general guidance and a link to a physio instead of a workout">
+        <div class="s-input" style="color:var(--ink)">my knee hurts when I climb stairs<span class="s-caret"></span></div>
+        <div class="s-btn pri mt12" style="display:flex;padding:.95em">Tell me what you want</div>
+        <div class="s-card mt12"><div class="s-m" style="color:#2563eb">Recovery plan</div><div class="s-h2 mt4">General guidance</div><div class="s-sm mt6" style="line-height:1.45">That sounds like pain or an injury. This app focuses on general fitness &mdash; please see a physiotherapist or doctor for a rehab plan.</div><div class="s-xs mt10">Starting intensity 100%</div></div>
+        <div class="s-sm mt12" style="color:var(--ink);line-height:1.45">That sounds like pain or an injury. A physio can check it first.</div>
+        <div class="s-card s-row mt10"><div><div class="s-t">Link to a physio</div><div class="s-xs mt2">Use a join code</div></div><span class="s-chev">&rsaquo;</span></div>
+      </div></div></div>
+    </div>
+
     <div class="sec-head">
       <div><span class="label">The part most movement apps don't explain</span><h2 class="giant h-lg" style="margin-top:18px">Your camera feed stays on your phone. Full stop.</h2></div>
       <div class="right"><p class="body">Most movement-tracking products either need a wearable you buy and charge, or send your video to a server to be analysed. MoveMentor does neither — the analysis happens where the camera already is.</p></div>
