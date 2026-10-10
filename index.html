@@ -516,6 +516,9 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .sam-copy .sub{font-size:clamp(17px,1.5vw,21px);color:var(--text);letter-spacing:-.015em;line-height:1.3}
 .sam-copy p{font-size:15px;line-height:1.5;color:var(--muted)}
 @media (max-width:760px){.sam-demo{grid-template-columns:minmax(0,1fr)}.sam-video{max-width:320px;width:100%;justify-self:center}}
+/* empty column where the 3D athlete docks and does the forward arm raise (wide screens only) */
+.sam-stage{display:none;position:relative;align-self:stretch;min-height:520px}
+@media (min-width:1101px){.sam-demo{grid-template-columns:minmax(0,340px) minmax(0,480px) minmax(240px,1fr)}.sam-stage{display:block}}
 
 @media (prefers-reduced-motion:reduce){
   .mq-track{animation:none}
@@ -831,6 +834,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
           <li>Your video never leaves your phone.</li>
         </ul>
       </div>
+      <div class="sam-stage" aria-hidden="true"></div>
     </div>
 
     <div class="sub-h" style="margin-top:0"><div><span class="label">How the assessment works</span><h3 style="margin-top:10px">Five guided steps, one joint at a time.</h3></div></div>
@@ -1245,7 +1249,9 @@ window.addEventListener('DOMContentLoaded',function(){
   var test=document.createElement('canvas');
   if(!(test.getContext('webgl2')||test.getContext('webgl'))) return;
   var LIME=0xccff00, GREY=0x5c5c5c, WHITE=0xf5f5f5;
-  var hosts={hero:document.querySelector('.hero-fig'),tech:document.querySelector('.tech-fig')};
+  /* places where the character docks and works; sam = empty column beside the Sameeksha demo (desktop only) */
+  var hosts={hero:document.querySelector('.hero-fig'),tech:document.querySelector('.tech-fig'),sam:document.querySelector('.sam-stage')};
+  if(!hosts.sam)delete hosts.sam;
   var r=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
   r.setPixelRatio(Math.min(window.innerWidth<800?1.5:2,window.devicePixelRatio||1));
   r.outputEncoding=THREE.sRGBEncoding;r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;r.setClearColor(0,0);
@@ -1281,15 +1287,23 @@ window.addEventListener('DOMContentLoaded',function(){
   var Xa=new THREE.Vector3(1,0,0),Za=new THREE.Vector3(0,0,1),q=new THREE.Quaternion(),pw=new THREE.Quaternion(),inv=new THREE.Quaternion();
   function rw(b,axis,a){if(!b)return;o.m.updateMatrixWorld(true);b.parent.getWorldQuaternion(pw);q.setFromAxisAngle(axis,a);inv.copy(pw).invert();b.quaternion.premultiply(inv.multiply(q).multiply(pw));}
   var a0=new THREE.Vector3(),a1=new THREE.Vector3(),hw=new THREE.Vector3();
-  function pose(t){var B=o.B,d=Math.PI/180;
+  function pose(t,ex){var B=o.B,d=Math.PI/180;
     for(var k in o.rest)B[k].quaternion.copy(o.rest[k]);B[P+'Hips'].position.copy(o.hipPos);
     o.m.updateMatrixWorld(true);B[P+'LeftFoot'].getWorldPosition(a0);
     rw(B[P+'LeftArm'],Za,-72*d);rw(B[P+'RightArm'],Za,72*d);
+    if(ex==='armraise'){
+      /* Sameeksha movement test: forward arm raise, both arms from the sides to overhead, legs and trunk still */
+      var sh=6+168*t;
+      rw(B[P+'LeftArm'],Za,-6*d);rw(B[P+'RightArm'],Za,6*d);
+      rw(B[P+'LeftArm'],Xa,-sh*d);rw(B[P+'RightArm'],Xa,-sh*d);
+      rw(B[P+'LeftForeArm'],Xa,-4*d);rw(B[P+'RightForeArm'],Xa,-4*d);
+    }else{
     rw(B[P+'LeftArm'],Xa,-(10+80*t)*d);rw(B[P+'RightArm'],Xa,-(10+80*t)*d);
     rw(B[P+'LeftForeArm'],Xa,-(16*(1-t)+4)*d);rw(B[P+'RightForeArm'],Xa,-(16*(1-t)+4)*d);
     var th=92*t,ph=30*t,lam=42*t;
     ['Left','Right'].forEach(function(s){rw(B[P+s+'UpLeg'],Xa,-th*d);rw(B[P+s+'Leg'],Xa,(th+ph)*d);rw(B[P+s+'Foot'],Xa,-ph*d);});
     rw(B[P+'Spine'],Xa,lam*.45*d);rw(B[P+'Spine1'],Xa,lam*.35*d);rw(B[P+'Spine2'],Xa,lam*.2*d);rw(B[P+'Neck'],Xa,-lam*.5*d);
+    }
     o.m.updateMatrixWorld(true);B[P+'LeftFoot'].getWorldPosition(a1);
     var h=B[P+'Hips'];h.getWorldPosition(hw);hw.y+=a0.y-a1.y;hw.z+=a0.z-a1.z;h.parent.worldToLocal(hw);h.position.copy(hw);o.m.updateMatrixWorld(true);}
   /* walking stride layered on top of the current pose; amp 0..1 so the stride fades out as it arrives */
@@ -1327,6 +1341,10 @@ window.addEventListener('DOMContentLoaded',function(){
   var techHost=hosts.tech;techHost.style.position='relative';
   var tRead=document.createElement('div');tRead.className='bmx3d-read';techHost.appendChild(tRead);
   var heroKnee=document.querySelector('#kneeRead b');
+  /* readout beside the Sameeksha demo: shoulder angle during the forward arm raise */
+  var sRead=null;if(hosts.sam){sRead=document.createElement('div');sRead.className='bmx3d-read';hosts.sam.appendChild(sRead);}
+  function shoulderDeg(){var v1=new THREE.Vector3().subVectors(wp.LeftForeArm,wp.LeftArm).normalize(),v2=new THREE.Vector3().subVectors(wp.LeftUpLeg,wp.LeftArm).normalize();
+    return Math.round(Math.acos(Math.max(-1,Math.min(1,v1.dot(v2))))*180/Math.PI);}
 
   /* ---------- Agent athlete ----------
      The character waits in the bottom-right corner of the screen. When a place it works comes into
@@ -1336,7 +1354,7 @@ window.addEventListener('DOMContentLoaded',function(){
 
   var active=null,ag={state:'',host:null,target:null,cx:0,cy:0,h:200,ox:0,oy:0,oh:0,vx:0,vy:0,vh:0,ph:0,amp:0,dir:1,work:0,settled:false,camYaw:.45,R:4.3,cw:0,ch:0};
   function hostRatio(el){var b=el.getBoundingClientRect(),vh=window.innerHeight;return b.height?Math.max(0,Math.min(vh,b.bottom)-Math.max(0,b.top))/b.height:0;}
-  function wantHost(){if(hostRatio(hosts.hero)>=.5)return 'hero';if(hostRatio(hosts.tech)>=.6)return 'tech';return null;}
+  function wantHost(){if(hostRatio(hosts.hero)>=.5)return 'hero';if(hostRatio(hosts.tech)>=.6)return 'tech';if(hosts.sam&&hostRatio(hosts.sam)>=.6)return 'sam';return null;}
   function setCanvasSize(w,h){w=Math.max(1,Math.round(w));h=Math.max(1,Math.round(h));if(w===ag.cw&&h===ag.ch)return;ag.cw=w;ag.ch=h;r.setSize(w,h,false);cv.style.width=w+'px';cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix();}
   function steady(){cv.style.animation='none';cv.style.opacity='1';}
   /* while travelling the canvas keeps one resolution and is scaled on the GPU, so nothing is reallocated mid-move */
@@ -1393,16 +1411,19 @@ window.addEventListener('DOMContentLoaded',function(){
     var c=reduce?.25:(clock/3.4)%1;if(c<lcyc)reps++;lcyc=c;var t=.5-.5*Math.cos(c*Math.PI*2);
     agentTick(dt);
     /* exercises only where it works (fading in and out), with the walking stride layered on while travelling */
-    pose(t*ag.work);if(ag.amp>.01&&!reduce)walkAdd(ag.ph,ag.amp);
+    /* which exercise: chosen where it docks, kept while it walks so the arms never jump mid-move */
+    if(active!=='fly')ag.ex=active==='sam'?'armraise':'squat';
+    pose(t*ag.work,ag.ex||'squat');if(ag.amp>.01&&!reduce)walkAdd(ag.ph,ag.amp);
     var mode=active==='tech'?(window.BMX_MODE||'see'):'hero';var kd=overlay(mode);
     if(active!=='tech'&&tRead.innerHTML)tRead.innerHTML='';
     if(active==='hero'){if(heroKnee)heroKnee.textContent=kd+'°';}
     else if(active==='tech'){tRead.innerHTML=mode==='measure'?'knee <b>'+kd+'°</b>':(mode==='respond'?'<span class="big">'+String(reps%100).padStart(2,'0')+'</span>rep':'');}
+    if(sRead){if(active==='sam'&&ag.work>.5)sRead.innerHTML='<span class="big">'+shoulderDeg()+'°</span>forward arm raise';else if(sRead.innerHTML)sRead.innerHTML='';}
     if(!drag){uYaw+=vel;vel*=.92;}
     var fit=Math.max(1,.62/Math.min(cam.aspect,.9));
-    var Rt=(active==='tech'?3.75:4.3)*fit,look=.84;ag.R+=(Rt-ag.R)*(reduce?1:1-Math.exp(-dt*4));var R=ag.R;
+    var Rt=(active==='tech'?3.75:4.3)*fit,look=active==='sam'?1.0:.84;ag.R+=(Rt-ag.R)*(reduce?1:1-Math.exp(-dt*4));var R=ag.R;
     /* travelling: turn side-on to face the way it is going; otherwise keep slowly rotating */
-    var side=ag.dir>0?-1.25:1.25,ty=active==='tech'?.9+Math.sin(clock*.3)*.35:yaw+Math.atan2(Math.sin(side-yaw),Math.cos(side-yaw))*ag.amp;
+    var side=ag.dir>0?-1.25:1.25,ty=active==='tech'?.9+Math.sin(clock*.3)*.35:active==='sam'?1.15+Math.sin(clock*.3)*.25:yaw+Math.atan2(Math.sin(side-yaw),Math.cos(side-yaw))*ag.amp;
     var dA=Math.atan2(Math.sin(ty-ag.camYaw),Math.cos(ty-ag.camYaw));ag.camYaw+=reduce?dA:dA*(1-Math.exp(-dt*4));
     var yy=ag.camYaw+uYaw;
     cam.position.set(Math.sin(yy)*R,1.12,Math.cos(yy)*R);cam.lookAt(0,look,0);
@@ -1438,7 +1459,7 @@ window.addEventListener('DOMContentLoaded',function(){
     var rest={};for(var k in B)rest[k]=B[k].quaternion.clone();
     var mats=[];m.traverse(function(x){if(x.isMesh&&x.material&&x.material.map){var mt=x.material;mt.emissive=new THREE.Color(0xffffff);mt.emissiveMap=mt.map;mt.emissiveIntensity=0;mt.needsUpdate=true;mats.push(mt);}});
     o={m:m,B:B,rest:rest,hipPos:B[P+'Hips'].position.clone(),mats:mats};scene.add(m);
-    ['hero','tech'].forEach(function(k){var hn=document.createElement('div');hn.className='drag-hint';hn.textContent='\u2194 Drag to rotate';hosts[k].appendChild(hn);});
+    Object.keys(hosts).forEach(function(k){var hn=document.createElement('div');hn.className='drag-hint';hn.textContent='\u2194 Drag to rotate';hosts[k].appendChild(hn);});
     window.BMX3D=true;document.documentElement.classList.add('has-3d');resize();requestAnimationFrame(loop);
   });
 });
