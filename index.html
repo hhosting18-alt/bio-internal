@@ -501,6 +501,23 @@ tr:last-child th,tr:last-child td{border-bottom:0}
   .team{grid-template-columns:minmax(0,1fr)}.tcard-photo{max-width:none}
   .ban-cap{flex-direction:column;justify-content:space-between}.ban-meta{flex-direction:row;align-self:flex-start;gap:12px}}
 
+/* ---------- App screenshots & Sameeksha demo video ---------- */
+.shots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.6vw,20px)}
+.shot{margin:0}
+.shot-f{aspect-ratio:2/3;overflow:hidden;border:1px solid var(--line);background:var(--card);padding:8px;display:flex;align-items:flex-start}
+.shot-f img{width:100%;height:auto;border-radius:10px}
+.shot-f.short{align-items:center}
+.shot figcaption{margin-top:12px;font-size:14px;line-height:1.35;color:var(--text);letter-spacing:-.01em}
+@media (max-width:800px){.shots{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.sam-demo{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:center;margin-bottom:clamp(56px,7vw,100px)}
+.sam-video{padding:10px;background:var(--card)}
+.sam-video video{display:block;width:100%;aspect-ratio:9/16;background:#000;object-fit:cover}
+.sam-copy{display:flex;flex-direction:column;gap:16px;max-width:520px}
+.sam-copy h3{font-size:clamp(28px,3.4vw,48px);font-weight:500;letter-spacing:-.035em;line-height:1}
+.sam-copy .sub{font-size:clamp(17px,1.5vw,21px);color:var(--text);letter-spacing:-.015em;line-height:1.3}
+.sam-copy p{font-size:15px;line-height:1.5;color:var(--muted)}
+@media (max-width:760px){.sam-demo{grid-template-columns:minmax(0,1fr)}.sam-video{max-width:320px;width:100%;justify-self:center}}
+
 @media (prefers-reduced-motion:reduce){
   .mq-track{animation:none}
   html{scroll-behavior:auto}
@@ -687,9 +704,17 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       <div class="feat"><div class="n"><em>01</em><span>Fitness</span></div><h4>Real-time form feedback</h4><p>Every joint tracked in real time, faster than the human eye can follow. Each rep is scored against how the exercise should move: the joint that drives it, the joints that should stay still, and the common compensations.</p></div>
       <div class="feat"><div class="n"><em>02</em><span>Fitness</span></div><h4>Voice cues you can act on</h4><p>Short spoken cues and haptics guide each phase — get set, go down, hold, come up — so a correction arrives while there's still time to fix the next rep.</p></div>
       <div class="feat"><div class="n"><em>03</em><span>Fitness</span></div><h4>Automatic rep counting</h4><p>Reps are counted from your movement, with no tapping. A rep only counts when you reach the target range, and holds are timed at the top.</p></div>
-      <div class="feat"><div class="n"><em>04</em><span>Fitness</span></div><h4>Guided workouts</h4><p>Warm-up, full body, lower body, core and posture, and mobility, plus yoga poses and sport-specific programs, from beginner to advanced.</p></div>
+      <div class="feat"><div class="n"><em>04</em><span>Fitness</span></div><h4>Five ways to train</h4><p>Basic and advanced gym, yoga (standing, seated, balance and hip openers), tai chi forms and rehab routines. Pick a workout, or build your own plan.</p></div>
       <div class="feat"><div class="n"><em>05</em><span>Fitness</span></div><h4>Perspiration Mode</h4><p>A workout that makes music with your body — your movements trigger beats and rhythms, so a sweat session turns into a jam session.</p></div>
       <div class="feat"><div class="n"><em>06</em><span>Fitness</span></div><h4>Progress you can see</h4><p>Workout history, session summaries and form-quality trends over time, plus short rep clips you can save and review.</p></div>
+    </div>
+
+    <div class="sub-h"><h3>Pick a workout or build your own plan, then see what your body actually did.</h3></div>
+    <div class="shots">
+      <figure class="shot"><div class="shot-f"><img src="assets/img/shot-fitness-workouts.webp" alt="Find your workout screen, browsing yoga workouts by domain" width="720" height="1320" loading="lazy"></div><figcaption>Choose a workout</figcaption></figure>
+      <figure class="shot"><div class="shot-f"><img src="assets/img/shot-fitness-plan.webp" alt="New plan screen with days a week, rounds and reps per exercise" width="720" height="1450" loading="lazy"></div><figcaption>Build your own plan</figcaption></figure>
+      <figure class="shot"><div class="shot-f"><img src="assets/img/shot-fitness-report.webp" alt="Exercise performance report showing reps, range of motion, movement quality and sequencing" width="689" height="1362" loading="lazy"></div><figcaption>See the report</figcaption></figure>
+      <figure class="shot"><div class="shot-f short"><img src="assets/img/shot-fitness-joints.webp" alt="Knee and hip angle charts over time, and which muscles did the work" width="689" height="760" loading="lazy"></div><figcaption>Joints and muscles</figcaption></figure>
     </div>
 
     <div class="sub-h"><h3>Set up once, then just move</h3></div>
@@ -742,6 +767,14 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       <div class="feat"><div class="n"><em>06</em><span>Physio</span></div><h4>Works offline</h4><p>Examine, prescribe and share by QR or file without a connection. Sign in for online delivery and adherence reports.</p></div>
     </div>
 
+    <div class="sub-h"><h3>Start from a clinical protocol and see every home session.</h3></div>
+    <div class="shots">
+      <figure class="shot"><div class="shot-f"><img src="assets/img/shot-physio-protocols.webp" alt="Rehab protocols list, searchable by condition or region" width="644" height="1225" loading="lazy"></div><figcaption>23 rehab protocols</figcaption></figure>
+      <figure class="shot"><div class="shot-f short"><img src="assets/img/shot-physio-patient.webp" alt="Patient overview with examine, prescribe and adjust actions and a session timeline" width="720" height="930" loading="lazy"></div><figcaption>Every patient at a glance</figcaption></figure>
+      <figure class="shot"><div class="shot-f"><img src="assets/img/shot-physio-prescription.webp" alt="Prescription screen comparing prescribed exercises with completed sessions" width="720" height="1060" loading="lazy"></div><figcaption>Done vs prescribed</figcaption></figure>
+      <figure class="shot"><div class="shot-f short"><img src="assets/img/shot-physio-create.webp" alt="Create exercise options: pick joints, from a template, from a description or from the camera" width="720" height="760" loading="lazy"></div><figcaption>Your own exercises</figcaption></figure>
+    </div>
+
     <div class="duo">
       <div class="panel frame">
         <svg class="c tl"><use href="#plus"/></svg><svg class="c br"><use href="#plus"/></svg>
@@ -780,6 +813,26 @@ tr:last-child th,tr:last-child td{border-bottom:0}
     </div>
 
     <div class="note" style="margin-top:0;margin-bottom:clamp(48px,6vw,80px)"><svg class="plus"><use href="#plus"/></svg><p><b>Screening, not diagnosis.</b> Sameeksha reports what it observes and what may be contributing to it, always as possibilities for a qualified professional to confirm. It doesn't diagnose conditions or replace an examination. If symptoms are severe or worsening, seek medical care.</p></div>
+
+    <div class="sam-demo">
+      <div class="sam-video frame"><svg class="c tl"><use href="#plus"/></svg><svg class="c br"><use href="#plus"/></svg>
+        <video data-demo muted loop playsinline controls preload="none" poster="assets/img/sameeksha-demo-poster.webp" aria-label="Sameeksha walkthrough: show where it hurts, move while the camera measures, see the full picture, and know your next step">
+          <source src="assets/video/sameeksha-demo.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div class="sam-copy">
+        <span class="label">See it in 20 seconds</span>
+        <h3>A movement check-up on your phone.</h3>
+        <p class="sub">About 10 minutes. No wearables, no lab.</p>
+        <p>Designed to be touchless, so you can answer from across the room without walking back to the phone.</p>
+        <ul class="dash-list">
+          <li>Point to where it hurts, and the camera confirms the spot.</li>
+          <li>Answer by raising a hand on the side of your answer, saying it out loud, or tapping it.</li>
+          <li>Questions are spoken in six languages.</li>
+          <li>Your video never leaves your phone.</li>
+        </ul>
+      </div>
+    </div>
 
     <div class="sub-h" style="margin-top:0"><div><span class="label">How the assessment works</span><h3 style="margin-top:10px">Five guided steps, one joint at a time.</h3></div></div>
     <div class="steps c5">
@@ -936,7 +989,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
         <div class="acc-item"><button class="acc-q" aria-expanded="true">Is a Sameeksha report a diagnosis?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>No. It's a structured screening that reports observations and possibilities for a qualified professional to confirm. If you have severe or worsening symptoms, seek medical care directly.</p></div></div></div>
         <div class="acc-item"><button class="acc-q" aria-expanded="false">Will MoveMentor Physio replace my physiotherapist's judgement?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>No. It measures and delivers a prescription at the dose the clinician sets. Exercise selection, dosage and interpretation stay theirs.</p></div></div></div>
         <div class="acc-item"><button class="acc-q" aria-expanded="false">Do any of the apps need a wearable or extra hardware?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>No. A phone camera and about 2×2 m of floor space is enough for every workout, exam or assessment.</p></div></div></div>
-        <div class="acc-item"><button class="acc-q" aria-expanded="false">Is my camera video ever uploaded?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>No. Pose analysis runs on-device. Camera images are discarded right after analysis; only structured results sync, and only if you choose to sign in.</p></div></div></div>
+        <div class="acc-item"><button class="acc-q" aria-expanded="false">Is my camera video ever uploaded?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>No. Movement analysis runs on-device. Camera images are discarded right after analysis; only structured results sync, and only if you choose to sign in.</p></div></div></div>
         <div class="acc-item"><button class="acc-q" aria-expanded="false">Which languages does Sameeksha support?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>English, Hindi, Punjabi, Tamil, Telugu and Kannada — including the safety-screen wording.</p></div></div></div>
         <div class="acc-item"><button class="acc-q" aria-expanded="false">Does MoveMentor Physio work without internet in the clinic?<svg><use href="#plus"/></svg></button><div class="acc-a"><div><p>Yes. Examine, prescribe and share by QR code or file offline. Sign in when you want online delivery and adherence reports.</p></div></div></div>
       </div>
@@ -975,7 +1028,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
     <div class="foot-top">
       <div class="about">
         <a href="#top" class="logo"><svg><use href="#mark"/></svg><b>BIOMECHANIX</b></a>
-        <p>Phone-camera movement analysis for training, rehabilitation and self-assessment. Pose analysis runs on your device, and live camera video is never uploaded.</p>
+        <p>Phone-camera movement analysis for training, rehabilitation and self-assessment. Movement analysis runs on your device, and live camera video is never uploaded.</p>
         <div class="foot-photo"><img src="assets/img/footer-photo.webp" alt="Athlete training" loading="lazy"></div>
       </div>
       <div>
@@ -1015,7 +1068,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
   /* ---------- Marquee duplicate ---------- */
   var mq=document.getElementById('mq'); mq.innerHTML+=mq.innerHTML;
 
-  /* ---------- 33-landmark pose model ---------- */
+  /* ---------- Pose model ---------- */
   function face(nx,ny){ return [[nx,ny],[nx+7,ny-8],[nx+12,ny-8],[nx+17,ny-8],[nx-7,ny-8],[nx-12,ny-8],[nx-17,ny-8],[nx+24,ny-2],[nx-24,ny-2],[nx+6,ny+14],[nx-6,ny+14]]; }
   var STAND = face(200,80).concat([
     [245,130],[155,130],[262,210],[138,210],[268,285],[132,285],
@@ -1110,7 +1163,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
   /* ---------- Tabs ---------- */
   var STEPS=[
     ['see','See','Your phone\u2019s camera tracks every joint as you move, faster and more precisely than the human eye can follow — on your phone, not in a data centre.'],
-    ['measure','Measure','Landmarks become joint angles, range of motion, left–right symmetry and hold times — a goniometer\u2019s readings, produced automatically.'],
+    ['measure','Measure','Your joint positions become joint angles, range of motion, left–right symmetry and hold times — a goniometer\u2019s readings, produced automatically.'],
     ['understand','Understand','Each movement is modelled as the joint that drives it, the joints that should stay still, and the compensations worth watching.'],
     ['respond','Respond','Reps are counted and form is scored. A spoken cue arrives while there\u2019s still time to fix the next rep, not in a report you read later.']];
   var tabs=[].slice.call(document.querySelectorAll('.tab'));
@@ -1163,6 +1216,15 @@ tr:last-child th,tr:last-child td{border-bottom:0}
             ['RS','Head of Research and Development','Leads research and development of the MoveMentor movement engine — the pose analysis, the movement modelling, and the clinical-authoring tools behind every Biomechanix app.']];
   var tnames=[].slice.call(document.querySelectorAll('.tname'));
   tnames.forEach(function(b){ function act(){var i=+b.dataset.p; tnames.forEach(function(x,k){x.setAttribute('aria-selected',k===i);}); document.getElementById('tInit').textContent=TEAM[i][0]; var ti=document.getElementById('tImg'); ti.src='assets/img/'+(i?'team-raghunandan':'team-gaurav')+'.webp'; ti.alt=i?'Raghunandan S K':'Dr. Gaurav Sharma'; document.getElementById('tRole').textContent=TEAM[i][1]; document.getElementById('tBio').textContent=TEAM[i][2]; drawPose(port,lerp(STAND,SQUAT,i?.8:.35),'plain',0);} b.addEventListener('click',act); b.addEventListener('mouseenter',act); });
+
+  /* ---------- Demo video: plays muted only while on screen; never auto-plays with reduced motion ---------- */
+  if(!reduce && 'IntersectionObserver' in window){
+    document.querySelectorAll('video[data-demo]').forEach(function(v){
+      new IntersectionObserver(function(es){es.forEach(function(e){
+        if(e.isIntersecting){var p=v.play();if(p&&p.catch)p.catch(function(){});} else v.pause();
+      });},{threshold:.5}).observe(v);
+    });
+  }
 
   /* ---------- Accordion ---------- */
   document.querySelectorAll('.acc-q').forEach(function(q){ q.addEventListener('click',function(){ var open=q.getAttribute('aria-expanded')==='true'; document.querySelectorAll('.acc-q').forEach(function(x){x.setAttribute('aria-expanded','false');}); q.setAttribute('aria-expanded',!open); }); });
