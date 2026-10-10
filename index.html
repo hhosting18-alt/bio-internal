@@ -569,8 +569,13 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .sam-copy p{font-size:15px;line-height:1.5;color:var(--muted)}
 @media (max-width:760px){.sam-demo{grid-template-columns:minmax(0,1fr)}.sam-video{max-width:320px;width:100%;justify-self:center}}
 /* empty column where the 3D athlete docks and does the forward arm raise (wide screens only) */
-.sam-stage{display:none;position:relative;align-self:stretch;min-height:520px}
-@media (min-width:1101px){.sam-demo{grid-template-columns:minmax(0,340px) minmax(0,480px) minmax(240px,1fr)}.sam-stage{display:block}}
+.sam-stage{display:none;position:relative;align-self:stretch;min-height:520px;flex-direction:column}
+@media (min-width:1101px){.sam-demo{grid-template-columns:minmax(0,340px) minmax(0,480px) minmax(240px,1fr)}.sam-stage{display:flex}}
+/* readout strip above the 3D area so the numbers never sit on top of the athlete */
+.stage-read{min-height:92px;display:flex;align-items:flex-end;position:relative}
+.stage-read .bmx3d-read{position:static;text-align:left}
+.stage-read .bmx3d-read .big{font-size:clamp(40px,3.6vw,64px)}
+.stage-3d{position:relative;flex:1;min-height:0}
 
 /* ---------- Safety block (top of the privacy section): copy | 3D athlete climbing stairs | phone, phone as tall as the copy ---------- */
 .scr.auto{aspect-ratio:auto}
@@ -579,11 +584,11 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .safe-copy .giant{font-size:clamp(36px,3.8vw,76px)}
 .safe-punch{font-size:clamp(18px,1.6vw,22px);letter-spacing:-.015em;color:var(--text)}
 .safe-copy .checks{max-width:520px}
-.safe-stage{display:none;position:relative;min-height:460px}
+.safe-stage{display:none;position:relative;min-height:460px;flex-direction:column}
 .safe-phone{display:flex;width:100%;max-width:460px;justify-self:end}
 .safe-phone .shot-f{flex:1;display:flex}
 .safe-phone .scr{flex:1;display:flex;flex-direction:column;justify-content:center}
-@media (min-width:1101px){.safe{grid-template-columns:minmax(0,1.1fr) minmax(220px,.7fr) minmax(320px,440px)}.safe-stage{display:block}}
+@media (min-width:1101px){.safe{grid-template-columns:minmax(0,1.1fr) minmax(220px,.7fr) minmax(320px,440px)}.safe-stage{display:flex}}
 @media (max-width:860px){.safe{grid-template-columns:minmax(0,1fr)}.safe-phone{justify-self:start;max-width:420px}}
 
 @media (prefers-reduced-motion:reduce){
@@ -900,7 +905,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
           <li>Your video never leaves your phone.</li>
         </ul>
       </div>
-      <div class="sam-stage" aria-hidden="true"></div>
+      <div class="sam-stage" aria-hidden="true"><div class="stage-read"></div><div class="stage-3d"></div></div>
     </div>
 
     <div class="sub-h" style="margin-top:0"><div><span class="label">How the assessment works</span><h3 style="margin-top:10px">Five guided steps, one joint at a time.</h3></div></div>
@@ -969,7 +974,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
           <li><svg><use href="#check"/></svg><span><b>Stress view</b> shows the load on your working joints while you move.</span></li>
         </ul>
       </div>
-      <div class="safe-stage" aria-hidden="true"></div>
+      <div class="safe-stage" aria-hidden="true"><div class="stage-read"></div><div class="stage-3d"></div></div>
       <div class="safe-phone"><div class="shot-f"><div class="scr auto" role="img" aria-label="MoveMentor Fitness answering &ldquo;my knee hurts when I climb stairs&rdquo; with general guidance and a link to a physio instead of a workout">
         <div class="s-input" style="color:var(--ink)">my knee hurts when I climb stairs<span class="s-caret"></span></div>
         <div class="s-btn pri mt12" style="display:flex;padding:.95em">Tell me what you want</div>
@@ -1337,7 +1342,7 @@ window.addEventListener('DOMContentLoaded',function(){
   if(!(test.getContext('webgl2')||test.getContext('webgl'))) return;
   var LIME=0xccff00, GREY=0x5c5c5c, WHITE=0xf5f5f5;
   /* places where the character docks and works; sam = empty column beside the Sameeksha demo (desktop only) */
-  var hosts={hero:document.querySelector('.hero-fig'),tech:document.querySelector('.tech-fig'),sam:document.querySelector('.sam-stage'),safe:document.querySelector('.safe-stage')};
+  var hosts={hero:document.querySelector('.hero-fig'),tech:document.querySelector('.tech-fig'),sam:document.querySelector('.sam-stage .stage-3d'),safe:document.querySelector('.safe-stage .stage-3d')};
   if(!hosts.sam)delete hosts.sam;
   if(!hosts.safe)delete hosts.safe;
   var r=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
@@ -1452,9 +1457,9 @@ window.addEventListener('DOMContentLoaded',function(){
   var tRead=document.createElement('div');tRead.className='bmx3d-read';techHost.appendChild(tRead);
   var heroKnee=document.querySelector('#kneeRead b');
   /* readout beside the Sameeksha demo: shoulder angle during the forward arm raise */
-  var sRead=null;if(hosts.sam){sRead=document.createElement('div');sRead.className='bmx3d-read';hosts.sam.appendChild(sRead);}
+  var sRead=null,sSlot=document.querySelector('.sam-stage .stage-read');if(hosts.sam&&sSlot){sRead=document.createElement('div');sRead.className='bmx3d-read';sSlot.appendChild(sRead);}
   /* safety stage: knee readout + pulsing red ring on the right knee while it climbs */
-  var fRead=null;if(hosts.safe){fRead=document.createElement('div');fRead.className='bmx3d-read';hosts.safe.appendChild(fRead);}
+  var fRead=null,fSlot=document.querySelector('.safe-stage .stage-read');if(hosts.safe&&fSlot){fRead=document.createElement('div');fRead.className='bmx3d-read';fSlot.appendChild(fRead);}
   var painRing=new THREE.Mesh(new THREE.RingGeometry(.075,.092,40),new THREE.MeshBasicMaterial({color:0xff4d4d,depthTest:false,transparent:true,opacity:0,side:THREE.DoubleSide}));painRing.renderOrder=16;painRing.visible=false;scene.add(painRing);
   function kneeRDeg(){var v1=new THREE.Vector3().subVectors(wp.RightUpLeg,wp.RightLeg).normalize(),v2=new THREE.Vector3().subVectors(wp.RightFoot,wp.RightLeg).normalize();
     return Math.round(Math.acos(Math.max(-1,Math.min(1,v1.dot(v2))))*180/Math.PI);}
