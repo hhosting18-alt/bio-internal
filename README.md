@@ -1,41 +1,26 @@
 # Biomechanix landing page
 
-Open `index.html` in a browser (or upload the whole folder to any static host).
+Open `index.html` over http(s) (Vercel, GitHub Pages, or `python -m http.server` locally).
+Opened straight from disk, the 3D character will not load.
 
 ## Structure
-- `index.html` — the full page (HTML, CSS and JS in one file)
-- `assets/img/` — PLACEHOLDER photos, to be replaced before launch
-
-## 3D athlete
-The hero and the "how it works" tabs use a rigged 3D character: `assets/models/athlete.glb`
-(a free three.js sample character, PLACEHOLDER). Swap in your own Mixamo character by
-replacing that file with a `.glb` using the standard Mixamo skeleton (bone names `mixamorig:*`).
-The 3D only loads over http(s) (Vercel, GitHub Pages, or `python3 -m http.server` locally).
-Opened straight from disk, the page falls back to the flat 2D figure.
-
-The character waits in the bottom-right corner of the screen, slowly rotating. When a place it works
-comes into view (the hero or the "how it works" panel) it walks up, sits into that spot and does its
-demo. When you scroll past, it walks back to the corner. It only exercises where it works.
+- `index.html` — the MoveMentor page: one engine, three apps (MoveMentor Fitness, MoveMentor Physio, Sameeksha).
+  HTML, CSS and JS in one file. Each app section has a live pose-engine animation.
+- `movementor-journey.html` — clickable app prototype (Personal area, Clinic area, Sameeksha hand-off),
+  opened from the "Open the interactive journey" buttons. Sign-offs are saved in the visitor's browser
+  and can be downloaded as CSV.
+- `assets/models/diva_fluo.glb` — Diva character in the hero phone, rendered with Google's `<model-viewer>`
+  (loaded from jsDelivr, pinned to 3.5.0). Drag to rotate.
+- `assets/img/`, `assets/js/`, other `.glb` files — used by the previous page version; safe to keep or delete.
 
 ## Deploy to Vercel
-No build step. Either drag this folder into vercel.com/new, or run `vercel` inside it.
-If asked: Framework preset **Other**, Build command **empty**, Output directory **`.`** (this folder).
-`vercel.json` sets the correct type for the `.glb` model and light caching on `assets/`.
-File names are case-sensitive on Vercel, so keep replacement images lowercase with the same names.
+No build step. Framework preset **Other**, Build command **empty**, Output directory **`.`**.
+`vercel.json` sets the correct type for `.glb` models and light caching on `assets/`.
+File names are case-sensitive on Vercel.
 
-## Replace before going live
-1. **3D character** — `assets/models/athlete.glb` (see above).
-2. **Photos** — every file in `assets/img/` is a temporary placeholder.
-   Keep the same file names and they drop straight in:
-   hero-runner, path-training, path-rehab, path-self-assessment, path-enterprise,
-   fitness-banner, physio-banner, sameeksha-banner, team-gaurav, team-raghunandan,
-   partners-banner, footer-photo (.webp).
-3. **App store links** — "Get it on Google Play" buttons currently use `href="#"`.
-4. **Support / Privacy Policy links** — currently `#support` and `#privacy-policy`.
-
-## Colours (from biomechanix.github.io)
-Black #000000, near-black #0A0A0A, card #111111, lime #CCFF00, cyan #22D3EE,
-text #F5F5F5, muted #A3A3A3. All defined as CSS variables at the top of index.html.
+## Still to fill in before launch
+1. **Google Play links** — the "Get it on Google Play" buttons have no link yet.
+2. **Support and privacy policy pages** — footer "Support" and "Read the full privacy policy" use `href="#"`.
 
 ## Fonts
-Inter Tight + JetBrains Mono, loaded from Google Fonts.
+Archivo, Hanken Grotesk and Space Mono (main page); Bricolage Grotesque, Geist and Geist Mono (prototype), from Google Fonts.
