@@ -585,7 +585,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .mt2{margin-top:0.125em}.mt4{margin-top:0.25em}.mt6{margin-top:0.375em}.mt8{margin-top:0.5em}.mt10{margin-top:0.625em}.mt12{margin-top:0.75em}.mt14{margin-top:0.875em}.mt16{margin-top:1em}.mt20{margin-top:1.25em}
 .shot figcaption{margin-top:12px;font-size:14px;line-height:1.35;color:var(--text);letter-spacing:-.01em}
 @media (max-width:800px){.shots{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.sam-demo{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:center;margin-bottom:clamp(56px,7vw,100px)}
+.sam-demo{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(28px,5vw,80px);align-items:center;margin-bottom:clamp(56px,7vw,100px)}
 .sam-video{padding:10px;background:var(--card)}
 .sam-video video{display:block;width:100%;aspect-ratio:9/16;background:#000;object-fit:cover}
 .sam-copy{display:flex;flex-direction:column;gap:16px;max-width:520px}
@@ -595,7 +595,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 @media (max-width:760px){.sam-demo{grid-template-columns:minmax(0,1fr)}.sam-video{max-width:320px;width:100%;justify-self:center}}
 /* empty column where the 3D athlete docks and does the forward arm raise (wide screens only) */
 .sam-stage{display:none;position:relative;align-self:stretch;min-height:520px;flex-direction:column}
-@media (min-width:1101px){.sam-demo{grid-template-columns:minmax(0,340px) minmax(0,480px) minmax(240px,1fr)}.sam-stage{display:flex}}
+@media (min-width:1101px){.sam-demo{grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr)}.sam-stage{display:flex}}
 /* readout strip above the 3D area so the numbers never sit on top of the athlete */
 .stage-read{min-height:92px;display:flex;align-items:flex-end;position:relative}
 .stage-read .bmx3d-read{position:static;text-align:left}
@@ -998,13 +998,8 @@ tr:last-child th,tr:last-child td{border-bottom:0}
     <div class="note" style="margin-top:0;margin-bottom:clamp(48px,6vw,80px)"><svg class="plus"><use href="#plus"/></svg><p><b>A screening, not a diagnosis.</b> Sameeksha reports what it observes as possibilities for a qualified professional to confirm. It doesn't diagnose conditions or replace an examination. If symptoms are severe or worsening, seek medical care directly.</p></div>
 
     <div class="sam-demo">
-      <div class="sam-video frame"><svg class="c tl"><use href="#plus"/></svg><svg class="c br"><use href="#plus"/></svg>
-        <video data-demo muted loop playsinline controls preload="none" poster="assets/img/sameeksha-demo-poster.webp" aria-label="Sameeksha walkthrough: show where it hurts, move while the camera measures, see the full picture, and know your next step">
-          <source src="assets/video/sameeksha-demo.mp4" type="video/mp4">
-        </video>
-      </div>
       <div class="sam-copy">
-        <span class="label">See it in 20 seconds</span>
+        <span class="label">How the check-up works</span>
         <h3>A movement check-up on your phone.</h3>
         <p class="sub">About 10 minutes. No wearables, no lab.</p>
         <p>Designed to be touchless, so you can answer from across the room without walking back to the phone.</p>
