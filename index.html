@@ -1544,6 +1544,12 @@ window.addEventListener('DOMContentLoaded',function(){
   var Xa=new THREE.Vector3(1,0,0),Za=new THREE.Vector3(0,0,1),q=new THREE.Quaternion(),pw=new THREE.Quaternion(),inv=new THREE.Quaternion();
   function rw(b,axis,a){if(!b)return;o.m.updateMatrixWorld(true);b.parent.getWorldQuaternion(pw);q.setFromAxisAngle(axis,a);inv.copy(pw).invert();b.quaternion.premultiply(inv.multiply(q).multiply(pw));}
   var a0=new THREE.Vector3(),a1=new THREE.Vector3(),hw=new THREE.Vector3(),r1=new THREE.Vector3(),stepT=null,stairs=null,stairMat=null,edgeMat=null;
+  /* point an upper arm straight at a direction (model space: +x her left, +y up, +z forward) with the shortest swing from the T-pose the mesh was rigged in.
+     Stacking two rotations (down, then forward) also twisted the arm around its own length by up to ~70 degrees, which wrung the shoulder skin into a crease. */
+  var aA=new THREE.Vector3(),aF=new THREE.Vector3(),aD=new THREE.Vector3(),aQ=new THREE.Quaternion();
+  function aimArm(s,x,y,z){var b=o.B[P+s+'Arm'],f=o.B[P+s+'ForeArm'];if(!b||!f)return;b.quaternion.copy(o.rest[P+s+'Arm']);o.m.updateMatrixWorld(true);
+    b.getWorldPosition(aA);f.getWorldPosition(aF);aF.sub(aA).normalize();aD.set(x,y,z).normalize();aQ.setFromUnitVectors(aF,aD);
+    b.parent.getWorldQuaternion(pw);inv.copy(pw).invert();b.quaternion.premultiply(inv.multiply(aQ).multiply(pw));}
   function pose(t,ex,w){var B=o.B,d=Math.PI/180;w=w==null?1:w;
     for(var k in o.rest)B[k].quaternion.copy(o.rest[k]);B[P+'Hips'].position.copy(o.hipPos);
     o.m.updateMatrixWorld(true);B[P+'LeftFoot'].getWorldPosition(a0);
@@ -1564,8 +1570,7 @@ window.addEventListener('DOMContentLoaded',function(){
       /* Sameeksha movement test: forward arm raise, both arms from the sides to overhead, legs and trunk still */
       /* the shoulder blade lifts with the arm (as in a real overhead raise), so the shoulder mesh never tears away from the sleeve */
       var sh=6+122*t;rw(B[P+'LeftShoulder'],Xa,-16*t*d);rw(B[P+'RightShoulder'],Xa,-16*t*d);
-      rw(B[P+'LeftArm'],Za,-6*d);rw(B[P+'RightArm'],Za,6*d);
-      rw(B[P+'LeftArm'],Xa,-sh*d);rw(B[P+'RightArm'],Xa,-sh*d);
+      var fr=(8+134*t)*d;aimArm('Left',.22,-Math.cos(fr),Math.sin(fr));aimArm('Right',-.22,-Math.cos(fr),Math.sin(fr));
       rw(B[P+'LeftForeArm'],Xa,-4*d);rw(B[P+'RightForeArm'],Xa,-4*d);
     }else if(ex==='abduct'){
       /* Physio shoulder exam: both arms sweep out to the side and overhead, trunk and legs still */
@@ -1574,7 +1579,7 @@ window.addEventListener('DOMContentLoaded',function(){
       /* Sameeksha lower-back test: side bend to each side; t runs -1..1 */
       var sb=32*t*w;rw(B[P+'Spine'],Za,sb*.4*d);rw(B[P+'Spine1'],Za,sb*.35*d);rw(B[P+'Spine2'],Za,sb*.25*d);rw(B[P+'Neck'],Za,-sb*.25*d);
     }else{
-    rw(B[P+'LeftArm'],Xa,-(10+80*t)*d);rw(B[P+'RightArm'],Xa,-(10+80*t)*d);
+    var fa=(10+80*t)*d;aimArm('Left',.3,-Math.cos(fa),Math.sin(fa));aimArm('Right',-.3,-Math.cos(fa),Math.sin(fa));
     rw(B[P+'LeftForeArm'],Xa,-(16*(1-t)+4)*d);rw(B[P+'RightForeArm'],Xa,-(16*(1-t)+4)*d);
     var th=92*t,ph=30*t,lam=42*t;
     ['Left','Right'].forEach(function(s){rw(B[P+s+'UpLeg'],Xa,-th*d);rw(B[P+s+'Leg'],Xa,(th+ph)*d);rw(B[P+s+'Foot'],Xa,-ph*d);});
