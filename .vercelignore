@@ -1,9 +1,4 @@
 README.md
 *.docx
-*.zip
 .DS_Store
 Thumbs.db
-source/
-files/
-diva_reference_images/
-assets/models/athlete_old_placeholder.glb
