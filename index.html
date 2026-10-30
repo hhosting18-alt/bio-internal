@@ -660,6 +660,23 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .spec .sl{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--lime)}
 .spec .sv{margin-top:6px;font-size:14.5px;line-height:1.5;color:var(--muted)}
 @media (max-width:600px){.specs{grid-template-columns:minmax(0,1fr)}.demo-frame{aspect-ratio:4/3}.demo-sub .k2{margin-left:0;width:100%}}
+/* live preview: the walkthrough video (or the journey itself) plays muted inside the frame; click for the full version */
+.demo-wrap{position:relative;border:1px solid var(--line);background:radial-gradient(120% 120% at 50% 0%,#161619 0%,#0a0a0c 70%);transition:border-color .2s;overflow:hidden}
+.demo-wrap:hover{border-color:var(--lime)}
+.demo-wrap .demo-frame{border:0;background:transparent;z-index:1}
+.dprev{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;opacity:0;transition:opacity .8s ease}
+.dprev.on{opacity:1}
+.dprev iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;background:#0b0b0d}
+.dprev video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.dprev video.bg{object-fit:cover;filter:blur(28px) brightness(.4);transform:scale(1.15)}
+.demo-frame .lbl,.demo-frame .tag-live,.demo-frame .play{z-index:2}
+.demo-wrap.is-live .demo-frame .grid{opacity:0}
+.demo-wrap.is-live .demo-frame .play{opacity:0;background:rgba(0,0,0,.6);transition:opacity .3s,box-shadow .2s,transform .3s var(--ease)}
+.demo-wrap.is-live:hover .demo-frame .play,.demo-wrap.is-live .demo-frame:focus-visible .play{opacity:1}
+.demo-wrap.is-live .demo-frame::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(0,0,0,.8),transparent 20%);pointer-events:none}
+.demo-dlg video{display:none;flex:1;width:100%;min-height:0;background:#000;object-fit:contain}
+.demo-dlg.is-video iframe{display:none}
+.demo-dlg.is-video video{display:block}
 .demo-dlg{width:min(1440px,96vw);height:min(920px,92vh);max-width:none;max-height:none;padding:0;border:1px solid var(--line-2);background:var(--bg);color:var(--text)}
 .demo-dlg::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(4px)}
 .demo-dlg[open]{display:flex;flex-direction:column}
@@ -1026,7 +1043,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       <div class="extra"><span class="k">Share · White-label</span><h5>Share &amp; export</h5><p>Export a PDF or share a structured file. A referral letter quotes your own words, unchanged. Built for white-label use in clinics, health camps and insurer programmes.</p></div>
     </div>
     <div class="demo-sub"><span class="k">Demo</span><h3>See it in the app</h3><span class="k2">Interactive prototype</span></div>
-    <button class="demo-frame" type="button" data-journey="movementor-journey.html#P-7" data-title="Sameeksha · interactive journey"><span class="grid"></span><span class="tag-live">Live</span><span class="play"><svg viewBox="0 0 16 16"><path fill="currentColor" d="M3 1.5v13L14 8z"/></svg></span><span class="lbl">Open the interactive journey — Sameeksha &rarr;</span></button>
+    <button class="demo-frame" type="button" data-journey="movementor-journey.html#P-7" data-video="assets/video/sameeksha-demo.mp4" data-title="Sameeksha · 20-second walkthrough"><span class="grid"></span><span class="tag-live">Live</span><span class="play"><svg viewBox="0 0 16 16"><path fill="currentColor" d="M3 1.5v13L14 8z"/></svg></span><span class="lbl">Watch the Sameeksha walkthrough &rarr;</span></button>
     <details class="more"><summary><span>More about Sameeksha</span><svg><use href="#plus"/></svg></summary><div class="specs"><div class="spec"><div class="sl">How the report scores</div><div class="sv">Each finding is graded from normal to a safety indicator, and the same issue across several tests counts for more.</div></div><div class="spec"><div class="sl">Three risk dimensions</div><div class="sv">Symptoms, movement and safety are each scored out of 100 and weighted for the joint you assessed.</div></div><div class="spec"><div class="sl">Safety first</div><div class="sv">A warning-sign answer always overrides the scores and points to medical care, before anything else.</div></div><div class="spec"><div class="sl">Walking check</div><div class="sv">Included for knee and lower back only — a short recording of how you walk.</div></div><div class="spec"><div class="sl">Fairness &amp; export</div><div class="sv">Skipping a test never counts as failing it. Export a PDF or structured file; a referral letter quotes your own words, unchanged.</div></div><div class="spec"><div class="sl">Touchless &amp; white-label</div><div class="sv">Run it hands-free with gestures and voice. Built for white-label use in clinics, health camps and insurer programmes.</div></div></div></details>
   </div>
 </section>
@@ -1250,6 +1267,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 <dialog class="demo-dlg" id="demoDlg" aria-label="MoveMentor interactive prototype">
   <div class="dd-bar"><span class="mono" id="ddTitle">Interactive journey</span><a class="ulink" id="ddOpen" href="movementor-journey.html" target="_blank" rel="noopener">Open in new tab &nearr;</a><button class="dd-x" id="ddClose" type="button" aria-label="Close"><svg><use href="#plus"/></svg></button></div>
   <iframe id="ddFrame" title="MoveMentor interactive prototype" loading="lazy"></iframe>
+  <video id="ddVideo" controls playsinline preload="none" poster="assets/img/sameeksha-demo-poster.webp"></video>
 </dialog>
 
 <script>
@@ -1431,13 +1449,46 @@ tr:last-child th,tr:last-child td{border-bottom:0}
   }
 
   /* ---------- Interactive prototype: opens in a full-screen viewer, loaded only when asked for ---------- */
-  var dlg=document.getElementById('demoDlg'), ddF=document.getElementById('ddFrame');
-  document.querySelectorAll('[data-journey]').forEach(function(b){ b.addEventListener('click',function(){ var src=b.dataset.journey;
-    if(!dlg||typeof dlg.showModal!=='function'){ window.open(src,'_blank','noopener'); return; }
-    document.getElementById('ddTitle').textContent=b.dataset.title; document.getElementById('ddOpen').href=src; ddF.src=src; dlg.showModal(); }); });
+  var dlg=document.getElementById('demoDlg'), ddF=document.getElementById('ddFrame'), ddV=document.getElementById('ddVideo');
+  document.querySelectorAll('[data-journey]').forEach(function(b){ b.addEventListener('click',function(){ var src=b.dataset.journey, vid=b.dataset.video;
+    if(!dlg||typeof dlg.showModal!=='function'){ window.open(vid||src,'_blank','noopener'); return; }
+    document.getElementById('ddTitle').textContent=b.dataset.title; document.getElementById('ddOpen').href=vid||src;
+    dlg.classList.toggle('is-video',!!vid);
+    if(vid){ ddV.src=vid; dlg.showModal(); var pp=ddV.play(); if(pp&&pp.catch)pp.catch(function(){}); }
+    else { ddF.src=src; dlg.showModal(); } }); });
   if(dlg){ document.getElementById('ddClose').addEventListener('click',function(){dlg.close();});
     dlg.addEventListener('click',function(e){if(e.target===dlg)dlg.close();});
-    dlg.addEventListener('close',function(){ddF.src='about:blank';}); }
+    dlg.addEventListener('close',function(){ddF.src='about:blank';ddV.pause();ddV.removeAttribute('src');ddV.load();});
+    /* on the public site, hide the internal review panel (sign-off, approve / needs changes) */
+    ddF.addEventListener('load',function(){inject(ddF,FULL_CSS);}); }
+
+  /* ---------- Demo frames: a live, muted preview plays inside each frame, like a video ---------- */
+  var PREV_FLOW={'P-1':'F1','K-1':'F2','P-7':'F6'};
+  var PREV_CSS='header.top,aside.index,aside.info,.mobile-pick,#stepPrev,#stepNext,#stepExit{display:none!important}.shell{grid-template-columns:minmax(0,1fr)!important;padding-block:14px!important;gap:0!important}html,body{background:#0b0b0d!important;overflow:hidden!important}.stepper{max-width:410px!important}';
+  var FULL_CSS='#signoff,#summary{display:none!important}header.top .eyebrow{visibility:hidden}';
+  function inject(fr,css){try{var d=fr.contentDocument;if(!d||!d.head||!d.getElementById('phone'))return false;var st=d.createElement('style');st.textContent=css;d.head.appendChild(st);return true;}catch(e){return false;}}
+  function mkVid(src,cls){var v=document.createElement('video');v.muted=true;v.loop=true;v.playsInline=true;v.setAttribute('playsinline','');v.preload='none';v.poster='assets/img/sameeksha-demo-poster.webp';if(cls)v.className=cls;v.src=src;return v;}
+  var previews=[];
+  document.querySelectorAll('[data-journey]').forEach(function(b){
+    var wrap=document.createElement('div');wrap.className='demo-wrap';b.parentNode.insertBefore(wrap,b);wrap.appendChild(b);
+    var box=document.createElement('div');box.className='dprev';box.setAttribute('aria-hidden','true');wrap.insertBefore(box,b);
+    if(b.dataset.video){
+      /* walkthrough video: a soft blurred copy fills the frame, the real one sits in the middle */
+      var bg=mkVid(b.dataset.video,'bg'),fg=mkVid(b.dataset.video);box.appendChild(bg);box.appendChild(fg);box.classList.add('on');wrap.classList.add('is-live');
+      if(reduce||!('IntersectionObserver' in window))return;
+      new IntersectionObserver(function(es){es.forEach(function(e){[bg,fg].forEach(function(v){if(e.isIntersecting){var pp=v.play();if(pp&&pp.catch)pp.catch(function(){});}else v.pause();});});},{threshold:.25}).observe(wrap);
+      return;
+    }
+    if(reduce||!('IntersectionObserver' in window))return;
+    var p={wrap:wrap,box:box,fr:null,flow:PREV_FLOW[b.dataset.journey.split('#')[1]]||'F1',vis:false,ok:false};previews.push(p);
+    new IntersectionObserver(function(es){es.forEach(function(e){p.vis=e.isIntersecting;if(p.vis&&!p.fr)loadPrev(p);});},{rootMargin:'300px'}).observe(wrap);
+  });
+  function sizePrev(p){if(!p.fr)return;var W=p.box.clientWidth,H=p.box.clientHeight,VH=1000,s=H/VH;p.fr.style.width=(W/s)+'px';p.fr.style.height=VH+'px';p.fr.style.transform='scale('+s+')';}
+  function startFlow(p){try{var f=p.fr.contentDocument.querySelector('.flow[data-flow="'+p.flow+'"]');if(f)f.click();}catch(e){}}
+  function loadPrev(p){var fr=document.createElement('iframe');fr.tabIndex=-1;fr.title='';fr.setAttribute('aria-hidden','true');fr.src='movementor-journey.html#P-1';p.fr=fr;p.box.appendChild(fr);sizePrev(p);
+    fr.addEventListener('load',function(){if(!inject(fr,PREV_CSS)){fr.remove();return;}p.ok=true;startFlow(p);p.box.classList.add('on');p.wrap.classList.add('is-live');});}
+  window.addEventListener('resize',function(){previews.forEach(sizePrev);});
+  setInterval(function(){previews.forEach(function(p){if(!p.ok||!p.vis||(dlg&&dlg.open))return;try{var d=p.fr.contentDocument,st=d.getElementById('stepper');if(!st||st.hidden){startFlow(p);return;}d.getElementById('stepNext').click();}catch(e){}});},2800);
 
   /* ---------- Accordion ---------- */
   document.querySelectorAll('.acc-q').forEach(function(q){ q.addEventListener('click',function(){ var open=q.getAttribute('aria-expanded')==='true'; document.querySelectorAll('.acc-q').forEach(function(x){x.setAttribute('aria-expanded','false');}); q.setAttribute('aria-expanded',!open); }); });
