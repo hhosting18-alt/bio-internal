@@ -126,10 +126,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
   radial-gradient(40% 40% at 55% 60%, rgba(34,211,238,.05), transparent 70%),
   var(--bg)}
 .hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(70% 70% at 70% 40%,#000 20%,transparent 75%);-webkit-mask-image:radial-gradient(70% 70% at 70% 40%,#000 20%,transparent 75%);opacity:.55}
-.hero-fig{position:absolute;right:var(--pad);top:80px;bottom:300px;width:min(34vw,440px);display:flex;align-items:center;justify-content:center}
+.hero-fig{position:absolute;right:var(--pad);top:76px;bottom:280px;width:min(34vw,440px);display:flex;align-items:center;justify-content:center}
 /* phone on a tripod: the 3D athlete is filmed inside its screen */
 .phone{height:100%;max-width:100%;display:flex;flex-direction:column;align-items:center}
-.ph-frame{position:relative;height:calc(100% - 48px);width:auto;max-width:100%;aspect-ratio:9/16;flex:none;border:9px solid #141416;border-radius:34px;background:#000;box-shadow:0 0 0 1px var(--line-2),0 26px 60px rgba(0,0,0,.55);overflow:hidden}
+.ph-frame{position:relative;height:100%;width:auto;max-width:100%;aspect-ratio:9/16;flex:none;border:9px solid #141416;border-radius:34px;background:#000;box-shadow:0 0 0 1px var(--line-2),0 26px 60px rgba(0,0,0,.55);overflow:hidden}
 .ph-notch{position:absolute;top:8px;left:12px;z-index:6;height:24px;padding:0 12px;border-radius:12px;background:#141416;display:flex;align-items:center;gap:22px}
 .ph-notch .cam{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 6px var(--lime)}
 .ph-rec{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--lime);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
@@ -746,7 +746,6 @@ tr:last-child th,tr:last-child td{border-bottom:0}
           <span class="ph-live"><i></i>Movement engine</span>
         </div>
       </div>
-      <div class="ph-stand"></div><div class="ph-tripod"></div>
     </div>
   </div>
   <div class="wrap hero-bottom">
@@ -1509,7 +1508,7 @@ window.addEventListener('DOMContentLoaded',function(){
   /* what the athlete does in each place, and how the camera frames it (no yaw = slow turntable) */
   var SPOT={hero:{ex:'squat'},tech:{ex:'squat',R:3.75,yaw:.9,sway:.35},sam:{ex:'armraise',look:1.0,yaw:1.15,sway:.25},safe:{ex:'stepup',look:.95,yaw:.9,sway:.2},
     fit:{ex:'squat',yaw:.7,sway:.3,R:4.1},phy:{ex:'abduct',look:1.0,yaw:0,sway:.2,R:4.6},samp:{ex:'sidebend',look:.92,yaw:0,sway:.25},
-    p0:{ex:'squat',yaw:.7,sway:.3},p1:{ex:'abduct',look:1.0,yaw:0,sway:.25,R:4.7},p2:{ex:'armraise',look:1.0,yaw:1.15,sway:.25,R:4.5},p3:{ex:'stepup',look:.95,yaw:.9,sway:.2}};
+    p0:{ex:'squat',yaw:.7,sway:.3},p1:{ex:'abduct',look:1.0,yaw:0,sway:.25,R:4.7},p2:{ex:'armraise',look:1.0,yaw:1.15,sway:.25,R:4.5},p3:{ex:'sidebend',look:.92,yaw:0,sway:.25}};
   var r=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
   r.setPixelRatio(Math.min(window.innerWidth<800?1.5:2,window.devicePixelRatio||1));
   r.outputEncoding=THREE.sRGBEncoding;r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;r.setClearColor(0,0);
@@ -1603,20 +1602,22 @@ window.addEventListener('DOMContentLoaded',function(){
   function overlay(mode){
     TRACK.forEach(function(n){var b=o.B[P+n];if(b)b.getWorldPosition(wp[n]);});wp.Head.y+=.08;
     var showLines=mode!=='see';
-    TRACK.forEach(function(n){var d=dots[n];d.position.copy(wp[n]);var c=LIME;
-      if(mode==='understand')c=DRIVE.indexOf(n)>-1?LIME:(STILL.indexOf(n)>-1?WHITE:GREY);d.material.color.setHex(c);});
+    /* engine panel styling: white joints read on skin and on the lime kit; cyan marks the driving chain; lime marks what is being measured or counted */
+    TRACK.forEach(function(n){var d=dots[n];d.position.copy(wp[n]);var c=mode==='respond'?LIME:WHITE;
+      if(mode==='measure'&&(n==='LeftLeg'||n==='RightLeg'))c=LIME;
+      if(mode==='understand')c=DRIVE.indexOf(n)>-1?0x22d3ee:(STILL.indexOf(n)>-1?WHITE:GREY);d.material.color.setHex(c);});
     EDGES.forEach(function(e,i){var a=wp[e[0]],b=wp[e[1]];lp.set([a.x,a.y,a.z,b.x,b.y,b.z],i*6);
       var col=mode==='understand'?(DRIVE.indexOf(e[0])>-1&&DRIVE.indexOf(e[1])>-1?cL:cG):(mode==='measure'?cW:cL);
       lc.set([col.r,col.g,col.b,col.r,col.g,col.b],i*6);});
     lg.attributes.position.needsUpdate=true;lg.attributes.color.needsUpdate=true;
     var clean=mode==='clean',panel=mode!=='hero'&&!clean;
     lines.visible=showLines&&!panel&&!clean;lines.material.opacity=.32;
-    TRACK.forEach(function(n){var d=dots[n];d.visible=!clean;d.renderOrder=panel?15:10;d.material.opacity=panel?1:.7;d.scale.setScalar(panel?1.15:1);
-      rings[n].visible=panel;rings[n].position.copy(wp[n]);});
+    TRACK.forEach(function(n,i){var d=dots[n],s=panel?(mode==='see'?1+.45*Math.pow(Math.max(0,Math.sin(clock*3-i*.5)),6):1.1):1;d.visible=!clean;d.renderOrder=panel?15:10;d.material.opacity=panel?1:.7;d.scale.setScalar(s);
+      rings[n].visible=panel;rings[n].position.copy(wp[n]);rings[n].scale.setScalar(s*.92);});
     EDGES.forEach(function(e,i){var tb=tubes[i];tb.t.visible=tb.out.visible=panel&&showLines;if(!tb.t.visible)return;
       var a=wp[e[0]],b=wp[e[1]];setTube(tb.out,a,b,.011);setTube(tb.t,a,b,.0065);
       var drive=DRIVE.indexOf(e[0])>-1&&DRIVE.indexOf(e[1])>-1;
-      tb.t.material.color.setHex(mode==='understand'?(drive?LIME:0x4a4a4a):LIME);});
+      tb.t.material.color.setHex(mode==='understand'?(drive?0x22d3ee:0x4a4a4a):WHITE);tb.t.material.opacity=mode==='understand'&&!drive?.8:.95;});
     /* lighter model inside the engine panel */
     var lk=.08;hemi.intensity+=((panel?1.7:clean?1.3:.85)-hemi.intensity)*lk;key.intensity+=((panel?1.9:clean?1.6:1.3)-key.intensity)*lk;
     if(o.mats)o.mats.forEach(function(mt){if(mt.emissiveMap)mt.emissiveIntensity+=((panel?.42:clean?.14:0)-mt.emissiveIntensity)*lk;});
@@ -1671,7 +1672,7 @@ window.addEventListener('DOMContentLoaded',function(){
   function renderClones(t){if(!cloneOn||!o)return;var W=cv.width,H=cv.height;
     PK.forEach(function(k){var cl=clones[k];if(k===cloneFrom||!cl||hostRatio(hosts[k])<=0)return;
       var sp=SPOT[k],ex=sp.ex;
-      if(ex==='stepup'&&stepT)pose(t,'stepup',1);else pose(t,ex==='stepup'?'squat':ex);
+      if(ex==='stepup'&&stepT)pose(t,'stepup',1);else if(ex==='sidebend')pose(2*t-1,'sidebend',1);else pose(t,ex==='stepup'?'squat':ex);
       if(stairs){var on=ex==='stepup';stairs.visible=on;stairMat.opacity=on?1:0;edgeMat.opacity=on?.7:0;}
       var fit=Math.max(1,.62/Math.min(cam.aspect,.9)),R=(sp.R||4.3)*fit,yy=(sp.yaw||0)+Math.sin(clock*.3)*(sp.sway||0);
       cam.position.set(Math.sin(yy)*R,1.12,Math.cos(yy)*R);cam.lookAt(0,sp.look||.84,0);
@@ -1745,7 +1746,7 @@ window.addEventListener('DOMContentLoaded',function(){
     if(ex==='stepup'&&stepT)pose(t,'stepup',ag.work);else if(ex==='sidebend')pose(sbS,'sidebend',ag.work);else pose(t*ag.work,ex==='stepup'?'squat':ex);
     if(ag.amp>.01&&!reduce)walkAdd(ag.ph,ag.amp);
     if(stairs){var sv=ag.ex==='stepup'?ag.work:0;stairs.visible=sv>.02;stairMat.opacity=sv;edgeMat.opacity=.7*sv;}
-    var mode=active==='tech'?(window.BMX_MODE||'see'):'clean';var kd=overlay('clean');
+    var mode=active==='tech'?(window.BMX_MODE||'see'):'clean';var kd=overlay(active==='tech'?mode:'clean');
     if(active!=='tech'&&tRead.innerHTML)tRead.innerHTML='';
     if(active==='hero'){if(heroKnee)heroKnee.textContent=kd+'°';}
     else if(active==='tech'){tRead.innerHTML=mode==='measure'?'knee <b>'+kd+'°</b>':(mode==='respond'?'<span class="big">'+String(reps%100).padStart(2,'0')+'</span>rep':'');}
@@ -1781,7 +1782,7 @@ window.addEventListener('DOMContentLoaded',function(){
     var rest={};for(var k in B)rest[k]=B[k].quaternion.clone();
     var mats=[];m.traverse(function(x){if(x.isMesh&&x.material&&x.material.map){var mt=x.material;mt.emissive=new THREE.Color(0xffffff);mt.emissiveMap=mt.map;mt.emissiveIntensity=0;mt.map.anisotropy=r.capabilities.getMaxAnisotropy();mt.needsUpdate=true;mats.push(mt);}});
     o={m:m,B:B,rest:rest,hipPos:B[P+'Hips'].position.clone(),mats:mats};scene.add(m);
-    var fy0=new THREE.Vector3();B[P+'LeftFoot'].getWorldPosition(fy0);o.footY0=fy0.y;if(hosts.safe||hosts.p3)buildStairs();
+    var fy0=new THREE.Vector3();B[P+'LeftFoot'].getWorldPosition(fy0);o.footY0=fy0.y;if(hosts.safe)buildStairs();
     ['tech','sam','safe'].forEach(function(k){if(!hosts[k])return;var hn=document.createElement('div');hn.className='drag-hint';hn.textContent='\u2194 Drag to rotate';hosts[k].appendChild(hn);});
     window.BMX3D=true;document.documentElement.classList.add('has-3d');resize();requestAnimationFrame(loop);
   });
