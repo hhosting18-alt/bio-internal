@@ -634,6 +634,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 @media (max-width:900px){.prod-body{grid-template-columns:minmax(0,1fr)}.pstage{aspect-ratio:4/5;max-height:640px}}
 /* the athlete steps into the "start here" photos instead of the line figures */
 .path-stage{position:absolute;top:0;right:0;bottom:0;width:48%;z-index:1}
+.bmx-clone{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;z-index:1;will-change:transform,opacity}
 .has-3d .pstage .pose,.has-3d [data-mini]{visibility:hidden}
 
 /* ---------- Demo: interactive prototype + "more about" ---------- */
@@ -1612,6 +1613,28 @@ window.addEventListener('DOMContentLoaded',function(){
     if(hoverHost&&hosts[hoverHost]&&hostRatio(hosts[hoverHost])>=.55)return hoverHost;
     var best=null,bv=0;for(var k in hosts){var need=k==='hero'?.5:(/^p\d$/.test(k)?.55:.6),v=hostRatio(hosts[k]);if(v>=need&&v>bv+.02){best=k;bv=v;}}
     return best;}
+  /* ---------- "Start here" clones: once she settles into one photo she splits into all four, each doing its own exercise at the same time; scroll away and they merge back into her ---------- */
+  var PK=Object.keys(hosts).filter(function(k){return /^p\d$/.test(k);}),clones={},cloneOn=false,cloneFrom=null;
+  function isP(k){return !!k&&/^p\d$/.test(k);}
+  function centerOf(el){var b=el.getBoundingClientRect();return [b.left+b.width/2,b.top+b.height/2];}
+  function cloneTo(k,show){var c=clones[k];
+    if(!c){var el=document.createElement('canvas');el.className='bmx-clone';el.setAttribute('aria-hidden','true');hosts[k].appendChild(el);c=clones[k]={el:el,ctx:el.getContext('2d')};}
+    var a=centerOf(hosts[cloneFrom]),b=centerOf(hosts[k]),off='translate('+Math.round(a[0]-b[0])+'px,'+Math.round(a[1]-b[1])+'px) scale(.55)',e=c.el;
+    if(show){e.style.transition='none';e.style.transform=off;e.style.opacity='0';void e.offsetWidth;e.style.transition=reduce?'none':'transform .9s cubic-bezier(.16,1,.3,1),opacity .45s ease';e.style.transform='none';e.style.opacity='1';}
+    else{e.style.transition=reduce?'none':'transform .6s cubic-bezier(.7,0,.84,0),opacity .6s ease';e.style.transform=off;e.style.opacity='0';}}
+  function splitOut(){if(cloneOn||!isP(ag.host))return;cloneOn=true;cloneFrom=ag.host;PK.forEach(function(k){if(k!==cloneFrom)cloneTo(k,true);});}
+  function mergeBack(){if(!cloneOn)return;PK.forEach(function(k){if(k!==cloneFrom&&clones[k])cloneTo(k,false);});cloneOn=false;}
+  /* each copy is the same character posed for its own card, rendered once and painted into that card */
+  function renderClones(t){if(!cloneOn||!o)return;var W=cv.width,H=cv.height;
+    PK.forEach(function(k){var cl=clones[k];if(k===cloneFrom||!cl||hostRatio(hosts[k])<=0)return;
+      var sp=SPOT[k],ex=sp.ex;
+      if(ex==='stepup'&&stepT)pose(t,'stepup',1);else pose(t,ex==='stepup'?'squat':ex);
+      if(stairs){var on=ex==='stepup';stairs.visible=on;stairMat.opacity=on?1:0;edgeMat.opacity=on?.7:0;}
+      var fit=Math.max(1,.62/Math.min(cam.aspect,.9)),R=(sp.R||4.3)*fit,yy=(sp.yaw||0)+Math.sin(clock*.3)*(sp.sway||0);
+      cam.position.set(Math.sin(yy)*R,1.12,Math.cos(yy)*R);cam.lookAt(0,sp.look||.84,0);
+      r.render(scene,cam);
+      if(cl.el.width!==W||cl.el.height!==H){cl.el.width=W;cl.el.height=H;}
+      cl.ctx.clearRect(0,0,W,H);cl.ctx.drawImage(cv,0,0);});}
   function setCanvasSize(w,h){w=Math.max(1,Math.round(w));h=Math.max(1,Math.round(h));if(w===ag.cw&&h===ag.ch)return;ag.cw=w;ag.ch=h;r.setSize(w,h,false);cv.style.width=w+'px';cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix();}
   function steady(){cv.style.animation='none';cv.style.opacity='1';}
   /* while travelling the canvas keeps one resolution and is scaled on the GPU, so nothing is reallocated mid-move */
@@ -1634,7 +1657,7 @@ window.addEventListener('DOMContentLoaded',function(){
   function damp(x,v,T,dt){var w=2/T,k=w*dt,e=1/(1+k+.48*k*k+.235*k*k*k),tmp=(v+w*x)*dt;return [(x+tmp)*e,(v-w*tmp)*e];}
   function agentTick(dt){
     var want=wantHost();
-    if(ag.state==='docked'){if(want===ag.host||(hostRatio(hosts[ag.host])>=.4&&!(want&&want===hoverHost))){ag.work=Math.min(1,ag.work+dt*2.5);ag.amp*=Math.exp(-dt*8);return;}undock();}
+    if(ag.state==='docked'){if(want===ag.host||(cloneOn&&isP(want))||(hostRatio(hosts[ag.host])>=.4&&!(want&&want===hoverHost&&!cloneOn))){ag.work=Math.min(1,ag.work+dt*2.5);ag.amp*=Math.exp(-dt*8);if(isP(ag.host)&&ag.work>.25)splitOut();return;}mergeBack();undock();}
     ag.work=Math.max(0,ag.work-dt*4);
     /* position is tracked relative to where it is heading, so scrolling carries it along instead of making it chase */
     var key=want||'corner',tr=rectOf(key),tcx=tr.x+tr.w/2,tcy=tr.y+tr.h/2;
@@ -1671,6 +1694,7 @@ window.addEventListener('DOMContentLoaded',function(){
     if(!reduce){clock+=dt;yaw+=dt*(active==='fly'?.6:.18);} /* turns faster while waiting in the corner */
     var c=reduce?.25:(clock/3.4)%1;if(c<lcyc)reps++;lcyc=c;var t=.5-.5*Math.cos(c*Math.PI*2);
     agentTick(dt);
+    renderClones(t);
     /* exercises only where it works (fading in and out), with the walking stride layered on while travelling */
     /* which exercise: chosen where it docks, kept while it walks so the arms never jump mid-move */
     if(active!=='fly')ag.ex=(SPOT[active]||{}).ex||'squat';
