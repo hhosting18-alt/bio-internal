@@ -651,6 +651,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .demo-frame .lbl{position:absolute;left:16px;bottom:14px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--muted)}
 .demo-frame .tag-live{position:absolute;top:14px;right:16px;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;color:var(--faint);border:1px solid var(--line-2);padding:4px 8px}
 .more{margin-top:16px;border:1px solid var(--line);background:var(--card)}
+.extras+.more,.duo+.more{margin-top:clamp(44px,5.5vw,76px)}
 .more>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 20px;font-size:clamp(16px,1.5vw,19px);font-weight:500;letter-spacing:-.02em;text-transform:uppercase}
 .more>summary::-webkit-details-marker{display:none}
 .more>summary svg{width:14px;height:14px;flex:none;color:var(--lime);transition:transform .35s var(--ease)}
@@ -907,8 +908,6 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       <div class="extra"><span class="k">Roadmap</span><h5>Sports modules</h5><p>Dedicated sports modules — starting with cricket — are on the way, growing the app toward coaching.</p></div>
     </div>
 
-    <div class="demo-sub"><span class="k">Demo</span><h3>See it in the app</h3><span class="k2">Interactive prototype</span></div>
-    <button class="demo-frame" type="button" data-journey="movementor-journey.html#P-1" data-title="MoveMentor Fitness · interactive journey"><span class="grid"></span><span class="tag-live">Live</span><span class="play"><svg viewBox="0 0 16 16"><path fill="currentColor" d="M3 1.5v13L14 8z"/></svg></span><span class="lbl">Open the interactive journey — Personal area &rarr;</span></button>
     <details class="more"><summary><span>More about MoveMentor Fitness</span><svg><use href="#plus"/></svg></summary><div class="specs"><div class="spec"><div class="sl">Workout library</div><div class="sv">Warm-up, full body, lower body, core and posture, and mobility, plus yoga poses and sport-specific programmes — beginner to advanced.</div></div><div class="spec"><div class="sl">Prescribed plans</div><div class="sv">If a physiotherapist links to you, their prescription from MoveMentor Physio appears here and runs with the same live feedback.</div></div><div class="spec"><div class="sl">Measurement</div><div class="sv">Every joint tracked in real time and scored on-device. A rep counts only at target range; holds are timed at the top.</div></div><div class="spec"><div class="sl">Account</div><div class="sv">Optional. Train in guest mode, or sign in to back up your history and saved rep clips.</div></div><div class="spec"><div class="sl">Platform</div><div class="sv">Android, via Google Play.</div></div><div class="spec"><div class="sl">Scope</div><div class="sv">A fitness and wellness app — it doesn't diagnose, prescribe or treat.</div></div><div class="spec"><div class="sl">Roadmap</div><div class="sv">Dedicated sports modules — starting with cricket — are on the way, growing the app toward coaching.</div></div></div></details>
   </div>
 </section>
@@ -977,8 +976,6 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       </div>
     </div>
 
-    <div class="demo-sub"><span class="k">Demo</span><h3>See it in the app</h3><span class="k2">Interactive prototype</span></div>
-    <button class="demo-frame" type="button" data-journey="movementor-journey.html#K-1" data-title="MoveMentor Physio · interactive journey"><span class="grid"></span><span class="tag-live">Live</span><span class="play"><svg viewBox="0 0 16 16"><path fill="currentColor" d="M3 1.5v13L14 8z"/></svg></span><span class="lbl">Open the interactive journey — Clinic area &rarr;</span></button>
     <details class="more"><summary><span>More about MoveMentor Physio</span><svg><use href="#plus"/></svg></summary><div class="specs"><div class="spec"><div class="sl">Author &amp; library</div><div class="sv">Build exercises in a visual editor. Your exercises stay private to you; submit one for peer review to add it to the shared library.</div></div><div class="spec"><div class="sl">Two separate apps</div><div class="sv">Physio is the physiotherapist's app; patients receive and perform the plan in MoveMentor Fitness. Kept separate to meet medical app-store requirements.</div></div><div class="spec"><div class="sl">Data &amp; storage</div><div class="sv">Live analysis stays on the phone; patient records created in the clinic are stored on the clinician's device.</div></div><div class="spec"><div class="sl">Offline &amp; online</div><div class="sv">Examine, prescribe and share by QR or file offline. Sign in for online delivery and adherence reports.</div></div><div class="spec"><div class="sl">Clinical judgement</div><div class="sv">MoveMentor measures and delivers; the clinician selects exercises, sets the dose, and interprets the measurements.</div></div></div></details>
     <div class="note"><svg class="plus"><use href="#plus"/></svg><p><b>A tool for clinicians, not a replacement.</b> Exercise selection, dosage and interpretation stay the clinician's call. Physio and Fitness are two separate apps, to meet medical app-store requirements. Live analysis stays on the phone, and patient records created in the clinic are stored on the clinician's device.</p></div>
   </div>
@@ -1042,7 +1039,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       <div class="extra"><span class="k">Caregiver</span><h5>Assisted mode</h5><p>A family member or caregiver can hold the phone and answer for the person. The report records that it was assisted.</p></div>
       <div class="extra"><span class="k">Share · White-label</span><h5>Share &amp; export</h5><p>Export a PDF or share a structured file. A referral letter quotes your own words, unchanged. Built for white-label use in clinics, health camps and insurer programmes.</p></div>
     </div>
-    <div class="demo-sub"><span class="k">Demo</span><h3>See it in the app</h3><span class="k2">Interactive prototype</span></div>
+    <div class="demo-sub"><span class="k">Demo</span><h3>See it in the app</h3><span class="k2">20-second walkthrough</span></div>
     <button class="demo-frame" type="button" data-journey="movementor-journey.html#P-7" data-video="assets/video/sameeksha-demo.mp4" data-title="Sameeksha · 20-second walkthrough"><span class="grid"></span><span class="tag-live">Live</span><span class="play"><svg viewBox="0 0 16 16"><path fill="currentColor" d="M3 1.5v13L14 8z"/></svg></span><span class="lbl">Watch the Sameeksha walkthrough &rarr;</span></button>
     <details class="more"><summary><span>More about Sameeksha</span><svg><use href="#plus"/></svg></summary><div class="specs"><div class="spec"><div class="sl">How the report scores</div><div class="sv">Each finding is graded from normal to a safety indicator, and the same issue across several tests counts for more.</div></div><div class="spec"><div class="sl">Three risk dimensions</div><div class="sv">Symptoms, movement and safety are each scored out of 100 and weighted for the joint you assessed.</div></div><div class="spec"><div class="sl">Safety first</div><div class="sv">A warning-sign answer always overrides the scores and points to medical care, before anything else.</div></div><div class="spec"><div class="sl">Walking check</div><div class="sv">Included for knee and lower back only — a short recording of how you walk.</div></div><div class="spec"><div class="sl">Fairness &amp; export</div><div class="sv">Skipping a test never counts as failing it. Export a PDF or structured file; a referral letter quotes your own words, unchanged.</div></div><div class="spec"><div class="sl">Touchless &amp; white-label</div><div class="sv">Run it hands-free with gestures and voice. Built for white-label use in clinics, health camps and insurer programmes.</div></div></div></details>
   </div>
@@ -1110,7 +1107,6 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       <div class="big-line"><span class="giant gl">Never sold, never ads</span><svg class="ar"><use href="#arrow"/></svg><p>Your data isn't sold or used for advertising.</p></div>
       <div class="big-line"><span class="giant gl">Only results sync</span><svg class="ar"><use href="#arrow"/></svg><p>A clip is saved or shared only when you record or share it yourself.</p></div>
     </div>
-    <div style="margin-top:32px"><a class="btn dark" href="#privacy-policy"><span>Read the full privacy policy</span><i><svg><use href="#arrow"/></svg></i></a></div>
   </div>
 </section>
 
@@ -1206,11 +1202,11 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       </div>
       <aside class="support-box">
         <h4>More questions?</h4>
-        <p>Visit Support.</p>
-        <div class="btn-row"><a class="btn" href="#support"><span>Support</span><i><svg><use href="#arrow"/></svg></i></a></div>
+        <p>Email us and we'll get back to you.</p>
+        <div class="btn-row"><a class="btn" href="mailto:contact@biomechanix.ai?subject=MoveMentor%20support"><span>Email support</span><i><svg><use href="#arrow"/></svg></i></a></div>
         <div class="support-meta">
           <div><span class="label" style="display:block;margin-bottom:6px">Contact</span><a href="mailto:contact@biomechanix.ai">contact@biomechanix.ai</a></div>
-          <div><span class="label" style="display:block;margin-bottom:6px">Help &amp; legal</span><a href="#privacy-policy">Privacy Policy</a></div>
+          <div><span class="label" style="display:block;margin-bottom:6px">Help &amp; legal</span><a href="#privacy">Privacy &amp; your data</a></div>
         </div>
       </aside>
     </div>
@@ -1246,7 +1242,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
         <div class="fgroup"><span class="label">Company &amp; apps</span>
           <div class="links"><a href="#compare">All applications</a><a href="#fitness">MoveMentor Fitness</a><a href="#physio">MoveMentor Physio</a><a href="#sameeksha">Sameeksha</a><a href="#how">MoveMentor platform</a><a href="#company">About Biomechanix</a></div></div>
         <div class="fgroup"><span class="label">Help &amp; legal</span>
-          <div class="links"><a href="#support">Support</a><a href="#privacy-policy">Privacy Policy</a><a href="mailto:contact@biomechanix.ai">contact@biomechanix.ai</a></div></div>
+          <div class="links"><a href="mailto:contact@biomechanix.ai?subject=MoveMentor%20support">Support</a><a href="#privacy">Privacy</a><a href="mailto:contact@biomechanix.ai">contact@biomechanix.ai</a></div></div>
         <a class="btn" href="#apps"><span>Get the app</span><i><svg><use href="#arrow"/></svg></i></a>
       </div>
     </div>
@@ -1258,7 +1254,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 
     <div class="foot-bot">
       <span class="label">© 2026 Biomechanix Inc.</span>
-      <span class="mid mono"><a href="#privacy-policy">Privacy Policy</a><a href="#support">Support</a></span>
+      <span class="mid mono"><a href="#privacy">Privacy</a><a href="mailto:contact@biomechanix.ai?subject=MoveMentor%20support">Support</a></span>
       <span class="label"><a href="https://biomechanix.ai" target="_blank" rel="noopener">biomechanix.ai</a></span>
     </div>
   </div>
@@ -1572,13 +1568,14 @@ window.addEventListener('DOMContentLoaded',function(){
     }
     if(ex==='armraise'){
       /* Sameeksha movement test: forward arm raise, both arms from the sides to overhead, legs and trunk still */
-      var sh=6+168*t;
+      /* the shoulder blade lifts with the arm (as in a real overhead raise), so the shoulder mesh never tears away from the sleeve */
+      var sh=6+138*t;rw(B[P+'LeftShoulder'],Xa,-22*t*d);rw(B[P+'RightShoulder'],Xa,-22*t*d);
       rw(B[P+'LeftArm'],Za,-6*d);rw(B[P+'RightArm'],Za,6*d);
       rw(B[P+'LeftArm'],Xa,-sh*d);rw(B[P+'RightArm'],Xa,-sh*d);
       rw(B[P+'LeftForeArm'],Xa,-4*d);rw(B[P+'RightForeArm'],Xa,-4*d);
     }else if(ex==='abduct'){
       /* Physio shoulder exam: both arms sweep out to the side and overhead, trunk and legs still */
-      var ab=160*t;rw(B[P+'LeftArm'],Za,ab*d);rw(B[P+'RightArm'],Za,-ab*d);
+      var ab=138*t;rw(B[P+'LeftShoulder'],Za,22*t*d);rw(B[P+'RightShoulder'],Za,-22*t*d);rw(B[P+'LeftArm'],Za,ab*d);rw(B[P+'RightArm'],Za,-ab*d);
     }else if(ex==='sidebend'){
       /* Sameeksha lower-back test: side bend to each side; t runs -1..1 */
       var sb=32*t*w;rw(B[P+'Spine'],Za,sb*.4*d);rw(B[P+'Spine1'],Za,sb*.35*d);rw(B[P+'Spine2'],Za,sb*.25*d);rw(B[P+'Neck'],Za,-sb*.25*d);
