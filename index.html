@@ -610,11 +610,16 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 .safe-punch{font-size:clamp(18px,1.6vw,22px);letter-spacing:-.015em;color:var(--text)}
 .safe-copy .checks{max-width:520px}
 .safe-stage{display:none;position:relative;min-height:460px;flex-direction:column}
-.safe-phone{display:flex;width:100%;max-width:460px;justify-self:end}
-.safe-phone .shot-f{flex:1;display:flex}
-.safe-phone .scr{flex:1;display:flex;flex-direction:column;justify-content:center}
+.safe-phone{display:flex;justify-content:center;width:100%;min-height:560px;justify-self:end}
+.safe-phone .iph{height:100%;max-height:720px}
+/* the app's own light screen: dark status bar, the recording on top, the still screen underneath as a fallback */
+.iph-screen.sp-screen{background:#f4f1ea;container-type:inline-size}
+.sp-screen .iph-sb{color:#0e0e10}
+.sp-screen .iph-home{background:rgba(0,0,0,.35)}
+.sp-screen .scr{position:absolute;left:0;right:0;bottom:0;top:42px;border-radius:0;display:flex;flex-direction:column;justify-content:center}
+.sp-v{position:absolute;left:0;right:0;bottom:0;top:42px;width:100%;height:calc(100% - 42px);object-fit:cover;object-position:top;z-index:2;background:#f4f1ea}
 @media (min-width:1101px){.safe{grid-template-columns:minmax(0,1.1fr) minmax(220px,.7fr) minmax(320px,440px)}.safe-stage{display:flex}}
-@media (max-width:860px){.safe{grid-template-columns:minmax(0,1fr)}.safe-phone{justify-self:start;max-width:420px}}
+@media (max-width:860px){.safe{grid-template-columns:minmax(0,1fr)}.safe-phone{justify-self:start;justify-content:flex-start;min-height:0;height:min(150vw,620px)}}
 
 /* ---------- Product stage: copy + live 3D stage (replaces the old Google Play head) ---------- */
 .prod-body{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(28px,4.5vw,64px);align-items:center;margin-bottom:clamp(48px,6vw,88px)}
@@ -1146,13 +1151,13 @@ tr:last-child th,tr:last-child td{border-bottom:0}
         </ul>
       </div>
       <div class="safe-stage" aria-hidden="true"><div class="stage-read"></div><div class="stage-3d"></div></div>
-      <div class="safe-phone"><div class="shot-f"><div class="scr auto" role="img" aria-label="MoveMentor Fitness answering &ldquo;my knee hurts when I climb stairs&rdquo; with general guidance and a link to a physio instead of a workout">
+      <div class="safe-phone"><div class="iph"><i class="iph-btn a"></i><i class="iph-btn v1"></i><i class="iph-btn v2"></i><i class="iph-btn p"></i><div class="iph-in"><div class="iph-screen sp-screen"><div class="iph-sb"><span>9:41</span><span class="iph-di"></span><svg viewBox="0 0 68 12" aria-hidden="true"><g fill="currentColor"><rect x="0" y="8" width="3" height="4" rx=".7"/><rect x="4.5" y="6" width="3" height="6" rx=".7"/><rect x="9" y="3.5" width="3" height="8.5" rx=".7"/><rect x="13.5" y="1" width="3" height="11" rx=".7"/><path d="M29.5 4.2a9.6 9.6 0 0 1 13 0l-1.5 1.6a7.4 7.4 0 0 0-10 0zM32.3 7a5.6 5.6 0 0 1 7.4 0l-1.6 1.6a3.3 3.3 0 0 0-4.2 0zM36 11.6l-1.7-1.8a2.5 2.5 0 0 1 3.4 0z"/><rect x="47.5" y="1" width="17.5" height="10" rx="3" fill="none" stroke="currentColor" stroke-opacity=".45"/><rect x="49.3" y="2.8" width="13.9" height="6.4" rx="1.6"/><path d="M66.4 4.3v3.4a1.8 1.8 0 0 0 0-3.4z" fill-opacity=".45"/></g></svg></div><video class="sp-v" muted loop playsinline preload="none" poster="assets/video/journey/s1.webp" src="assets/video/journey/s1.mp4" aria-hidden="true"></video><div class="scr auto" role="img" aria-label="MoveMentor Fitness answering &ldquo;my knee hurts when I climb stairs&rdquo; with general guidance and a link to a physio instead of a workout">
         <div class="s-input" style="color:var(--ink)">my knee hurts when I climb stairs<span class="s-caret"></span></div>
         <div class="s-btn pri mt12" style="display:flex;padding:.95em">Tell me what you want</div>
         <div class="s-card mt12"><div class="s-m" style="color:#2563eb">Recovery plan</div><div class="s-h2 mt4">General guidance</div><div class="s-sm mt6" style="line-height:1.45">That sounds like pain or an injury. This app focuses on general fitness &mdash; please see a physiotherapist or doctor for a rehab plan.</div><div class="s-xs mt10">Starting intensity 100%</div></div>
         <div class="s-sm mt12" style="color:var(--ink);line-height:1.45">That sounds like pain or an injury. A physio can check it first.</div>
         <div class="s-card s-row mt10"><div><div class="s-t">Link to a physio</div><div class="s-xs mt2">Use a join code</div></div><span class="s-chev">&rsaquo;</span></div>
-      </div></div></div>
+      </div><i class="iph-home"></i></div></div></div></div>
     </div>
 
     <div class="sec-head">
@@ -1559,6 +1564,11 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       v.addEventListener('error',function(){v.remove();});f.appendChild(v);
       if(reduce||!('IntersectionObserver' in window))return;
       new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var pp=v.play();if(pp&&pp.catch)pp.catch(function(){});}else v.pause();});},{threshold:.35}).observe(f);});});
+
+  /* the safety section's phone plays the "knee hurts" journey */
+  var spv=document.querySelector('.sp-v');
+  if(spv){spv.addEventListener('error',function(){spv.remove();});
+    if(!reduce&&'IntersectionObserver' in window)new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var pp=spv.play();if(pp&&pp.catch)pp.catch(function(){});}else spv.pause();});},{threshold:.35}).observe(spv);}
 
   /* ---------- Accordion ---------- */
   document.querySelectorAll('.acc-q').forEach(function(q){ q.addEventListener('click',function(){ var open=q.getAttribute('aria-expanded')==='true'; document.querySelectorAll('.acc-q').forEach(function(x){x.setAttribute('aria-expanded','false');}); q.setAttribute('aria-expanded',!open); }); });
