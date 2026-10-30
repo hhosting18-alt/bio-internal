@@ -43,7 +43,7 @@
 :root[data-theme="dark"]{ --bg:#000000; --text:#f5f5f5; }
 html{overflow-x:clip;scrollbar-width:thin;scrollbar-color:#3a3a3a transparent;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px);scroll-behavior:smooth;background:var(--bg)}
 *,*::before,*::after{box-sizing:border-box}
-body{overflow-x:clip;max-width:100%;margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body{overflow-x:clip;max-width:100%;margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased}
 h1,h2,h3,h4,p{margin:0}
 a{color:inherit;text-decoration:none}
 ul{margin:0;padding:0;list-style:none}
@@ -126,8 +126,28 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
   radial-gradient(40% 40% at 55% 60%, rgba(34,211,238,.05), transparent 70%),
   var(--bg)}
 .hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:80px 80px;mask-image:radial-gradient(70% 70% at 70% 40%,#000 20%,transparent 75%);-webkit-mask-image:radial-gradient(70% 70% at 70% 40%,#000 20%,transparent 75%);opacity:.55}
-.hero-fig{position:absolute;right:var(--pad);top:96px;bottom:330px;width:min(34vw,440px);display:flex;align-items:center;justify-content:center}
-.hero-fig svg{height:100%;width:auto;overflow:visible}
+.hero-fig{position:absolute;right:var(--pad);top:80px;bottom:300px;width:min(34vw,440px);display:flex;align-items:center;justify-content:center}
+/* phone on a tripod: the 3D athlete is filmed inside its screen */
+.phone{height:100%;max-width:100%;display:flex;flex-direction:column;align-items:center}
+.ph-frame{position:relative;height:calc(100% - 48px);width:auto;max-width:100%;aspect-ratio:9/16;flex:none;border:9px solid #141416;border-radius:34px;background:#000;box-shadow:0 0 0 1px var(--line-2),0 26px 60px rgba(0,0,0,.55);overflow:hidden}
+.ph-notch{position:absolute;top:8px;left:12px;z-index:6;height:24px;padding:0 12px;border-radius:12px;background:#141416;display:flex;align-items:center;gap:22px}
+.ph-notch .cam{width:7px;height:7px;border-radius:50%;background:var(--lime);box-shadow:0 0 6px var(--lime)}
+.ph-rec{font-family:var(--font-mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--lime);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.ph-rec i,.ph-live i,.live i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 6px var(--lime);animation:bmxPulse 1.4s infinite}
+@keyframes bmxPulse{50%{opacity:.25}}
+.ph-screen{position:absolute;inset:0;background:radial-gradient(120% 120% at 50% 0%,#1a1a1e 0%,#0a0a0c 60%,#050506 100%)}
+.ph-grid,.pstage .grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:11% 8%;opacity:.7;mask-image:radial-gradient(130% 110% at 50% 45%,#000 40%,transparent 85%);-webkit-mask-image:radial-gradient(130% 110% at 50% 45%,#000 40%,transparent 85%)}
+.ph-screen #heroPose{position:absolute;left:0;top:14%;width:100%;height:72%;overflow:visible}
+.ph-hud,.hud{position:absolute;inset:0;pointer-events:none;z-index:3}
+.ph-hud>div,.hud>div{position:absolute;font-family:var(--font-mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ph-hud b,.hud b{color:var(--lime);font-weight:500}
+.ph-hud .tl{top:42px;left:16px}.ph-hud .tr{top:42px;right:16px;text-align:right}
+.ph-hud .bl{bottom:16px;left:16px}.ph-hud .br{bottom:16px;right:16px;text-align:right}
+.ph-live,.live{position:absolute;left:50%;bottom:44px;transform:translateX(-50%);z-index:3;display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);white-space:nowrap;pointer-events:none}
+.ph-stand{width:3px;height:22px;background:var(--line-2);flex:none}
+.ph-tripod{position:relative;width:110px;height:26px;flex:none}
+.ph-tripod::before,.ph-tripod::after{content:"";position:absolute;top:0;left:50%;width:2px;height:28px;background:var(--line-2);transform-origin:top center}
+.ph-tripod::before{transform:rotate(26deg)}.ph-tripod::after{transform:rotate(-26deg)}
 .readout{position:absolute;z-index:2;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--muted);display:flex;gap:8px;align-items:center}
 .readout b{color:var(--lime);font-weight:500}
 .hero-bottom{position:relative;display:grid;grid-template-columns:minmax(0,1.9fr) minmax(0,1fr);gap:40px;align-items:end;padding-bottom:44px}
@@ -141,7 +161,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
   .hero{display:flex;flex-direction:column;justify-content:flex-start;min-height:auto;padding-top:calc(68px + clamp(28px,6vw,48px))}
   .hero-bottom{display:contents}
   .hero-bottom>div:first-child{order:1;padding:0 var(--pad);position:relative}
-  .hero-fig{order:2;position:relative;inset:auto;right:auto;top:auto;bottom:auto;transform:none;align-self:center;width:min(100% - 2*var(--pad),520px);height:clamp(300px,62vw,480px);margin:clamp(28px,5vw,44px) auto 0}
+  .hero-fig{order:2;position:relative;inset:auto;right:auto;top:auto;bottom:auto;transform:none;align-self:center;width:min(100% - 2*var(--pad),520px);height:clamp(470px,128vw,640px);margin:clamp(28px,5vw,44px) auto 0}
   .hero-side{order:3;justify-self:auto;max-width:560px;padding:clamp(28px,5vw,40px) var(--pad) 48px;position:relative}
   .hero h1{font-size:clamp(40px,10.4vw,84px)}
 }
@@ -190,8 +210,13 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
 @media (max-width:760px){.paths{grid-template-columns:minmax(0,1fr)}}
 
 /* ---------- Big sliding headline ---------- */
-.slide-head{overflow:hidden;padding:clamp(40px,6vw,80px) 0}
-.slide-head .line{white-space:nowrap;font-size:clamp(70px,13vw,210px);will-change:transform}
+/* the section pins while the whole line scrolls past; only then does the page carry on down */
+.slide-pin{position:relative;height:200vh}
+.slide-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center}
+.slide-pin .line{white-space:nowrap;font-size:clamp(70px,13vw,210px);will-change:transform;padding-right:var(--pad)}
+.slide-bar{position:absolute;left:var(--pad);right:var(--pad);bottom:clamp(28px,6vh,64px);height:2px;background:var(--line-2)}
+.slide-bar i{display:block;height:100%;width:0;background:var(--lime)}
+@media (prefers-reduced-motion:reduce){.slide-pin{height:auto}.slide-sticky{position:static;height:auto;padding:clamp(40px,6vw,80px) var(--pad)}.slide-pin .line{white-space:normal;font-size:clamp(44px,8vw,120px)}.slide-bar{display:none}}
 
 /* ---------- Tech tabs (TPL Technology & approach) ---------- */
 .tech{position:relative;background:var(--card);border:1px solid var(--line);min-height:clamp(520px,58vw,720px);display:flex;flex-direction:column;overflow:hidden}
@@ -591,6 +616,59 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 @media (min-width:1101px){.safe{grid-template-columns:minmax(0,1.1fr) minmax(220px,.7fr) minmax(320px,440px)}.safe-stage{display:flex}}
 @media (max-width:860px){.safe{grid-template-columns:minmax(0,1fr)}.safe-phone{justify-self:start;max-width:420px}}
 
+/* ---------- Product stage: copy + live 3D stage (replaces the old Google Play head) ---------- */
+.prod-body{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(28px,4.5vw,64px);align-items:center;margin-bottom:clamp(48px,6vw,88px)}
+.prod-copy{display:flex;flex-direction:column;gap:20px;max-width:580px}
+.prod-copy .promise{font-size:clamp(32px,3.7vw,60px);text-wrap:balance;overflow-wrap:normal}
+.prod-copy>p{font-size:15.5px;line-height:1.5;color:var(--muted)}
+.prod-copy .disc{font-family:var(--font-mono);font-size:11px;line-height:1.7;text-transform:uppercase;color:var(--faint);border-left:1px solid var(--line-2);padding-left:14px;max-width:62ch}
+.prod-copy .disc a{color:var(--lime)}
+.pstage{position:relative;width:100%;aspect-ratio:10/11;min-height:380px;max-height:820px;background:radial-gradient(120% 120% at 50% 0%,#1a1a1e 0%,#0a0a0c 60%,#050506 100%);border:1px solid var(--line);overflow:hidden}
+.pstage>.c{position:absolute;width:12px;height:12px;color:var(--lime);z-index:3}
+.pstage>.c.tl{top:10px;left:10px}.pstage>.c.tr{top:10px;right:10px}.pstage>.c.bl{bottom:10px;left:10px}.pstage>.c.br{bottom:10px;right:10px}
+.pstage .hud>div{font-size:11px}
+.pstage .hud .tl{top:18px;left:30px}.pstage .hud .tr{top:18px;right:30px;text-align:right}
+.pstage .hud .bl{bottom:18px;left:30px}.pstage .hud .br{bottom:18px;right:30px;text-align:right}
+.pstage .pose{position:absolute;left:0;top:10%;width:100%;height:78%;overflow:visible}
+.pstage .bmx3d,.ph-screen .bmx3d,.path-stage .bmx3d{z-index:1}
+@media (max-width:900px){.prod-body{grid-template-columns:minmax(0,1fr)}.pstage{aspect-ratio:4/5;max-height:640px}}
+/* the athlete steps into the "start here" photos instead of the line figures */
+.path-stage{position:absolute;top:0;right:0;bottom:0;width:48%;z-index:1}
+.has-3d .pstage .pose,.has-3d [data-mini]{visibility:hidden}
+
+/* ---------- Demo: interactive prototype + "more about" ---------- */
+.demo-sub{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin:clamp(44px,5.5vw,76px) 0 20px;padding-top:24px;border-top:1px solid var(--line)}
+.demo-sub .k{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--lime)}
+.demo-sub h3{font-size:clamp(22px,2.4vw,34px);font-weight:500;letter-spacing:-.03em;text-transform:uppercase;line-height:1}
+.demo-sub .k2{margin-left:auto;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--faint)}
+.demo-frame{position:relative;display:grid;place-items:center;width:100%;aspect-ratio:16/9;max-height:72vh;border:1px solid var(--line);background:radial-gradient(120% 120% at 50% 0%,#161619 0%,#0a0a0c 70%);overflow:hidden;transition:border-color .2s}
+.demo-frame:hover{border-color:var(--lime)}
+.demo-frame .grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;opacity:.35;mask-image:radial-gradient(60% 70% at 50% 50%,#000 10%,transparent 80%);-webkit-mask-image:radial-gradient(60% 70% at 50% 50%,#000 10%,transparent 80%)}
+.demo-frame .play{position:relative;width:58px;height:58px;border-radius:50%;border:1px solid var(--lime);color:var(--lime);display:grid;place-items:center;transition:box-shadow .2s,transform .3s var(--ease)}
+.demo-frame .play svg{width:16px;height:16px;margin-left:3px}
+.demo-frame:hover .play{box-shadow:0 0 22px var(--lime-glow);transform:scale(1.06)}
+.demo-frame .lbl{position:absolute;left:16px;bottom:14px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--muted)}
+.demo-frame .tag-live{position:absolute;top:14px;right:16px;font-family:var(--font-mono);font-size:10px;text-transform:uppercase;color:var(--faint);border:1px solid var(--line-2);padding:4px 8px}
+.more{margin-top:16px;border:1px solid var(--line);background:var(--card)}
+.more>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:18px 20px;font-size:clamp(16px,1.5vw,19px);font-weight:500;letter-spacing:-.02em;text-transform:uppercase}
+.more>summary::-webkit-details-marker{display:none}
+.more>summary svg{width:14px;height:14px;flex:none;color:var(--lime);transition:transform .35s var(--ease)}
+.more[open]>summary svg{transform:rotate(45deg)}
+.more[open]>summary{border-bottom:1px solid var(--line)}
+.specs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px 40px;padding:22px 20px 26px}
+.spec .sl{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;color:var(--lime)}
+.spec .sv{margin-top:6px;font-size:14.5px;line-height:1.5;color:var(--muted)}
+@media (max-width:600px){.specs{grid-template-columns:minmax(0,1fr)}.demo-frame{aspect-ratio:4/3}.demo-sub .k2{margin-left:0;width:100%}}
+.demo-dlg{width:min(1440px,96vw);height:min(920px,92vh);max-width:none;max-height:none;padding:0;border:1px solid var(--line-2);background:var(--bg);color:var(--text)}
+.demo-dlg::backdrop{background:rgba(0,0,0,.82);backdrop-filter:blur(4px)}
+.demo-dlg[open]{display:flex;flex-direction:column}
+.dd-bar{display:flex;align-items:center;gap:18px;height:48px;padding:0 8px 0 16px;border-bottom:1px solid var(--line);flex:none}
+.dd-bar .mono{color:var(--lime);margin-right:auto}
+.dd-x{width:36px;height:36px;display:grid;place-items:center;border:1px solid var(--line-2)}
+.dd-x svg{width:14px;height:14px;transform:rotate(45deg)}
+.dd-x:hover{border-color:var(--lime);color:var(--lime)}
+.demo-dlg iframe{flex:1;width:100%;border:0;background:#ece8df}
+
 @media (prefers-reduced-motion:reduce){
   .mq-track{animation:none}
   html{scroll-behavior:auto}
@@ -639,11 +717,18 @@ tr:last-child th,tr:last-child td{border-bottom:0}
   <div class="hero-photo" aria-hidden="true"></div>
   <div class="hero-grid" aria-hidden="true"></div>
   <div class="hero-fig" aria-hidden="true">
-    <svg id="heroPose" viewBox="60 40 280 530"></svg>
-    <div class="readout" style="top:8%;left:0"><b>Full-body</b> tracking</div>
-    <div class="readout" style="top:8%;right:0"><b>Real-time</b></div>
-    <div class="readout" id="kneeRead" style="bottom:4%;left:0">knee <b>180°</b></div>
-    <div class="readout" style="bottom:4%;right:0">on-device</div>
+    <div class="phone">
+      <div class="ph-frame">
+        <div class="ph-notch"><span class="ph-rec"><i></i>Rec · analyzing</span><i class="cam"></i></div>
+        <div class="ph-screen">
+          <div class="ph-grid"></div>
+          <svg id="heroPose" viewBox="60 40 280 530"></svg>
+          <div class="ph-hud"><div class="tl">Full-body tracking</div><div class="tr">On-device</div><div class="bl">Drag to rotate</div><div class="br" id="kneeRead">Knee <b>180°</b></div></div>
+          <span class="ph-live"><i></i>Movement engine</span>
+        </div>
+      </div>
+      <div class="ph-stand"></div><div class="ph-tripod"></div>
+    </div>
   </div>
   <div class="wrap hero-bottom">
     <div>
@@ -685,28 +770,28 @@ tr:last-child th,tr:last-child td{border-bottom:0}
     <div class="paths" id="paths">
       <article class="path">
         <div class="ph mono"><span style="color:var(--faint)">Start here</span><span class="t">Training</span><span style="color:var(--faint)">001</span></div>
-        <div class="path-vis"><img src="assets/img/path-training.webp" alt="Athlete sprinting on a track" loading="lazy"><svg data-mini="fit" viewBox="0 0 400 225"></svg><span class="word">Train</span></div>
+        <div class="path-vis"><img src="assets/img/path-training.webp" alt="Athlete sprinting on a track" loading="lazy"><svg data-mini="fit" viewBox="0 0 400 225"></svg><div class="path-stage" data-host="p0"></div><span class="word">Train</span></div>
         <h3>“I want to train — or run the plan my physio gave me.”</h3>
         <p>Live rep counting, spoken corrections and form trends. Built-in workouts, or the exact exercises your physiotherapist prescribed.</p>
         <a class="btn" href="#fitness"><span>MoveMentor Fitness</span><i><svg><use href="#arrow"/></svg></i></a>
       </article>
       <article class="path">
         <div class="ph mono"><span style="color:var(--faint)">Start here</span><span class="t">Rehabilitation</span><span style="color:var(--faint)">002</span></div>
-        <div class="path-vis"><img src="assets/img/path-rehab.webp" alt="Therapist working with an athlete" loading="lazy"><svg data-mini="physio" viewBox="0 0 400 225"></svg><span class="word">Rehab</span></div>
+        <div class="path-vis"><img src="assets/img/path-rehab.webp" alt="Therapist working with an athlete" loading="lazy"><svg data-mini="physio" viewBox="0 0 400 225"></svg><div class="path-stage" data-host="p1"></div><span class="word">Rehab</span></div>
         <h3>“I'm a physiotherapist treating patients.”</h3>
         <p>A separate clinic app: author exercises, manage patients, prescribe at the right dose, and track adherence from every home programme.</p>
         <a class="btn" href="#physio"><span>MoveMentor Physio</span><i><svg><use href="#arrow"/></svg></i></a>
       </article>
       <article class="path">
         <div class="ph mono"><span style="color:var(--faint)">Start here</span><span class="t">Self-assessment</span><span style="color:var(--faint)">003</span></div>
-        <div class="path-vis"><img src="assets/img/path-self-assessment.webp" alt="Runner mid-stride" loading="lazy"><svg data-mini="sam" viewBox="0 0 400 225"></svg><span class="word">Screen</span></div>
+        <div class="path-vis"><img src="assets/img/path-self-assessment.webp" alt="Runner mid-stride" loading="lazy"><svg data-mini="sam" viewBox="0 0 400 225"></svg><div class="path-stage" data-host="p2"></div><span class="word">Screen</span></div>
         <h3>“My joint hurts and I don't know what it means.”</h3>
         <p>A guided self-check of your knee, back, shoulder or elbow that ends in one clear next step. Six languages.</p>
         <a class="btn" href="#sameeksha"><span>Sameeksha</span><i><svg><use href="#arrow"/></svg></i></a>
       </article>
       <article class="path">
         <div class="ph mono"><span style="color:var(--faint)">Start here</span><span class="t">Enterprise</span><span style="color:var(--faint)">004</span></div>
-        <div class="path-vis"><img src="assets/img/path-enterprise.webp" alt="Basketball players in motion" loading="lazy"><svg data-mini="ent" viewBox="0 0 400 225"></svg><span class="word">Scale</span></div>
+        <div class="path-vis"><img src="assets/img/path-enterprise.webp" alt="Basketball players in motion" loading="lazy"><svg data-mini="ent" viewBox="0 0 400 225"></svg><div class="path-stage" data-host="p3"></div><span class="word">Scale</span></div>
         <h3>“I run a clinic, an insurance book or an academy.”</h3>
         <p>Objective range-of-motion, symmetry and adherence data — no wearables to hand out and no clinic visit for every reading.</p>
         <a class="btn" href="#partners"><span>Clinics &amp; Partners</span><i><svg><use href="#arrow"/></svg></i></a>
@@ -717,7 +802,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 
 <!-- ============ PLATFORM / HOW IT WORKS ============ -->
 <section class="sec alt" id="how" style="padding-top:clamp(40px,6vw,80px)">
-  <div class="slide-head" aria-hidden="true"><div class="line giant" id="slideLine">One movement engine, with the expert in charge. One movement engine, with the expert in charge.</div></div>
+  <div class="slide-pin" id="slidePin" aria-hidden="true"><div class="slide-sticky"><div class="line giant" id="slideLine">One movement engine, with the expert in charge.</div><div class="slide-bar"><i id="slideBar"></i></div></div></div>
   <div class="wrap">
     <h2 class="sr">One movement engine, with the expert in charge.</h2>
     <div class="lit-wrap" style="margin-bottom:clamp(56px,7vw,100px)">
@@ -762,15 +847,15 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 <section class="sec" id="fitness">
   <div class="wrap">
     <figure class="banner"><img src="assets/img/fitness-banner.webp" alt="Runner in motion" loading="lazy"><svg class="c" style="top:-6px;left:-6px"><use href="#plus"/></svg><svg class="c" style="bottom:-6px;right:-6px"><use href="#plus"/></svg><figcaption class="ban-cap"><span class="giant ban-t">MoveMentor Fitness</span><span class="ban-meta mono"><b>01</b><span>Training</span></span></figcaption></figure>
-    <div class="prod-head">
-      <div>
-        <span class="tag lime" style="margin-bottom:24px">MoveMentor Fitness · Training</span>
-        <h2 class="giant h-lg">A personal trainer that can see you.</h2>
-      </div>
-      <div class="right">
+    <div class="prod-body">
+      <div class="prod-copy">
+        <span class="tag lime">MoveMentor Fitness · Training</span>
+        <h2 class="giant promise">A personal trainer that can see you.</h2>
         <p>Stand your phone up, step back, and get live coaching on every rep — automatic counting, spoken corrections, and form trends, without booking a session every time you train. Work from the built-in catalogs, or run the exact plan your physiotherapist prescribed.</p>
-        <a class="btn" href="#"><span>Get it on Google Play</span><i><svg><use href="#arrow"/></svg></i></a>
+        <div><a class="btn" href="#"><span>Get it on Google Play</span><i><svg><use href="#arrow"/></svg></i></a></div>
+        <p class="disc">Fitness &amp; wellness only — it doesn't diagnose or treat. Recovering from an injury? Ask a physio about <a href="#physio">MoveMentor Physio</a>.</p>
       </div>
+      <div class="pstage" data-host="fit" aria-hidden="true"><div class="grid"></div><svg class="pose" data-pose viewBox="60 40 280 530"></svg><svg class="c tl"><use href="#plus"/></svg><svg class="c tr"><use href="#plus"/></svg><svg class="c bl"><use href="#plus"/></svg><svg class="c br"><use href="#plus"/></svg><div class="hud"><div class="tl">Reps <b data-h="rep">00</b></div><div class="tr">Squat</div><div class="bl">Knee <b data-h="deg">178°</b></div><div class="br" data-h="cue">Ready</div></div><span class="live"><i></i>Live pose engine</span></div>
     </div>
 
     <div class="feat-grid">
@@ -804,7 +889,9 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       <div class="extra"><span class="k">Roadmap</span><h5>Sports modules</h5><p>Dedicated sports modules — starting with cricket — are on the way, growing the app toward coaching.</p></div>
     </div>
 
-    <div class="note"><svg class="plus"><use href="#plus"/></svg><p><b>Fitness &amp; wellness only.</b> MoveMentor Fitness doesn't diagnose, prescribe or treat. Recovering from an injury? Ask a physio about <a href="#physio">MoveMentor Physio</a>.</p></div>
+    <div class="demo-sub"><span class="k">Demo</span><h3>See it in the app</h3><span class="k2">Interactive prototype</span></div>
+    <button class="demo-frame" type="button" data-journey="movementor-journey.html#P-1" data-title="MoveMentor Fitness · interactive journey"><span class="grid"></span><span class="tag-live">Live</span><span class="play"><svg viewBox="0 0 16 16"><path fill="currentColor" d="M3 1.5v13L14 8z"/></svg></span><span class="lbl">Open the interactive journey — Personal area &rarr;</span></button>
+    <details class="more"><summary><span>More about MoveMentor Fitness</span><svg><use href="#plus"/></svg></summary><div class="specs"><div class="spec"><div class="sl">Workout library</div><div class="sv">Warm-up, full body, lower body, core and posture, and mobility, plus yoga poses and sport-specific programmes — beginner to advanced.</div></div><div class="spec"><div class="sl">Prescribed plans</div><div class="sv">If a physiotherapist links to you, their prescription from MoveMentor Physio appears here and runs with the same live feedback.</div></div><div class="spec"><div class="sl">Measurement</div><div class="sv">Every joint tracked in real time and scored on-device. A rep counts only at target range; holds are timed at the top.</div></div><div class="spec"><div class="sl">Account</div><div class="sv">Optional. Train in guest mode, or sign in to back up your history and saved rep clips.</div></div><div class="spec"><div class="sl">Platform</div><div class="sv">Android, via Google Play.</div></div><div class="spec"><div class="sl">Scope</div><div class="sv">A fitness and wellness app — it doesn't diagnose, prescribe or treat.</div></div><div class="spec"><div class="sl">Roadmap</div><div class="sv">Dedicated sports modules — starting with cricket — are on the way, growing the app toward coaching.</div></div></div></details>
   </div>
 </section>
 
@@ -812,18 +899,18 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 <section class="sec alt" id="physio">
   <div class="wrap">
     <figure class="banner"><img src="assets/img/physio-banner.webp" alt="Physiotherapy session" loading="lazy"><svg class="c" style="top:-6px;left:-6px"><use href="#plus"/></svg><svg class="c" style="bottom:-6px;right:-6px"><use href="#plus"/></svg><figcaption class="ban-cap"><span class="giant ban-t">MoveMentor Physio</span><span class="ban-meta mono"><b>02</b><span>Rehabilitation</span></span></figcaption></figure>
-    <div class="prod-head">
-      <div>
-        <span class="tag cyan" style="margin-bottom:24px">MoveMentor Physio · Rehabilitation</span>
-        <h2 class="giant h-lg">The clinic app for physiotherapists.</h2>
-      </div>
-      <div class="right">
+    <div class="prod-body">
+      <div class="prod-copy">
+        <span class="tag cyan">MoveMentor Physio · Rehabilitation</span>
+        <h2 class="giant promise">The clinic app for physiotherapists.</h2>
         <p>A dedicated app for physiotherapists — separate from MoveMentor Fitness, to meet medical app-store rules. Measure how a patient moves, prescribe the right exercises at the right dose, and send the plan to their Fitness app, where they train with live feedback. Results come back before the next visit.</p>
         <div class="btn-row">
           <a class="btn" href="#"><span>Get it on Google Play</span><i><svg><use href="#arrow"/></svg></i></a>
           <a class="btn dark" href="#partners"><span>Bring it to your clinic</span></a>
         </div>
+        <p class="disc">A tool for clinicians — exercise selection, dosage and interpretation stay the clinician's call.</p>
       </div>
+      <div class="pstage" data-host="phy" aria-hidden="true"><div class="grid"></div><svg class="pose" data-pose viewBox="60 40 280 530"></svg><svg class="c tl"><use href="#plus"/></svg><svg class="c tr"><use href="#plus"/></svg><svg class="c bl"><use href="#plus"/></svg><svg class="c br"><use href="#plus"/></svg><div class="hud"><div class="tl">Exam · ROM</div><div class="tr">Symmetry <b data-h="sym">98%</b></div><div class="bl">Shoulder <b data-h="deg">22°</b></div><div class="br">Target <b>160°</b></div></div><span class="live"><i></i>Live pose engine</span></div>
     </div>
 
     <div class="sub-h" style="margin-top:0"><div><span class="label">The care loop</span><h3 style="margin-top:10px">Clinic to living room, and back.</h3></div></div>
@@ -872,6 +959,9 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       </div>
     </div>
 
+    <div class="demo-sub"><span class="k">Demo</span><h3>See it in the app</h3><span class="k2">Interactive prototype</span></div>
+    <button class="demo-frame" type="button" data-journey="movementor-journey.html#K-1" data-title="MoveMentor Physio · interactive journey"><span class="grid"></span><span class="tag-live">Live</span><span class="play"><svg viewBox="0 0 16 16"><path fill="currentColor" d="M3 1.5v13L14 8z"/></svg></span><span class="lbl">Open the interactive journey — Clinic area &rarr;</span></button>
+    <details class="more"><summary><span>More about MoveMentor Physio</span><svg><use href="#plus"/></svg></summary><div class="specs"><div class="spec"><div class="sl">Author &amp; library</div><div class="sv">Build exercises in a visual editor. Your exercises stay private to you; submit one for peer review to add it to the shared library.</div></div><div class="spec"><div class="sl">Two separate apps</div><div class="sv">Physio is the physiotherapist's app; patients receive and perform the plan in MoveMentor Fitness. Kept separate to meet medical app-store requirements.</div></div><div class="spec"><div class="sl">Data &amp; storage</div><div class="sv">Live analysis stays on the phone; patient records created in the clinic are stored on the clinician's device.</div></div><div class="spec"><div class="sl">Offline &amp; online</div><div class="sv">Examine, prescribe and share by QR or file offline. Sign in for online delivery and adherence reports.</div></div><div class="spec"><div class="sl">Clinical judgement</div><div class="sv">MoveMentor measures and delivers; the clinician selects exercises, sets the dose, and interprets the measurements.</div></div></div></details>
     <div class="note"><svg class="plus"><use href="#plus"/></svg><p><b>A tool for clinicians, not a replacement.</b> Exercise selection, dosage and interpretation stay the clinician's call. Physio and Fitness are two separate apps, to meet medical app-store requirements. Live analysis stays on the phone, and patient records created in the clinic are stored on the clinician's device.</p></div>
   </div>
 </section>
@@ -880,15 +970,14 @@ tr:last-child th,tr:last-child td{border-bottom:0}
 <section class="sec" id="sameeksha">
   <div class="wrap">
     <figure class="banner"><img src="assets/img/sameeksha-banner.webp" alt="Athlete standing in a studio" loading="lazy"><svg class="c" style="top:-6px;left:-6px"><use href="#plus"/></svg><svg class="c" style="bottom:-6px;right:-6px"><use href="#plus"/></svg><figcaption class="ban-cap"><span class="giant ban-t">Sameeksha</span><span class="ban-meta mono"><b>03</b><span>Self-assessment</span></span></figcaption></figure>
-    <div class="prod-head">
-      <div>
-        <span class="tag grey" style="margin-bottom:24px">Sameeksha · Musculoskeletal self-assessment</span>
-        <h2 class="giant h-lg">Understand your joint pain, and know what to do next.</h2>
-      </div>
-      <div class="right">
+    <div class="prod-body">
+      <div class="prod-copy">
+        <span class="tag grey">Sameeksha · Musculoskeletal self-assessment</span>
+        <h2 class="giant promise">Understand your joint pain, and know what to do next.</h2>
         <p>Sameeksha takes you through a structured check of your knee, lower back, shoulder or elbow using your phone and its camera. The whole check is touchless — guided by hand gestures and voice — so you can run it on your own. At the end you get a clear screening report and one recommended next step.</p>
-        <a class="btn" href="#"><span>Get it on Google Play</span><i><svg><use href="#arrow"/></svg></i></a>
+        <div><a class="btn" href="#"><span>Get it on Google Play</span><i><svg><use href="#arrow"/></svg></i></a></div>
       </div>
+      <div class="pstage" data-host="samp" aria-hidden="true"><div class="grid"></div><svg class="pose" data-pose viewBox="60 40 280 530"></svg><svg class="c tl"><use href="#plus"/></svg><svg class="c tr"><use href="#plus"/></svg><svg class="c bl"><use href="#plus"/></svg><svg class="c br"><use href="#plus"/></svg><div class="hud"><div class="tl">Test <b data-h="rep">3</b>/5</div><div class="tr">Lower back · side bend</div><div class="bl">Trunk <b data-h="deg">0°</b></div><div class="br">Symmetry <b data-h="sym">94%</b></div></div><span class="live"><i></i>Live pose engine</span></div>
     </div>
 
     <div class="note" style="margin-top:0;margin-bottom:clamp(48px,6vw,80px)"><svg class="plus"><use href="#plus"/></svg><p><b>A screening, not a diagnosis.</b> Sameeksha reports what it observes as possibilities for a qualified professional to confirm. It doesn't diagnose conditions or replace an examination. If symptoms are severe or worsening, seek medical care directly.</p></div>
@@ -935,6 +1024,9 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       <div class="extra"><span class="k">Caregiver</span><h5>Assisted mode</h5><p>A family member or caregiver can hold the phone and answer for the person. The report records that it was assisted.</p></div>
       <div class="extra"><span class="k">Share · White-label</span><h5>Share &amp; export</h5><p>Export a PDF or share a structured file. A referral letter quotes your own words, unchanged. Built for white-label use in clinics, health camps and insurer programmes.</p></div>
     </div>
+    <div class="demo-sub"><span class="k">Demo</span><h3>See it in the app</h3><span class="k2">Interactive prototype</span></div>
+    <button class="demo-frame" type="button" data-journey="movementor-journey.html#P-7" data-title="Sameeksha · interactive journey"><span class="grid"></span><span class="tag-live">Live</span><span class="play"><svg viewBox="0 0 16 16"><path fill="currentColor" d="M3 1.5v13L14 8z"/></svg></span><span class="lbl">Open the interactive journey — Sameeksha &rarr;</span></button>
+    <details class="more"><summary><span>More about Sameeksha</span><svg><use href="#plus"/></svg></summary><div class="specs"><div class="spec"><div class="sl">How the report scores</div><div class="sv">Each finding is graded from normal to a safety indicator, and the same issue across several tests counts for more.</div></div><div class="spec"><div class="sl">Three risk dimensions</div><div class="sv">Symptoms, movement and safety are each scored out of 100 and weighted for the joint you assessed.</div></div><div class="spec"><div class="sl">Safety first</div><div class="sv">A warning-sign answer always overrides the scores and points to medical care, before anything else.</div></div><div class="spec"><div class="sl">Walking check</div><div class="sv">Included for knee and lower back only — a short recording of how you walk.</div></div><div class="spec"><div class="sl">Fairness &amp; export</div><div class="sv">Skipping a test never counts as failing it. Export a PDF or structured file; a referral letter quotes your own words, unchanged.</div></div><div class="spec"><div class="sl">Touchless &amp; white-label</div><div class="sv">Run it hands-free with gestures and voice. Built for white-label use in clinics, health camps and insurer programmes.</div></div></div></details>
   </div>
 </section>
 
@@ -1154,6 +1246,11 @@ tr:last-child th,tr:last-child td{border-bottom:0}
   </div>
 </footer>
 
+<dialog class="demo-dlg" id="demoDlg" aria-label="MoveMentor interactive prototype">
+  <div class="dd-bar"><span class="mono" id="ddTitle">Interactive journey</span><a class="ulink" id="ddOpen" href="movementor-journey.html" target="_blank" rel="noopener">Open in new tab &nearr;</a><button class="dd-x" id="ddClose" type="button" aria-label="Close"><svg><use href="#plus"/></svg></button></div>
+  <iframe id="ddFrame" title="MoveMentor interactive prototype" loading="lazy"></iframe>
+</dialog>
+
 <script>
 (function(){
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1245,6 +1342,7 @@ tr:last-child th,tr:last-child td{border-bottom:0}
   /* portrait figure */
   var port=buildPose(document.getElementById('portraitPose'),{r:3,lw:1,lineCol:'rgba(245,245,245,.12)',dotCol:'rgba(204,255,0,.25)'});
   drawPose(port,lerp(STAND,SQUAT,.35),'plain',0);
+  var stagePoses=[].slice.call(document.querySelectorAll('[data-pose]')).map(function(s){return buildPose(s,{r:4.6,lw:2.2,lineCol:'rgba(245,245,245,.6)'});});
 
   function ease(x){return .5-.5*Math.cos(Math.PI*2*x);}
   var start=performance.now(), lastPhase=0;
@@ -1256,9 +1354,10 @@ tr:last-child th,tr:last-child td{border-bottom:0}
     if(cyc<lastPhase){ tech.reps=(tech.reps%12)+1; }
     lastPhase=cyc;
     drawPose(tech,lerp(STAND,SQUAT,t),techMode,t);
+    stagePoses.forEach(function(P){drawPose(P,lerp(STAND,SQUAT,t),'plain',t);});
     requestAnimationFrame(frame);
   }
-  if(reduce){ var t0=.55; drawPose(hero,lerp(STAND,SQUAT,t0),'plain',t0); kneeRead.textContent=kneeDeg(t0)+'°'; tech.reps=8; drawPose(tech,lerp(STAND,SQUAT,t0),techMode,t0); }
+  if(reduce){ var t0=.55; drawPose(hero,lerp(STAND,SQUAT,t0),'plain',t0); kneeRead.textContent=kneeDeg(t0)+'°'; tech.reps=8; drawPose(tech,lerp(STAND,SQUAT,t0),techMode,t0); stagePoses.forEach(function(P){drawPose(P,lerp(STAND,SQUAT,t0),'plain',t0);}); }
   else requestAnimationFrame(frame);
 
   /* ---------- Tabs ---------- */
@@ -1305,12 +1404,15 @@ tr:last-child th,tr:last-child td{border-bottom:0}
   lits.forEach(function(p){ p.innerHTML=p.textContent.trim().split(/\s+/).map(function(w){return '<span class="w">'+w+'</span>';}).join(' '); p._w=[].slice.call(p.querySelectorAll('.w')); });
   function litUpdate(){ var vh=window.innerHeight; lits.forEach(function(p){ var r=p.getBoundingClientRect(); var prog=(vh*0.85-r.top)/(r.height+vh*0.35); prog=reduce?1:Math.max(0,Math.min(1,prog)); var n=Math.round(prog*p._w.length); p._w.forEach(function(w,i){w.classList.toggle('on',i<n);}); }); }
 
-  /* ---------- Sliding giant headline ---------- */
-  var sl=document.getElementById('slideLine');
-  function slideUpdate(){ if(reduce) return; var r=sl.parentNode.getBoundingClientRect(); var p=(window.innerHeight-r.top)/(window.innerHeight+r.height); sl.style.transform='translateX('+(-p*45+5)+'%)'; }
+  /* ---------- Pinned giant headline: the page holds still while the whole line scrolls across, then carries on down ---------- */
+  var sl=document.getElementById('slideLine'), pin=document.getElementById('slidePin'), sbar=document.getElementById('slideBar'), slStart=0, slTravel=0;
+  function slideMeasure(){ if(reduce) return; var vw=document.documentElement.clientWidth; slStart=vw*0.3; slTravel=Math.max(0,slStart-(vw-sl.scrollWidth)); pin.style.height=Math.round(window.innerHeight+slTravel)+'px'; }
+  function slideUpdate(){ if(reduce) return; var span=pin.offsetHeight-window.innerHeight; var p=span>0?Math.max(0,Math.min(1,-pin.getBoundingClientRect().top/span)):0; sl.style.transform='translate3d('+(slStart-p*slTravel).toFixed(1)+'px,0,0)'; sbar.style.width=(p*100).toFixed(2)+'%'; }
 
   function onScroll(){ onScrollNav(); litUpdate(); slideUpdate(); }
-  window.addEventListener('scroll',onScroll,{passive:true}); window.addEventListener('resize',onScroll); onScroll();
+  function onResize(){ slideMeasure(); onScroll(); }
+  window.addEventListener('scroll',onScroll,{passive:true}); window.addEventListener('resize',onResize); window.addEventListener('load',onResize); onResize();
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(onResize);
 
   /* ---------- Team ---------- */
   var TEAM=[['GS','Chief Revenue Officer','A veteran sports physiotherapist with 15+ years of experience, specialising in mental agility and performance vision \u2014 combining physical rehabilitation with cognitive neuroscience, and focused on taking these solutions to sports and wellness markets globally.'],
@@ -1326,6 +1428,15 @@ tr:last-child th,tr:last-child td{border-bottom:0}
       });},{threshold:.5}).observe(v);
     });
   }
+
+  /* ---------- Interactive prototype: opens in a full-screen viewer, loaded only when asked for ---------- */
+  var dlg=document.getElementById('demoDlg'), ddF=document.getElementById('ddFrame');
+  document.querySelectorAll('[data-journey]').forEach(function(b){ b.addEventListener('click',function(){ var src=b.dataset.journey;
+    if(!dlg||typeof dlg.showModal!=='function'){ window.open(src,'_blank','noopener'); return; }
+    document.getElementById('ddTitle').textContent=b.dataset.title; document.getElementById('ddOpen').href=src; ddF.src=src; dlg.showModal(); }); });
+  if(dlg){ document.getElementById('ddClose').addEventListener('click',function(){dlg.close();});
+    dlg.addEventListener('click',function(e){if(e.target===dlg)dlg.close();});
+    dlg.addEventListener('close',function(){ddF.src='about:blank';}); }
 
   /* ---------- Accordion ---------- */
   document.querySelectorAll('.acc-q').forEach(function(q){ q.addEventListener('click',function(){ var open=q.getAttribute('aria-expanded')==='true'; document.querySelectorAll('.acc-q').forEach(function(x){x.setAttribute('aria-expanded','false');}); q.setAttribute('aria-expanded',!open); }); });
@@ -1348,9 +1459,14 @@ window.addEventListener('DOMContentLoaded',function(){
   if(!(test.getContext('webgl2')||test.getContext('webgl'))) return;
   var LIME=0xccff00, GREY=0x5c5c5c, WHITE=0xf5f5f5;
   /* places where the character docks and works; sam = empty column beside the Sameeksha demo (desktop only) */
-  var hosts={hero:document.querySelector('.hero-fig'),tech:document.querySelector('.tech-fig'),sam:document.querySelector('.sam-stage .stage-3d'),safe:document.querySelector('.safe-stage .stage-3d')};
-  if(!hosts.sam)delete hosts.sam;
-  if(!hosts.safe)delete hosts.safe;
+  var hosts={hero:document.querySelector('.hero-fig .ph-screen'),tech:document.querySelector('.tech-fig'),sam:document.querySelector('.sam-stage .stage-3d'),safe:document.querySelector('.safe-stage .stage-3d')};
+  /* plus the three product stages and the four "start here" photos */
+  document.querySelectorAll('[data-host]').forEach(function(el){hosts[el.dataset.host]=el;});
+  Object.keys(hosts).forEach(function(k){if(!hosts[k])delete hosts[k];});
+  /* what the athlete does in each place, and how the camera frames it (no yaw = slow turntable) */
+  var SPOT={hero:{ex:'squat'},tech:{ex:'squat',R:3.75,yaw:.9,sway:.35},sam:{ex:'armraise',look:1.0,yaw:1.15,sway:.25},safe:{ex:'stepup',look:.95,yaw:.9,sway:.2},
+    fit:{ex:'squat',yaw:.7,sway:.3,R:4.1},phy:{ex:'abduct',look:1.0,yaw:0,sway:.2,R:4.6},samp:{ex:'sidebend',look:.92,yaw:0,sway:.25},
+    p0:{ex:'squat',yaw:.7,sway:.3},p1:{ex:'abduct',look:1.0,yaw:0,sway:.25,R:4.7},p2:{ex:'armraise',look:1.0,yaw:1.15,sway:.25,R:4.5},p3:{ex:'stepup',look:.95,yaw:.9,sway:.2}};
   var r=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
   r.setPixelRatio(Math.min(window.innerWidth<800?1.5:2,window.devicePixelRatio||1));
   r.outputEncoding=THREE.sRGBEncoding;r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;r.setClearColor(0,0);
@@ -1408,6 +1524,12 @@ window.addEventListener('DOMContentLoaded',function(){
       rw(B[P+'LeftArm'],Za,-6*d);rw(B[P+'RightArm'],Za,6*d);
       rw(B[P+'LeftArm'],Xa,-sh*d);rw(B[P+'RightArm'],Xa,-sh*d);
       rw(B[P+'LeftForeArm'],Xa,-4*d);rw(B[P+'RightForeArm'],Xa,-4*d);
+    }else if(ex==='abduct'){
+      /* Physio shoulder exam: both arms sweep out to the side and overhead, trunk and legs still */
+      var ab=160*t;rw(B[P+'LeftArm'],Za,ab*d);rw(B[P+'RightArm'],Za,-ab*d);
+    }else if(ex==='sidebend'){
+      /* Sameeksha lower-back test: side bend to each side; t runs -1..1 */
+      var sb=32*t*w;rw(B[P+'Spine'],Za,sb*.4*d);rw(B[P+'Spine1'],Za,sb*.35*d);rw(B[P+'Spine2'],Za,sb*.25*d);rw(B[P+'Neck'],Za,-sb*.25*d);
     }else{
     rw(B[P+'LeftArm'],Xa,-(10+80*t)*d);rw(B[P+'RightArm'],Xa,-(10+80*t)*d);
     rw(B[P+'LeftForeArm'],Xa,-(16*(1-t)+4)*d);rw(B[P+'RightForeArm'],Xa,-(16*(1-t)+4)*d);
@@ -1443,17 +1565,17 @@ window.addEventListener('DOMContentLoaded',function(){
       var col=mode==='understand'?(DRIVE.indexOf(e[0])>-1&&DRIVE.indexOf(e[1])>-1?cL:cG):(mode==='measure'?cW:cL);
       lc.set([col.r,col.g,col.b,col.r,col.g,col.b],i*6);});
     lg.attributes.position.needsUpdate=true;lg.attributes.color.needsUpdate=true;
-    var panel=mode!=='hero';
-    lines.visible=showLines&&!panel;lines.material.opacity=.32;
-    TRACK.forEach(function(n){var d=dots[n];d.renderOrder=panel?15:10;d.material.opacity=panel?1:.7;d.scale.setScalar(panel?1.15:1);
+    var clean=mode==='clean',panel=mode!=='hero'&&!clean;
+    lines.visible=showLines&&!panel&&!clean;lines.material.opacity=.32;
+    TRACK.forEach(function(n){var d=dots[n];d.visible=!clean;d.renderOrder=panel?15:10;d.material.opacity=panel?1:.7;d.scale.setScalar(panel?1.15:1);
       rings[n].visible=panel;rings[n].position.copy(wp[n]);});
     EDGES.forEach(function(e,i){var tb=tubes[i];tb.t.visible=tb.out.visible=panel&&showLines;if(!tb.t.visible)return;
       var a=wp[e[0]],b=wp[e[1]];setTube(tb.out,a,b,.011);setTube(tb.t,a,b,.0065);
       var drive=DRIVE.indexOf(e[0])>-1&&DRIVE.indexOf(e[1])>-1;
       tb.t.material.color.setHex(mode==='understand'?(drive?LIME:0x4a4a4a):LIME);});
     /* lighter model inside the engine panel */
-    var lk=.08;hemi.intensity+=((panel?1.7:.85)-hemi.intensity)*lk;key.intensity+=((panel?1.9:1.3)-key.intensity)*lk;
-    if(o.mats)o.mats.forEach(function(mt){if(mt.emissiveMap)mt.emissiveIntensity+=((panel?.42:0)-mt.emissiveIntensity)*lk;});
+    var lk=.08;hemi.intensity+=((panel?1.7:clean?1.3:.85)-hemi.intensity)*lk;key.intensity+=((panel?1.9:clean?1.6:1.3)-key.intensity)*lk;
+    if(o.mats)o.mats.forEach(function(mt){if(mt.emissiveMap)mt.emissiveIntensity+=((panel?.42:clean?.14:0)-mt.emissiveIntensity)*lk;});
     halos.forEach(function(h,i){h.visible=mode==='understand';h.position.copy(wp[COMP[i]]);h.lookAt(cam.position);});
     var v1=new THREE.Vector3().subVectors(wp.LeftUpLeg,wp.LeftLeg).normalize(),v2=new THREE.Vector3().subVectors(wp.LeftFoot,wp.LeftLeg).normalize();
     return Math.round(Math.acos(Math.max(-1,Math.min(1,v1.dot(v2))))*180/Math.PI);}
@@ -1467,6 +1589,8 @@ window.addEventListener('DOMContentLoaded',function(){
   /* safety stage: knee readout + pulsing red ring on the right knee while it climbs */
   var fRead=null,fSlot=document.querySelector('.safe-stage .stage-read');if(hosts.safe&&fSlot){fRead=document.createElement('div');fRead.className='bmx3d-read';fSlot.appendChild(fRead);}
   var painRing=new THREE.Mesh(new THREE.RingGeometry(.075,.092,40),new THREE.MeshBasicMaterial({color:0xff4d4d,depthTest:false,transparent:true,opacity:0,side:THREE.DoubleSide}));painRing.renderOrder=16;painRing.visible=false;scene.add(painRing);
+  var huds={};['fit','phy','samp'].forEach(function(k){if(!hosts[k])return;var h={};hosts[k].querySelectorAll('[data-h]').forEach(function(el){h[el.dataset.h]=el;});huds[k]=h;});
+  function setH(el,v){if(el&&el.textContent!==v)el.textContent=v;}
   function kneeRDeg(){var v1=new THREE.Vector3().subVectors(wp.RightUpLeg,wp.RightLeg).normalize(),v2=new THREE.Vector3().subVectors(wp.RightFoot,wp.RightLeg).normalize();
     return Math.round(Math.acos(Math.max(-1,Math.min(1,v1.dot(v2))))*180/Math.PI);}
   function shoulderDeg(){var v1=new THREE.Vector3().subVectors(wp.LeftForeArm,wp.LeftArm).normalize(),v2=new THREE.Vector3().subVectors(wp.LeftUpLeg,wp.LeftArm).normalize();
@@ -1480,7 +1604,14 @@ window.addEventListener('DOMContentLoaded',function(){
 
   var active=null,ag={state:'',host:null,target:null,cx:0,cy:0,h:200,ox:0,oy:0,oh:0,vx:0,vy:0,vh:0,ph:0,amp:0,dir:1,work:0,settled:false,camYaw:.45,R:4.3,cw:0,ch:0};
   function hostRatio(el){var b=el.getBoundingClientRect(),vh=window.innerHeight;return b.height?Math.max(0,Math.min(vh,b.bottom)-Math.max(0,b.top))/b.height:0;}
-  function wantHost(){if(hostRatio(hosts.hero)>=.5)return 'hero';if(hostRatio(hosts.tech)>=.6)return 'tech';if(hosts.sam&&hostRatio(hosts.sam)>=.6)return 'sam';if(hosts.safe&&hostRatio(hosts.safe)>=.6)return 'safe';return null;}
+  /* where to go: the most visible place it works; among the "start here" photos, the one under the pointer wins */
+  var hoverHost=null;
+  document.querySelectorAll('.path').forEach(function(card){var st=card.querySelector('[data-host]');if(!st)return;
+    card.addEventListener('pointerenter',function(){hoverHost=st.dataset.host;});card.addEventListener('pointerleave',function(){if(hoverHost===st.dataset.host)hoverHost=null;});});
+  function wantHost(){
+    if(hoverHost&&hosts[hoverHost]&&hostRatio(hosts[hoverHost])>=.55)return hoverHost;
+    var best=null,bv=0;for(var k in hosts){var need=k==='hero'?.5:(/^p\d$/.test(k)?.55:.6),v=hostRatio(hosts[k]);if(v>=need&&v>bv+.02){best=k;bv=v;}}
+    return best;}
   function setCanvasSize(w,h){w=Math.max(1,Math.round(w));h=Math.max(1,Math.round(h));if(w===ag.cw&&h===ag.ch)return;ag.cw=w;ag.ch=h;r.setSize(w,h,false);cv.style.width=w+'px';cv.style.height=h+'px';cam.aspect=w/h;cam.updateProjectionMatrix();}
   function steady(){cv.style.animation='none';cv.style.opacity='1';}
   /* while travelling the canvas keeps one resolution and is scaled on the GPU, so nothing is reallocated mid-move */
@@ -1503,11 +1634,11 @@ window.addEventListener('DOMContentLoaded',function(){
   function damp(x,v,T,dt){var w=2/T,k=w*dt,e=1/(1+k+.48*k*k+.235*k*k*k),tmp=(v+w*x)*dt;return [(x+tmp)*e,(v-w*tmp)*e];}
   function agentTick(dt){
     var want=wantHost();
-    if(ag.state==='docked'){if(want===ag.host||hostRatio(hosts[ag.host])>=.4){ag.work=Math.min(1,ag.work+dt*2.5);ag.amp*=Math.exp(-dt*8);return;}undock();}
+    if(ag.state==='docked'){if(want===ag.host||(hostRatio(hosts[ag.host])>=.4&&!(want&&want===hoverHost))){ag.work=Math.min(1,ag.work+dt*2.5);ag.amp*=Math.exp(-dt*8);return;}undock();}
     ag.work=Math.max(0,ag.work-dt*4);
     /* position is tracked relative to where it is heading, so scrolling carries it along instead of making it chase */
     var key=want||'corner',tr=rectOf(key),tcx=tr.x+tr.w/2,tcy=tr.y+tr.h/2;
-    if(key!==ag.target){ag.target=key;ag.ox=ag.cx-tcx;ag.oy=ag.cy-tcy;ag.oh=ag.h-tr.h;ag.settled=false;
+    if(key!==ag.target){ag.target=key;ag.ox=ag.cx-tcx;ag.oy=ag.cy-tcy;var lim=window.innerHeight*1.1;ag.oy=Math.max(-lim,Math.min(lim,ag.oy));ag.cy=tcy+ag.oy;ag.oh=ag.h-tr.h;ag.settled=false;
       /* sharpness: draw at the larger of where it is and where it's going, so it is only ever scaled down (crisp), never stretched up (blurry) */
       var asp=ag.cw/ag.ch||.72,H=Math.min(Math.max(ag.h,tr.h),window.innerHeight*1.2);if(H>ag.ch)setCanvasSize(H*asp,H);}
     if(reduce){ag.ox=ag.oy=ag.oh=ag.vx=ag.vy=ag.vh=0;}
@@ -1542,10 +1673,12 @@ window.addEventListener('DOMContentLoaded',function(){
     agentTick(dt);
     /* exercises only where it works (fading in and out), with the walking stride layered on while travelling */
     /* which exercise: chosen where it docks, kept while it walks so the arms never jump mid-move */
-    if(active!=='fly')ag.ex=active==='sam'?'armraise':(active==='safe'?'stepup':'squat');
-    if(ag.ex==='stepup'&&stepT)pose(t,'stepup',ag.work);else pose(t*ag.work,ag.ex==='stepup'?'squat':(ag.ex||'squat'));if(ag.amp>.01&&!reduce)walkAdd(ag.ph,ag.amp);
+    if(active!=='fly')ag.ex=(SPOT[active]||{}).ex||'squat';
+    var ex=ag.ex||'squat',sbS=reduce?.6:Math.sin(c*Math.PI*2);
+    if(ex==='stepup'&&stepT)pose(t,'stepup',ag.work);else if(ex==='sidebend')pose(sbS,'sidebend',ag.work);else pose(t*ag.work,ex==='stepup'?'squat':ex);
+    if(ag.amp>.01&&!reduce)walkAdd(ag.ph,ag.amp);
     if(stairs){var sv=ag.ex==='stepup'?ag.work:0;stairs.visible=sv>.02;stairMat.opacity=sv;edgeMat.opacity=.7*sv;}
-    var mode=active==='tech'?(window.BMX_MODE||'see'):'hero';var kd=overlay(mode);
+    var mode=active==='tech'?(window.BMX_MODE||'see'):'clean';var kd=overlay('clean');
     if(active!=='tech'&&tRead.innerHTML)tRead.innerHTML='';
     if(active==='hero'){if(heroKnee)heroKnee.textContent=kd+'°';}
     else if(active==='tech'){tRead.innerHTML=mode==='measure'?'knee <b>'+kd+'°</b>':(mode==='respond'?'<span class="big">'+String(reps%100).padStart(2,'0')+'</span>rep':'');}
@@ -1553,11 +1686,18 @@ window.addEventListener('DOMContentLoaded',function(){
     var pain=active==='safe'&&ag.work>.3;painRing.visible=pain;
     if(pain){painRing.position.copy(wp.RightLeg);painRing.lookAt(cam.position);painRing.material.opacity=(.35+.65*(.5+.5*Math.sin(clock*7)))*Math.min(1,(1-t)*1.4+.2);dots.RightLeg.material.color.setHex(0xff4d4d);}
     if(fRead){if(active==='safe'&&ag.work>.5)fRead.innerHTML='<span class="big" style="color:#ff5d5d">'+kneeRDeg()+'\u00b0</span>right knee \u00b7 pain flagged';else if(fRead.innerHTML)fRead.innerHTML='';}
+    var hd=huds[active];
+    if(hd&&ag.work>.5){
+      if(active==='fit'){setH(hd.rep,String(reps%100).padStart(2,'0'));setH(hd.deg,kd+'\u00b0');setH(hd.cue,t>.85?'Hold':(t<.08?'Top':(t>ag.lt?'Lower':'Drive up')));}
+      else if(active==='phy'){setH(hd.deg,shoulderDeg()+'\u00b0');setH(hd.sym,(97+Math.round(Math.sin(clock*.7)))+'%');}
+      else if(active==='samp'){setH(hd.rep,String(reps%5+1));setH(hd.deg,Math.round(Math.abs(sbS)*32)+'\u00b0 '+(sbS>0?'R':'L'));setH(hd.sym,(94+Math.round(Math.sin(clock*.5)))+'%');}
+    }
+    ag.lt=t;
     if(!drag){uYaw+=vel;vel*=.92;}
-    var fit=Math.max(1,.62/Math.min(cam.aspect,.9));
-    var Rt=(active==='tech'?3.75:4.3)*fit,look=active==='sam'?1.0:(active==='safe'?.95:.84);ag.R+=(Rt-ag.R)*(reduce?1:1-Math.exp(-dt*4));var R=ag.R;
+    var spot=SPOT[active]||{},fit=Math.max(1,.62/Math.min(cam.aspect,.9));
+    var Rt=(spot.R||4.3)*fit,look=spot.look||.84;ag.R+=(Rt-ag.R)*(reduce?1:1-Math.exp(-dt*4));var R=ag.R;
     /* travelling: turn side-on to face the way it is going; otherwise keep slowly rotating */
-    var side=ag.dir>0?-1.25:1.25,ty=active==='tech'?.9+Math.sin(clock*.3)*.35:active==='sam'?1.15+Math.sin(clock*.3)*.25:active==='safe'?.9+Math.sin(clock*.3)*.2:yaw+Math.atan2(Math.sin(side-yaw),Math.cos(side-yaw))*ag.amp;
+    var side=ag.dir>0?-1.25:1.25,ty=spot.yaw!=null?spot.yaw+Math.sin(clock*.3)*(spot.sway||0):yaw+Math.atan2(Math.sin(side-yaw),Math.cos(side-yaw))*ag.amp;
     var dA=Math.atan2(Math.sin(ty-ag.camYaw),Math.cos(ty-ag.camYaw));ag.camYaw+=reduce?dA:dA*(1-Math.exp(-dt*4));
     var yy=ag.camYaw+uYaw;
     cam.position.set(Math.sin(yy)*R,1.12,Math.cos(yy)*R);cam.lookAt(0,look,0);
@@ -1574,8 +1714,8 @@ window.addEventListener('DOMContentLoaded',function(){
     var rest={};for(var k in B)rest[k]=B[k].quaternion.clone();
     var mats=[];m.traverse(function(x){if(x.isMesh&&x.material&&x.material.map){var mt=x.material;mt.emissive=new THREE.Color(0xffffff);mt.emissiveMap=mt.map;mt.emissiveIntensity=0;mt.map.anisotropy=r.capabilities.getMaxAnisotropy();mt.needsUpdate=true;mats.push(mt);}});
     o={m:m,B:B,rest:rest,hipPos:B[P+'Hips'].position.clone(),mats:mats};scene.add(m);
-    var fy0=new THREE.Vector3();B[P+'LeftFoot'].getWorldPosition(fy0);o.footY0=fy0.y;if(hosts.safe)buildStairs();
-    Object.keys(hosts).forEach(function(k){var hn=document.createElement('div');hn.className='drag-hint';hn.textContent='\u2194 Drag to rotate';hosts[k].appendChild(hn);});
+    var fy0=new THREE.Vector3();B[P+'LeftFoot'].getWorldPosition(fy0);o.footY0=fy0.y;if(hosts.safe||hosts.p3)buildStairs();
+    ['tech','sam','safe'].forEach(function(k){if(!hosts[k])return;var hn=document.createElement('div');hn.className='drag-hint';hn.textContent='\u2194 Drag to rotate';hosts[k].appendChild(hn);});
     window.BMX3D=true;document.documentElement.classList.add('has-3d');resize();requestAnimationFrame(loop);
   });
 });
