@@ -1506,9 +1506,9 @@ window.addEventListener('DOMContentLoaded',function(){
   document.querySelectorAll('[data-host]').forEach(function(el){hosts[el.dataset.host]=el;});
   Object.keys(hosts).forEach(function(k){if(!hosts[k])delete hosts[k];});
   /* what the athlete does in each place, and how the camera frames it (no yaw = slow turntable) */
-  var SPOT={hero:{ex:'squat'},tech:{ex:'squat',R:3.75,yaw:.9,sway:.35},sam:{ex:'armraise',look:1.0,yaw:1.15,sway:.25},safe:{ex:'stepup',look:.95,yaw:.9,sway:.2},
+  var SPOT={hero:{ex:'squat'},tech:{ex:'squat',R:3.75,yaw:.9,sway:.35},sam:{ex:'armraise',look:1.05,yaw:1.2,sway:.2,R:4.9},safe:{ex:'stepup',look:.95,yaw:.9,sway:.2},
     fit:{ex:'squat',yaw:.7,sway:.3,R:4.1},phy:{ex:'abduct',look:1.0,yaw:0,sway:.2,R:4.6},samp:{ex:'sidebend',look:.92,yaw:0,sway:.25},
-    p0:{ex:'squat',yaw:.7,sway:.3},p1:{ex:'abduct',look:1.0,yaw:0,sway:.25,R:4.7},p2:{ex:'armraise',look:1.0,yaw:1.15,sway:.25,R:4.5},p3:{ex:'sidebend',look:.92,yaw:0,sway:.25}};
+    p0:{ex:'squat',yaw:.7,sway:.3},p1:{ex:'abduct',look:1.0,yaw:0,sway:.25,R:4.7},p2:{ex:'armraise',look:1.05,yaw:1.2,sway:.2,R:4.9},p3:{ex:'sidebend',look:.92,yaw:0,sway:.25}};
   var r=new THREE.WebGLRenderer({antialias:true,alpha:true,powerPreference:'low-power'});
   r.setPixelRatio(Math.min(window.innerWidth<800?1.5:2,window.devicePixelRatio||1));
   r.outputEncoding=THREE.sRGBEncoding;r.shadowMap.enabled=true;r.shadowMap.type=THREE.PCFSoftShadowMap;r.setClearColor(0,0);
@@ -1563,7 +1563,7 @@ window.addEventListener('DOMContentLoaded',function(){
     if(ex==='armraise'){
       /* Sameeksha movement test: forward arm raise, both arms from the sides to overhead, legs and trunk still */
       /* the shoulder blade lifts with the arm (as in a real overhead raise), so the shoulder mesh never tears away from the sleeve */
-      var sh=6+138*t;rw(B[P+'LeftShoulder'],Xa,-22*t*d);rw(B[P+'RightShoulder'],Xa,-22*t*d);
+      var sh=6+122*t;rw(B[P+'LeftShoulder'],Xa,-16*t*d);rw(B[P+'RightShoulder'],Xa,-16*t*d);
       rw(B[P+'LeftArm'],Za,-6*d);rw(B[P+'RightArm'],Za,6*d);
       rw(B[P+'LeftArm'],Xa,-sh*d);rw(B[P+'RightArm'],Xa,-sh*d);
       rw(B[P+'LeftForeArm'],Xa,-4*d);rw(B[P+'RightForeArm'],Xa,-4*d);
